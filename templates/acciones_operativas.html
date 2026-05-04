@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .badge-activa { background: #28a745; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
+    .btn-crear { background: #28a745; color: white; }
+    .btn-crear:hover { background: #218838; }
+    .btn-icon { background: none; border: none; cursor: pointer; padding: 5px 8px; border-radius: 5px; color: #3498db; }
+    .btn-icon:hover { background: #e8f0fe; }
+</style>
+
+<h1>Acciones Operativas</h1>
+<p class="subtitle">Balance de acciones operativas de la Fuerza Pública</p>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-clipboard-list"></i> Listado de Acciones
+        {% if tiene_permiso(current_user, 'crear_acciones') %}
+        <a href="/accion_operativa/nueva" class="btn btn-sm btn-crear float-end">
+            <i class="fas fa-plus"></i> Nueva Acción
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table" id="tablaAcciones">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Código Unidad</th>
+                        <th>Lugar</th>
+                        <th>Mando</th>
+                        <th>Personas</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyAcciones">
+                    <tr><td colspan="6" class="empty">Cargando...<\/td><\/tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+// Función para cargar las acciones operativas
+function cargarAcciones() {
+    console.log("Cargando acciones...");
+    
+    fetch('/api/acciones_operativas')
+        .then(response => {
+            console.log("Respuesta recibida:", response.status);
+            if (!response.ok) {
+                throw new Error('Error HTTP: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Datos recibidos:", data);
+            var tbody = $('#tbodyAcciones');
+            tbody.empty();
+            
+            if (!data || data.length === 0) {
+                tbody.html('<tr><td colspan="6" class="empty">No hay acciones operativas registradas</td></tr>');
+            } else {
+                for (var i = 0; i < data.length; i++) {
+                    var a = data[i];
+                    
+                    // Construir botones de acciones
+                    var botones = '<a href="/accion_operativa/' + a.id + '" class="btn-icon" title="Ver"><i class="fas fa-eye"></i></a>';
+                    
+                    {% if tiene_permiso(current_user, 'editar_acciones') %}
+                    botones = '<a href="/accion_operativa/editar/' + a.id + '" class="btn-icon" title="Editar"><i class="fas fa-edit"></i></a> ' + botones;
+                    {% endif %}
+                    
+                    {% if tiene_permiso(current_user, 'eliminar_acciones') %}
+                    botones += ' <button class="btn-icon" onclick="eliminarAccion(' + a.id + ')" title="Eliminar"><i class="fas fa-trash"></i></button>';
+                    {% endif %}
+                    
+                    var row = '<tr>' +
+                        '<td>' + a.fecha + '</td>' +
+                        '<td>' + a.cod_unidad + '</td>' +
+                        '<td>' + a.lugar + '</td>' +
+                        '<td>' + a.mando + '</td>' +
+                        '<td>' + a.personas_abordadas + '</td>' +
+                        '<td>' + botones + '</td>' +
+                        '</tr>';
+                    
+                    tbody.append(row);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            $('#tbodyAcciones').html('<tr><td colspan="6" class="empty">Error al cargar datos: ' + error.message + '</td></tr>');
+        });
+}
+
+// Función para eliminar acción
+function eliminarAccion(id) {
+    if (confirm('¿Eliminar esta acción operativa?')) {
+        fetch('/api/acciones_operativas/' + id, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Acción eliminada correctamente');
+                    cargarAcciones();
+                } else {
+                    alert('Error al eliminar: ' + result.error);
+                }
+            })
+            .catch(error => {
+                alert('Error de conexión: ' + error);
+            });
+    }
+}
+
+// Cargar acciones cuando la página esté lista
+$(document).ready(function() {
+    console.log("Documento listo, cargando acciones...");
+    cargarAcciones();
+});
+</script>
+{% endblock %}

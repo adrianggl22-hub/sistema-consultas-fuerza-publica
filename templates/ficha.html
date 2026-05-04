@@ -1,0 +1,465 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Estilos para la vista normal */
+    .no-print {
+        display: inline-block;
+    }
+    
+    /* Estilos solo para impresión */
+    @media print {
+        .sidebar, 
+        .navbar, 
+        .btn, 
+        .btn-primary, 
+        .btn-secondary, 
+        .btn-danger, 
+        button, 
+        .card-header button, 
+        .float-end, 
+        .no-print,
+        .btn-search,
+        .search-box,
+        .btn-icon,
+        .user-info,
+        .logo,
+        .header,
+        .sidebar a,
+        .user-area,
+        .btn-home,
+        .btn-logout {
+            display: none !important;
+        }
+        
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+        }
+        
+        .main {
+            margin: 0 !important;
+            padding: 10px !important;
+            width: 100% !important;
+        }
+        
+        .container-fluid {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .card {
+            border: 1px solid #ddd !important;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            box-shadow: none !important;
+            margin-bottom: 15px !important;
+        }
+        
+        .card-header {
+            background: #f0f0f0 !important;
+            color: black !important;
+            border-bottom: 1px solid #ddd !important;
+        }
+        
+        .card-body {
+            padding: 10px !important;
+        }
+        
+        .badge-activa {
+            background: #ddd !important;
+            color: black !important;
+            border: 1px solid #999;
+        }
+        
+        h1 { 
+            font-size: 18pt !important; 
+            margin-bottom: 10px !important;
+            color: black !important;
+        }
+        h4 { 
+            font-size: 14pt !important; 
+        }
+        .card-header { 
+            font-size: 12pt !important; 
+        }
+        table { 
+            font-size: 10pt !important; 
+        }
+        p, td, th {
+            font-size: 10pt !important;
+        }
+        
+        /* Mostrar la foto centrada en impresión */
+        .card-body div {
+            text-align: center !important;
+        }
+        
+        .card-body img, 
+        .card-body div[style*="display: inline-flex"] {
+            display: block !important;
+            margin: 0 auto !important;
+        }
+        
+        img {
+            border: none !important;
+        }
+        
+        a[href]::after {
+            content: none !important;
+        }
+        
+        table {
+            border-collapse: collapse !important;
+            width: 100% !important;
+        }
+        
+        th, td {
+            border: 1px solid #ddd !important;
+            padding: 5px !important;
+        }
+        
+        th {
+            background: #f0f0f0 !important;
+        }
+        
+        .row {
+            display: block !important;
+        }
+        
+        .col-md-4, .col-md-8 {
+            width: 100% !important;
+            display: block !important;
+        }
+    }
+</style>
+
+<h1>Ficha de Persona</h1>
+<p class="subtitle">Información detallada del ciudadano</p>
+
+<div class="row">
+    <!-- Columna izquierda - Foto -->
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div style="text-align: center;">
+                    {% if persona.foto %}
+                        <img src="{{ persona.foto }}" class="img-fluid mb-3" style="width: 180px; height: 180px; object-fit: cover; border: none;">
+                    {% else %}
+                        <div style="width: 180px; height: 180px; background: #e8f0fe; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px; border: none;">
+                            <i class="fas fa-user fa-5x" style="color: #3498db;"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <h4>{{ persona.nombre }}</h4>
+                <p class="text-muted"><i class="fas fa-id-card"></i> {{ persona.cedula }}</p>
+                <span class="badge badge-activa">{{ persona.estado }}</span>
+            </div>
+        </div>
+        
+        <!-- Contacto -->
+        <div class="card mt-3">
+            <div class="card-header"><i class="fas fa-address-card"></i> Contacto</div>
+            <div class="card-body">
+                <p><i class="fas fa-phone"></i> <strong>Teléfono:</strong> {{ persona.telefono or 'No registrado' }}</p>
+                <p><i class="fas fa-envelope"></i> <strong>Email:</strong> {{ persona.email or 'No registrado' }}</p>
+                <p><i class="fas fa-map-marker-alt"></i> <strong>Dirección:</strong> {{ persona.direccion or 'No registrada' }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Columna derecha - Datos -->
+    <div class="col-md-8">
+        <!-- Datos personales -->
+        <div class="card">
+            <div class="card-header"><i class="fas fa-user"></i> Datos Personales</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Cédula:</strong> {{ persona.cedula }}</p>
+                        <p><strong>Nombre:</strong> {{ persona.nombre }}</p>
+                        <p><strong>Género:</strong> {{ persona.genero or 'No especificado' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Fecha Nacimiento:</strong> {{ persona.fecha_nacimiento or 'No registrada' }}</p>
+                        <p><strong>Estado:</strong> <span class="badge badge-activa">{{ persona.estado }}</span></p>
+                        <p><strong>Registro:</strong> {{ persona.fecha_registro or 'No registrada' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Antecedentes -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="fas fa-history"></i> Antecedentes
+                <button class="btn btn-sm btn-primary float-end no-print" onclick="abrirModalAntecedente()">+ Agregar Antecedente</button>
+            </div>
+            <div class="card-body">
+                {% if antecedentes %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Delito</th>
+                                    <th>Fecha</th>
+                                    <th>Lugar</th>
+                                    <th>Juzgado</th>
+                                    <th>Estado</th>
+                                    <th class="no-print">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for a in antecedentes %}
+                                <tr>
+                                    <td><strong>{{ a.delito }}</strong></td>
+                                    <td>{{ a.fecha_delito or '-' }}</td>
+                                    <td>{{ a.lugar or '-' }}</td>
+                                    <td>{{ a.juzgado or '-' }}</td>
+                                    <td><span class="badge badge-activa">{{ a.estado or 'REGISTRADO' }}</span></td>
+                                    <td class="no-print"><button class="btn btn-sm btn-danger" onclick="eliminarAntecedente({{ a.id }})"><i class="fas fa-trash"></i></button></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </tr>
+                    </div>
+                {% else %}
+                    <p>No tiene antecedentes registrados</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Órdenes de Captura -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="fas fa-file-alt"></i> Órdenes de Captura
+                <button class="btn btn-sm btn-primary float-end no-print" onclick="abrirModalOrden()">+ Agregar Orden</button>
+            </div>
+            <div class="card-body">
+                {% if ordenes %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>N° Orden</th>
+                                    <th>Monto</th>
+                                    <th>Juzgado</th>
+                                    <th>Expediente</th>
+                                    <th>Vence</th>
+                                    <th>Estado</th>
+                                    <th class="no-print">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for o in ordenes %}
+                                <tr>
+                                    <td><strong>{{ o.numero_orden }}</strong></td>
+                                    <td>₡{{ "{:,.2f}".format(o.monto_deuda) }}</td>
+                                    <td>{{ o.juzgado }}</td>
+                                    <td>{{ o.expediente }}</td>
+                                    <td>{{ o.fecha_vencimiento or '-' }}</td>
+                                    <td><span class="badge badge-activa">{{ o.estado }}</span></td>
+                                    <td class="no-print"><button class="btn btn-sm btn-danger" onclick="eliminarOrden({{ o.id }})"><i class="fas fa-trash"></i></button></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>No tiene órdenes de captura</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Botones (ahora al final, después de todas las tablas) -->
+        <div class="mt-3 no-print">
+            <a href="/personas" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver</a>
+            <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Imprimir Ficha</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para agregar antecedente -->
+<div id="modalAntecedente" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+    <div style="background:white; width:500px; margin:100px auto; padding:20px; border-radius:10px;">
+        <h3>Agregar Antecedente</h3>
+        <form id="formAntecedente">
+            <div class="mb-2">
+                <label>Delito *</label>
+                <input type="text" id="delito" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label>Fecha del Delito</label>
+                <input type="date" id="fecha_delito" class="form-control">
+            </div>
+            <div class="mb-2">
+                <label>Lugar</label>
+                <input type="text" id="lugar" class="form-control">
+            </div>
+            <div class="mb-2">
+                <label>Juzgado</label>
+                <input type="text" id="juzgado_ant" class="form-control">
+            </div>
+            <div class="mt-3">
+                <button type="button" class="btn btn-primary" onclick="guardarAntecedente()">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalAntecedente()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para agregar orden -->
+<div id="modalOrden" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+    <div style="background:white; width:500px; margin:100px auto; padding:20px; border-radius:10px;">
+        <h3>Agregar Orden de Captura</h3>
+        <form id="formOrden">
+            <div class="mb-2">
+                <label>Número de Orden *</label>
+                <input type="text" id="numero_orden" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label>Monto Deuda (₡) *</label>
+                <input type="number" id="monto_deuda" class="form-control" step="0.01" required>
+            </div>
+            <div class="mb-2">
+                <label>Juzgado *</label>
+                <input type="text" id="juzgado_orden" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label>Expediente *</label>
+                <input type="text" id="expediente" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label>Fecha Emisión</label>
+                <input type="date" id="fecha_emision" class="form-control">
+            </div>
+            <div class="mb-2">
+                <label>Fecha Vencimiento</label>
+                <input type="date" id="fecha_vencimiento_orden" class="form-control">
+            </div>
+            <div class="mt-3">
+                <button type="button" class="btn btn-primary" onclick="guardarOrden()">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalOrden()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Variables
+var personaId = {{ persona.id }};
+
+// ==================== ANTECEDENTES ====================
+function abrirModalAntecedente() {
+    document.getElementById('modalAntecedente').style.display = 'block';
+}
+
+function cerrarModalAntecedente() {
+    document.getElementById('modalAntecedente').style.display = 'none';
+    document.getElementById('formAntecedente').reset();
+}
+
+function guardarAntecedente() {
+    var data = {
+        persona_id: personaId,
+        delito: document.getElementById('delito').value,
+        fecha_delito: document.getElementById('fecha_delito').value,
+        lugar: document.getElementById('lugar').value,
+        juzgado: document.getElementById('juzgado_ant').value
+    };
+    
+    if (!data.delito) {
+        alert('El delito es obligatorio');
+        return;
+    }
+    
+    fetch('/api/antecedentes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('✅ Antecedente agregado correctamente');
+            location.reload();
+        } else {
+            alert('❌ Error al guardar');
+        }
+    })
+    .catch(error => {
+        alert('❌ Error de conexión: ' + error);
+    });
+}
+
+function eliminarAntecedente(id) {
+    if (confirm('¿Eliminar este antecedente?')) {
+        fetch(`/api/antecedentes/${id}`, { method: 'DELETE', credentials: 'same-origin' })
+            .then(() => location.reload());
+    }
+}
+
+// ==================== ÓRDENES ====================
+function abrirModalOrden() {
+    document.getElementById('modalOrden').style.display = 'block';
+    var hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha_emision').value = hoy;
+}
+
+function cerrarModalOrden() {
+    document.getElementById('modalOrden').style.display = 'none';
+    document.getElementById('formOrden').reset();
+}
+
+function guardarOrden() {
+    var numero_orden = document.getElementById('numero_orden').value;
+    var monto_deuda = document.getElementById('monto_deuda').value;
+    var juzgado = document.getElementById('juzgado_orden').value;
+    var expediente = document.getElementById('expediente').value;
+    
+    if (!numero_orden || !monto_deuda || !juzgado || !expediente) {
+        alert('Complete todos los campos obligatorios (*)');
+        return;
+    }
+    
+    var data = {
+        persona_id: personaId,
+        numero_orden: numero_orden,
+        monto_deuda: parseFloat(monto_deuda),
+        juzgado: juzgado,
+        expediente: expediente,
+        fecha_emision: document.getElementById('fecha_emision').value,
+        fecha_vencimiento: document.getElementById('fecha_vencimiento_orden').value
+    };
+    
+    fetch('/api/ordenes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('✅ Orden agregada correctamente');
+            cerrarModalOrden();
+            location.reload();
+        } else {
+            alert('❌ Error al guardar');
+        }
+    })
+    .catch(error => {
+        alert('❌ Error de conexión: ' + error);
+    });
+}
+
+function eliminarOrden(id) {
+    if (confirm('¿Eliminar esta orden?')) {
+        fetch(`/api/ordenes/${id}`, { method: 'DELETE', credentials: 'same-origin' })
+            .then(() => location.reload());
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Estadísticas</h1>
+<p class="subtitle">Reportes y gráficos del sistema</p>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number" id="totalPersonas">0</div>
+        <div class="stat-label">Personas</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" id="ordenesActivas">0</div>
+        <div class="stat-label">Órdenes Activas</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" id="deudaTotal">₡0</div>
+        <div class="stat-label">Deuda Total</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-chart-pie"></i> Distribución de Órdenes</div>
+    <div class="card-body">
+        <canvas id="ordenesChart" style="max-height: 300px; width: 100%;"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function formatMoney(amount) {
+    return '₡' + (amount || 0).toLocaleString();
+}
+
+let ordenesChart = null;
+
+// Cargar estadísticas básicas
+fetch('/api/estadisticas')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('totalPersonas').innerText = data.personas || 0;
+        document.getElementById('ordenesActivas').innerText = data.ordenes_activas || 0;
+        document.getElementById('deudaTotal').innerText = formatMoney(data.deuda_total);
+        
+        // También necesitamos órdenes vencidas para el gráfico
+        // Las obtenemos de otra llamada
+        fetch('/api/ordenes')
+            .then(res => res.json())
+            .then(ordenes => {
+                var activas = ordenes.filter(o => o.estado === 'ACTIVA').length;
+                var vencidas = ordenes.filter(o => o.estado === 'VENCIDA').length;
+                var cumplidas = ordenes.filter(o => o.estado === 'CUMPLIDA').length;
+                
+                // Destruir gráfico anterior si existe
+                if (ordenesChart) {
+                    ordenesChart.destroy();
+                }
+                
+                // Crear nuevo gráfico
+                var ctx = document.getElementById('ordenesChart').getContext('2d');
+                ordenesChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Activas', 'Vencidas', 'Cumplidas'],
+                        datasets: [{
+                            data: [activas, vencidas, cumplidas],
+                            backgroundColor: ['#28a745', '#dc3545', '#17a2b8'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            });
+    });
+</script>
+{% endblock %}

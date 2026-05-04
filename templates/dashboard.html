@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Dashboard</h1>
+<p class="subtitle">Bienvenido al Sistema de Consultas de la Fuerza Pública</p>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number" id="totalPersonas">0</div>
+        <div class="stat-label">Personas Registradas</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" id="ordenesActivas">0</div>
+        <div class="stat-label">Órdenes Activas</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" id="ordenesVencidas">0</div>
+        <div class="stat-label">Órdenes Vencidas</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" id="deudaTotal">₡0</div>
+        <div class="stat-label">Deuda Total</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-bell"></i> Alertas de Vencimiento</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>N° Orden</th><th>Deudor</th><th>Cédula</th><th>Días</th><th></th></tr></thead>
+                <tbody id="alertasBody">
+                    <tr><td colspan="5" class="empty">Cargando alertas...<\/td><\/tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-history"></i> Últimas Órdenes</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>N° Orden</th><th>Deudor</th><th>Monto</th><th>Juzgado</th><th>Estado</th></tr></thead>
+                <tbody id="ordenesBody">
+                    <tr><td colspan="5" class="empty">Cargando órdenes...<\/td><\/tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function formatMoney(amount) {
+    return '₡' + (amount || 0).toLocaleString();
+}
+
+fetch('/api/estadisticas')
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('totalPersonas').innerText = data.personas || 0;
+        document.getElementById('ordenesActivas').innerText = data.ordenes_activas || 0;
+        document.getElementById('ordenesVencidas').innerText = data.ordenes_vencidas || 0;
+        document.getElementById('deudaTotal').innerText = formatMoney(data.deuda_total);
+    });
+
+fetch('/api/alertas')
+    .then(res => res.json())
+    .then(data => {
+        const tbody = document.getElementById('alertasBody');
+        tbody.innerHTML = '';
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="empty">No hay alertas pendientes<\/td><\/tr>';
+        } else {
+            data.forEach(a => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${a.numero_orden}</strong><\/td>
+                        <td>${a.persona_nombre}<\/td>
+                        <td>${a.persona_cedula}<\/td>
+                        <td><span class="badge badge-activa">${a.dias_restantes} días</span><\/td>
+                        <td><button class="btn-icon" onclick="window.open('/ficha/${a.persona_id}')"><i class="fas fa-eye"></i><\/button><\/td>
+                    <\/tr>
+                `;
+            });
+        }
+    });
+
+fetch('/api/ordenes')
+    .then(res => res.json())
+    .then(data => {
+        const tbody = document.getElementById('ordenesBody');
+        tbody.innerHTML = '';
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="empty">No hay órdenes registradas<\/td><\/tr>';
+        } else {
+            data.slice(0, 5).forEach(o => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${o.numero_orden}</strong><\/td>
+                        <td>${o.persona_nombre}<\/td>
+                        <td>${formatMoney(o.monto_deuda)}<\/td>
+                        <td>${o.juzgado || '-'}<\/td>
+                        <td><span class="badge badge-activa">${o.estado}</span><\/td>
+                    <\/tr>
+                `;
+            });
+        }
+    });
+</script>
+{% endblock %}

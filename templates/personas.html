@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Gestión de Personas</h1>
+<p class="subtitle">Administre los registros de personas</p>
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-search"></i> Buscar Personas</div>
+    <div class="card-body">
+        <div class="search-box">
+            <input type="text" id="buscar" placeholder="Buscar por cédula o nombre...">
+            <button class="btn-search" onclick="cargarPersonas()"><i class="fas fa-search"></i> Buscar</button>
+            <button class="btn-search" style="background:#28a745;" onclick="abrirModal()"><i class="fas fa-plus"></i> Nueva Persona</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Cédula</th>
+                        <th>Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaPersonas">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para agregar/editar persona (versión compacta) -->
+<div id="modalPersona" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y: auto;">
+    <div style="background:white; width:500px; margin:30px auto; padding:20px; border-radius:10px; max-height:90vh; overflow-y:auto;">
+        <h3 id="modalTitulo" style="margin-top:0;">Nueva Persona</h3>
+        <form id="formPersona">
+            <input type="hidden" id="persona_id" value="">
+            <div class="mb-2">
+                <label>Cédula *</label>
+                <input type="text" id="cedula" class="form-control" required style="width:100%; padding:6px;">
+            </div>
+            <div class="mb-2">
+                <label>Nombre *</label>
+                <input type="text" id="nombre" class="form-control" required style="width:100%; padding:6px;">
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-2">
+                        <label>Fecha Nacimiento</label>
+                        <input type="date" id="fecha_nacimiento" class="form-control" style="width:100%; padding:6px;">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-2">
+                        <label>Género</label>
+                        <select id="genero" class="form-control" style="width:100%; padding:6px;">
+                            <option value="">Seleccionar</option>
+                            <option value="MASCULINO">Masculino</option>
+                            <option value="FEMENINO">Femenino</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-2">
+                <label>Teléfono</label>
+                <input type="text" id="telefono" class="form-control" style="width:100%; padding:6px;">
+            </div>
+            <div class="mb-2">
+                <label>Dirección</label>
+                <textarea id="direccion" class="form-control" rows="2" style="width:100%;"></textarea>
+            </div>
+            <div class="mb-2">
+                <label>Email</label>
+                <input type="email" id="email" class="form-control" style="width:100%; padding:6px;">
+            </div>
+            <div class="mb-2">
+                <label>Foto</label>
+                <input type="file" id="foto" class="form-control" accept="image/*" style="padding:3px;">
+                <div id="foto_actual" style="display:none; margin-top:5px;">
+                    <img id="foto_preview" style="width:50px; height:50px; border-radius:50%;">
+                </div>
+            </div>
+            <div class="mb-2">
+                <label>Estado</label>
+                <select id="estado" class="form-control" style="width:100%; padding:6px;">
+                    <option value="ACTIVO">ACTIVO</option>
+                    <option value="INACTIVO">INACTIVO</option>
+                </select>
+            </div>
+            <div class="mt-3" style="text-align:right;">
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()" style="margin-right:10px;">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarPersona()">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function cargarPersonas() {
+    var busqueda = document.getElementById('buscar').value;
+    fetch('/api/personas?busqueda=' + busqueda)
+        .then(response => response.json())
+        .then(data => {
+            var tbody = document.getElementById('tablaPersonas');
+            tbody.innerHTML = '';
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty">No hay personas registradas<\/td><\/tr>';
+            } else {
+                for (var i = 0; i < data.length; i++) {
+                    var p = data[i];
+                    var fotoHtml = p.foto ? '<img src="' + p.foto + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">' : '<i class="fas fa-user-circle fa-2x"></i>';
+                    var estadoClass = p.estado === 'ACTIVO' ? 'badge-activa' : 'badge';
+                    var row = '<tr>' +
+                        '<td>' + fotoHtml + '<\/td>' +
+                        '<td><strong>' + p.cedula + '<\/strong><\/td>' +
+                        '<td>' + p.nombre + '<\/td>' +
+                        '<td>' + (p.telefono || '-') + '<\/td>' +
+                        '<td><span class="badge ' + estadoClass + '">' + p.estado + '<\/span><\/td>' +
+                        '<td>' +
+                            '<button class="btn-icon" onclick="editarPersona(' + p.id + ')" title="Editar"><i class="fas fa-edit"><\/i><\/button>' +
+                            '<button class="btn-icon" onclick="eliminarPersona(' + p.id + ')" title="Eliminar"><i class="fas fa-trash"><\/i><\/button>' +
+                            '<button class="btn-icon" onclick="window.open(\'/ficha/' + p.id + '\')" title="Ver Ficha"><i class="fas fa-eye"><\/i><\/button>' +
+                        '<\/td>' +
+                        '<\/tr>';
+                    tbody.innerHTML += row;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('tablaPersonas').innerHTML = '<tr><td colspan="6" class="empty">Error al cargar datos<\/td><\/tr>';
+        });
+}
+
+function abrirModal() {
+    document.getElementById('modalTitulo').innerText = 'Nueva Persona';
+    document.getElementById('persona_id').value = '';
+    document.getElementById('formPersona').reset();
+    document.getElementById('modalPersona').style.display = 'block';
+}
+
+function cerrarModal() {
+    document.getElementById('modalPersona').style.display = 'none';
+}
+
+function editarPersona(id) {
+    fetch('/api/personas?busqueda=' + id)
+        .then(response => response.json())
+        .then(data => {
+            var persona = data.find(p => p.id === id);
+            if (persona) {
+                document.getElementById('modalTitulo').innerText = 'Editar Persona';
+                document.getElementById('persona_id').value = persona.id;
+                document.getElementById('cedula').value = persona.cedula;
+                document.getElementById('nombre').value = persona.nombre;
+                document.getElementById('fecha_nacimiento').value = persona.fecha_nacimiento || '';
+                document.getElementById('genero').value = persona.genero || '';
+                document.getElementById('telefono').value = persona.telefono || '';
+                document.getElementById('direccion').value = persona.direccion || '';
+                document.getElementById('email').value = persona.email || '';
+                document.getElementById('estado').value = persona.estado || 'ACTIVO';
+                if (persona.foto) {
+                    document.getElementById('foto_actual').style.display = 'block';
+                    document.getElementById('foto_preview').src = persona.foto;
+                }
+                document.getElementById('modalPersona').style.display = 'block';
+            }
+        });
+}
+
+function eliminarPersona(id) {
+    if (confirm('¿Eliminar esta persona? Esta acción eliminará también sus antecedentes y órdenes.')) {
+        fetch('/api/personas/' + id, { method: 'DELETE', credentials: 'same-origin' })
+            .then(() => {
+                alert('Persona eliminada correctamente');
+                cargarPersonas();
+            })
+            .catch(error => alert('Error al eliminar: ' + error));
+    }
+}
+
+async function guardarPersona() {
+    var id = document.getElementById('persona_id').value;
+    var data = {
+        cedula: document.getElementById('cedula').value,
+        nombre: document.getElementById('nombre').value.toUpperCase(),
+        fecha_nacimiento: document.getElementById('fecha_nacimiento').value,
+        genero: document.getElementById('genero').value,
+        telefono: document.getElementById('telefono').value,
+        direccion: document.getElementById('direccion').value,
+        email: document.getElementById('email').value,
+        estado: document.getElementById('estado').value
+    };
+    
+    if (!data.cedula || !data.nombre) {
+        alert('Cédula y nombre son obligatorios');
+        return;
+    }
+    
+    // Subir foto si hay
+    var fotoFile = document.getElementById('foto').files[0];
+    if (fotoFile) {
+        var formData = new FormData();
+        formData.append('foto', fotoFile);
+        try {
+            var uploadRes = await fetch('/api/upload_foto', { method: 'POST', body: formData });
+            var uploadResult = await uploadRes.json();
+            if (uploadResult.filename) {
+                data.foto = uploadResult.filename;
+            }
+        } catch(e) {
+            console.error('Error subiendo foto:', e);
+        }
+    }
+    
+    var url = id ? '/api/personas/' + id : '/api/personas';
+    var method = id ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert(id ? 'Persona actualizada correctamente' : 'Persona guardada correctamente');
+            cerrarModal();
+            cargarPersonas();
+        } else {
+            alert('Error al guardar: ' + JSON.stringify(result));
+        }
+    })
+    .catch(error => {
+        alert('Error de conexión: ' + error);
+    });
+}
+
+document.getElementById('buscar').addEventListener('keyup', cargarPersonas);
+document.addEventListener('DOMContentLoaded', cargarPersonas);
+</script>
+{% endblock %}

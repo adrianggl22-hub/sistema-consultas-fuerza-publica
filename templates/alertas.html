@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Alertas</h1>
+<p class="subtitle">Notificaciones de vencimiento</p>
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-bell"></i> Alertas de Vencimiento</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr><th>N° Orden</th><th>Deudor</th><th>Días</th><th>Acciones</th></tr>
+                </thead>
+                <tbody id="tablaAlertas">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+fetch('/api/alertas')
+    .then(response => response.json())
+    .then(data => {
+        var tbody = document.getElementById('tablaAlertas');
+        tbody.innerHTML = '';
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="empty">No hay alertas pendientes</td></tr>';
+        } else {
+            for (var i = 0; i < data.length; i++) {
+                var a = data[i];
+                var row = '<tr>' +
+                    '<td><strong>' + a.numero_orden + '</strong></td>' +
+                    '<td>' + a.persona_nombre + '</td>' +
+                    '<td><span class="badge badge-activa">' + a.dias_restantes + ' días</span></td>' +
+                    '<td><button class="btn-icon" onclick="window.open(\'/ficha/' + a.persona_id + '\')"><i class="fas fa-eye"></i></button></td>' +
+                    '</tr>';
+                tbody.innerHTML += row;
+            }
+        }
+    });
+</script>
+{% endblock %}

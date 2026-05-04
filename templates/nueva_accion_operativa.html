@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .section-title { background: #2c3e50; color: white; padding: 8px 15px; border-radius: 5px; margin: 15px 0 10px 0; }
+    .form-group { margin-bottom: 15px; }
+    .form-row { display: flex; gap: 15px; flex-wrap: wrap; }
+    .form-row .form-group { flex: 1; min-width: 150px; }
+    .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+    .checkbox-group label { margin: 0; }
+</style>
+
+<h1>{% if accion %}Editar{% else %}Nueva{% endif %} Acción Operativa</h1>
+<p class="subtitle">Balance de acción operativa - Delegación de Mora</p>
+
+<form id="formAccion">
+    <input type="hidden" id="accion_id" value="{{ accion.id if accion else '' }}">
+    
+    <!-- Datos generales -->
+    <div class="section-title">Datos de la Acción</div>
+    <div class="form-row">
+        <div class="form-group">
+            <label>Código Unidad</label>
+            <input type="text" id="cod_unidad" class="form-control" value="{{ accion.cod_unidad if accion else '3487' }}" required>
+        </div>
+        <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" id="fecha" class="form-control" value="{{ accion.fecha if accion else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label>Hora Inicio</label>
+            <input type="time" id="hora_inicio" class="form-control" value="{{ accion.hora_inicio if accion else '10:30' }}" required>
+        </div>
+        <div class="form-group">
+            <label>Hora Fin</label>
+            <input type="time" id="hora_fin" class="form-control" value="{{ accion.hora_fin if accion else '11:20' }}" required>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>Lugar</label>
+        <input type="text" id="lugar" class="form-control" value="{{ accion.lugar if accion else 'MORA, COLON CENTRO' }}" required>
+    </div>
+    
+    <div class="form-group">
+        <label>Acción Operativa</label>
+        <textarea id="accion_realizada" class="form-control" rows="2" required>{% if accion %}{{ accion.accion_realizada }}{% else %}PREVENCION DE LOS DELITOS CONTRA LA PROPIEDAD Y VENTA CONSUMO Y TRASIEGO DE DROGAS.{% endif %}</textarea>
+    </div>
+    
+    <!-- Escuadras -->
+    <div class="section-title">Escuadras</div>
+    <div class="checkbox-group">
+        <label><input type="checkbox" id="escuadra_1" {% if accion and accion.escuadra_1 %}checked{% endif %}> Escuadra 1</label>
+        <label><input type="checkbox" id="escuadra_2" {% if accion and accion.escuadra_2 %}checked{% endif %}> Escuadra 2</label>
+        <label><input type="checkbox" id="escuadra_3" {% if accion and accion.escuadra_3 %}checked{% endif %}> Escuadra 3</label>
+        <label><input type="checkbox" id="escuadra_4" {% if accion and accion.escuadra_4 %}checked{% endif %}> Escuadra 4</label>
+    </div>
+    
+    <!-- Personal -->
+    <div class="section-title">Personal</div>
+    <div class="form-group">
+        <label>Mando</label>
+        <input type="text" id="mando" class="form-control" value="{{ accion.mando if accion else 'SGTO ADRIAN ANDRES GARITA GONZALEZ' }}" required>
+    </div>
+    <div class="form-group">
+        <label>Oficiales</label>
+        <input type="text" id="oficiales" class="form-control" value="{{ accion.oficiales if accion else 'YOSSER FUENTES CARDENAS, EDWIN CARMONA SIBAJA, KARLA SOLANO JIMENEZ' }}" required>
+    </div>
+    <div class="form-group">
+        <label>Instituciones Participantes</label>
+        <input type="text" id="instituciones" class="form-control" value="{{ accion.instituciones if accion else 'MUNICIPALIDAD DE MORA' }}">
+    </div>
+    
+    <!-- Resultados -->
+    <div class="section-title">Resultados Operativos</div>
+    <div class="form-row">
+        <div class="form-group"><label>Personas Abordadas</label><input type="number" id="personas_abordadas" class="form-control" value="{{ accion.personas_abordadas if accion else '32' }}"></div>
+        <div class="form-group"><label>Personas OIJ</label><input type="number" id="personas_investigadas_oij" class="form-control" value="{{ accion.personas_investigadas_oij if accion else '5' }}"></div>
+        <div class="form-group"><label>Motos</label><input type="number" id="motos" class="form-control" value="{{ accion.motos if accion else '5' }}"></div>
+        <div class="form-group"><label>Carros</label><input type="number" id="carros" class="form-control" value="{{ accion.carros if accion else '25' }}"></div>
+    </div>
+    <div class="form-row">
+        <div class="form-group"><label>Control Carretera</label><input type="number" id="control_carretera" class="form-control" value="{{ accion.control_carretera if accion else '1' }}"></div>
+        <div class="form-group"><label>Op. Interinstitucionales</label><input type="number" id="op_inter_institucionales" class="form-control" value="{{ accion.op_inter_institucionales if accion else '1' }}"></div>
+        <div class="form-group"><label>Visitas Comercio</label><input type="number" id="visitas_comercio" class="form-control" value="{{ accion.visitas_comercio if accion else '3' }}"></div>
+        <div class="form-group"><label>Partes Tránsito</label><input type="number" id="partes_transito" class="form-control" value="{{ accion.partes_transito if accion else '10' }}"></div>
+    </div>
+    <div class="form-row">
+        <div class="form-group"><label>Placas Decomisadas</label><input type="number" id="placas_decomisadas" class="form-control" value="{{ accion.placas_decomisadas if accion else '1' }}"></div>
+        <div class="form-group"><label>Armas</label><input type="number" id="armas" class="form-control" value="{{ accion.armas if accion else '0' }}"></div>
+    </div>
+    
+    <!-- Incautaciones -->
+    <div class="section-title">Incautaciones</div>
+    <div class="form-row">
+        <div class="form-group"><label>Vehículos Incautados</label><input type="number" id="vehiculos_incautados" class="form-control" value="{{ accion.vehiculos_incautados if accion else '0' }}"></div>
+        <div class="form-group"><label>Gramos Marihuana</label><input type="number" step="0.01" id="gramos_marihuana" class="form-control" value="{{ accion.gramos_marihuana if accion else '0' }}"></div>
+        <div class="form-group"><label>Gramos Crack</label><input type="number" step="0.01" id="gramos_crack" class="form-control" value="{{ accion.gramos_crack if accion else '0' }}"></div>
+        <div class="form-group"><label>Gramos Cocaína</label><input type="number" step="0.01" id="gramos_cocaina" class="form-control" value="{{ accion.gramos_cocaina if accion else '0' }}"></div>
+    </div>
+    <div class="form-row">
+        <div class="form-group"><label>Puchos Marihuana</label><input type="number" id="puchos_marihuana" class="form-control" value="{{ accion.puchos_marihuana if accion else '0' }}"></div>
+        <div class="form-group"><label>Cigarillos Marihuana</label><input type="number" id="cigarillos_marihuana" class="form-control" value="{{ accion.cigarillos_marihuana if accion else '0' }}"></div>
+        <div class="form-group"><label>Piedras Crack</label><input type="number" id="piedras_crack" class="form-control" value="{{ accion.piedras_crack if accion else '0' }}"></div>
+        <div class="form-group"><label>Puntas Cocaína</label><input type="number" id="puntas_cocaina" class="form-control" value="{{ accion.puntas_cocaina if accion else '0' }}"></div>
+    </div>
+    <div class="form-row">
+        <div class="form-group"><label>Armas de Fuego</label><input type="number" id="armas_fuego" class="form-control" value="{{ accion.armas_fuego if accion else '0' }}"></div>
+        <div class="form-group"><label>Armas Blancas</label><input type="number" id="armas_blancas" class="form-control" value="{{ accion.armas_blancas if accion else '0' }}"></div>
+        <div class="form-group"><label>Dinero Efectivo (₡)</label><input type="number" step="0.01" id="dinero_efectivo" class="form-control" value="{{ accion.dinero_efectivo if accion else '0' }}"></div>
+    </div>
+    
+    <!-- Anotaciones -->
+    <div class="section-title">Anotaciones</div>
+    <div class="form-group">
+        <textarea id="anotaciones" class="form-control" rows="3">{% if accion %}{{ accion.anotaciones }}{% else %}INICIE CON LA HORA Y DEMÁS DATOS{% endif %}</textarea>
+    </div>
+    
+    <div class="mt-3">
+        <button type="button" class="btn btn-primary" onclick="guardarAccion()">Guardar</button>
+        <a href="/acciones_operativas" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+<script>
+function guardarAccion() {
+    var id = document.getElementById('accion_id').value;
+    var data = {
+        cod_unidad: document.getElementById('cod_unidad').value,
+        fecha: document.getElementById('fecha').value,
+        hora_inicio: document.getElementById('hora_inicio').value,
+        hora_fin: document.getElementById('hora_fin').value,
+        lugar: document.getElementById('lugar').value,
+        accion_realizada: document.getElementById('accion_realizada').value,
+        instituciones: document.getElementById('instituciones').value,
+        escuadra_1: document.getElementById('escuadra_1').checked,
+        escuadra_2: document.getElementById('escuadra_2').checked,
+        escuadra_3: document.getElementById('escuadra_3').checked,
+        escuadra_4: document.getElementById('escuadra_4').checked,
+        mando: document.getElementById('mando').value,
+        oficiales: document.getElementById('oficiales').value,
+        personas_abordadas: parseInt(document.getElementById('personas_abordadas').value) || 0,
+        personas_investigadas_oij: parseInt(document.getElementById('personas_investigadas_oij').value) || 0,
+        motos: parseInt(document.getElementById('motos').value) || 0,
+        carros: parseInt(document.getElementById('carros').value) || 0,
+        armas: parseInt(document.getElementById('armas').value) || 0,
+        control_carretera: parseInt(document.getElementById('control_carretera').value) || 0,
+        op_inter_institucionales: parseInt(document.getElementById('op_inter_institucionales').value) || 0,
+        visitas_comercio: parseInt(document.getElementById('visitas_comercio').value) || 0,
+        partes_transito: parseInt(document.getElementById('partes_transito').value) || 0,
+        placas_decomisadas: parseInt(document.getElementById('placas_decomisadas').value) || 0,
+        vehiculos_incautados: parseInt(document.getElementById('vehiculos_incautados').value) || 0,
+        puchos_marihuana: parseInt(document.getElementById('puchos_marihuana').value) || 0,
+        cigarillos_marihuana: parseInt(document.getElementById('cigarillos_marihuana').value) || 0,
+        gramos_marihuana: parseFloat(document.getElementById('gramos_marihuana').value) || 0,
+        piedras_crack: parseInt(document.getElementById('piedras_crack').value) || 0,
+        gramos_crack: parseFloat(document.getElementById('gramos_crack').value) || 0,
+        puntas_cocaina: parseInt(document.getElementById('puntas_cocaina').value) || 0,
+        gramos_cocaina: parseFloat(document.getElementById('gramos_cocaina').value) || 0,
+        armas_fuego: parseInt(document.getElementById('armas_fuego').value) || 0,
+        armas_blancas: parseInt(document.getElementById('armas_blancas').value) || 0,
+        dinero_efectivo: parseFloat(document.getElementById('dinero_efectivo').value) || 0,
+        anotaciones: document.getElementById('anotaciones').value
+    };
+    
+    var url = id ? '/api/acciones_operativas/' + id : '/api/acciones_operativas';
+    var method = id ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            window.location.href = '/acciones_operativas';
+        } else {
+            alert('Error al guardar: ' + (result.error || 'Error desconocido'));
+        }
+    })
+    .catch(error => {
+        alert('Error de conexión: ' + error);
+    });
+}
+
+// Si es nueva acción, establecer la fecha actual por defecto
+if (!document.getElementById('accion_id').value) {
+    var hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha').value = hoy;
+}
+</script>
+{% endblock %}

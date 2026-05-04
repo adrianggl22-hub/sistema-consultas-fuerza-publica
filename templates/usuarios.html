@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .badge-admin { background: #dc3545; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
+    .badge-supervisor { background: #fd7e14; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
+    .badge-agente { background: #17a2b8; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
+    .badge-usuario { background: #6c757d; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
+    .badge-activo { background: #28a745; }
+    .badge-inactivo { background: #6c757d; }
+</style>
+
+<h1>Gestión de Usuarios</h1>
+<p class="subtitle">Administre los usuarios del sistema</p>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-users"></i> Usuarios del Sistema
+        <button class="btn btn-sm btn-primary float-end" onclick="abrirModal()"><i class="fas fa-plus"></i> Nuevo Usuario</button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUsuarios">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para agregar/editar usuario -->
+<div id="modalUsuario" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+    <div style="background:white; width:450px; margin:50px auto; padding:20px; border-radius:10px;">
+        <h3 id="modalTitulo" style="margin-top:0;">Nuevo Usuario</h3>
+        <form id="formUsuario">
+            <input type="hidden" id="usuario_id">
+            <div class="mb-2">
+                <label>Usuario *</label>
+                <input type="text" id="username" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label>Email *</label>
+                <input type="email" id="email" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label>Contraseña</label>
+                <input type="password" id="password" class="form-control" placeholder="Dejar en blanco para no cambiar">
+            </div>
+            <div class="mb-2">
+                <label>Rol</label>
+                <select id="rol" class="form-control">
+                    <option value="usuario">Usuario (solo lectura)</option>
+                    <option value="agente">Agente (puede crear/editar)</option>
+                    <option value="supervisor">Supervisor (puede crear/editar/eliminar)</option>
+                    <option value="admin">Administrador (todos los permisos)</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <label>Estado</label>
+                <select id="activo" class="form-control">
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                </select>
+            </div>
+            <div class="mt-3" style="text-align:right;">
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()" style="margin-right:10px;">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarUsuario()">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function cargarUsuarios() {
+    fetch('/api/usuarios')
+        .then(response => response.json())
+        .then(data => {
+            var tbody = document.getElementById('tablaUsuarios');
+            tbody.innerHTML = '';
+            data.forEach(u => {
+                var rolClass = u.rol === 'admin' ? 'badge-admin' : (u.rol === 'supervisor' ? 'badge-supervisor' : (u.rol === 'agente' ? 'badge-agente' : 'badge-usuario'));
+                var estadoClass = u.activo ? 'badge-activo' : 'badge-inactivo';
+                var row = '<tr>' +
+                    '<td><strong>' + u.username + '</strong></td>' +
+                    '<td>' + u.email + '</td>' +
+                    '<td><span class="badge ' + rolClass + '">' + u.rol + '</span></td>' +
+                    '<td><span class="badge ' + estadoClass + '">' + (u.activo ? 'ACTIVO' : 'INACTIVO') + '</span></td>' +
+                    '<td>' + (u.fecha_registro ? u.fecha_registro.split(' ')[0] : '-') + '</td>' +
+                    '<td>' +
+                        '<button class="btn-icon" onclick="editarUsuario(' + u.id + ')"><i class="fas fa-edit"></i></button>' +
+                        '<button class="btn-icon" onclick="eliminarUsuario(' + u.id + ')"><i class="fas fa-trash"></i></button>' +
+                    '<\/td><\/tr>';
+                tbody.innerHTML += row;
+            });
+        });
+}
+
+function abrirModal() {
+    document.getElementById('modalTitulo').innerText = 'Nuevo Usuario';
+    document.getElementById('usuario_id').value = '';
+    document.getElementById('formUsuario').reset();
+    document.getElementById('password').required = true;
+    document.getElementById('modalUsuario').style.display = 'block';
+}
+
+function cerrarModal() {
+    document.getElementById('modalUsuario').style.display = 'none';
+}
+
+function editarUsuario(id) {
+    fetch('/api/usuarios')
+        .then(response => response.json())
+        .then(data => {
+            var usuario = data.find(u => u.id === id);
+            if (usuario) {
+                document.getElementById('modalTitulo').innerText = 'Editar Usuario';
+                document.getElementById('usuario_id').value = usuario.id;
+                document.getElementById('username').value = usuario.username;
+                document.getElementById('email').value = usuario.email;
+                document.getElementById('rol').value = usuario.rol;
+                document.getElementById('activo').value = usuario.activo;
+                document.getElementById('password').required = false;
+                document.getElementById('modalUsuario').style.display = 'block';
+            }
+        });
+}
+
+function guardarUsuario() {
+    var id = document.getElementById('usuario_id').value;
+    var data = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        rol: document.getElementById('rol').value,
+        activo: document.getElementById('activo').value === 'true'
+    };
+    
+    if (document.getElementById('password').value) {
+        data.password = document.getElementById('password').value;
+    }
+    
+    var url = id ? '/api/usuarios/' + id : '/api/usuarios';
+    var method = id ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert(id ? 'Usuario actualizado' : 'Usuario creado');
+            cerrarModal();
+            cargarUsuarios();
+        } else {
+            alert('Error: ' + result.error);
+        }
+    });
+}
+
+function eliminarUsuario(id) {
+    if (confirm('¿Eliminar este usuario?')) {
+        fetch('/api/usuarios/' + id, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    cargarUsuarios();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            });
+    }
+}
+
+$(document).ready(cargarUsuarios);
+</script>
+{% endblock %}

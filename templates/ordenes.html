@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Órdenes de Captura</h1>
+<p class="subtitle">Gestione las órdenes de captura</p>
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-search"></i> Buscar Órdenes</div>
+    <div class="card-body">
+        <div class="search-box">
+            <input type="text" id="buscar" placeholder="Buscar por número de orden...">
+            <button class="btn-search" onclick="cargarOrdenes()"><i class="fas fa-search"></i> Buscar</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>N° Orden</th>
+                        <th>Deudor</th>
+                        <th>Monto</th>
+                        <th>Juzgado</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaOrdenes">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function formatMoney(amount) {
+    return '₡' + (amount || 0).toLocaleString();
+}
+
+function cargarOrdenes() {
+    var busqueda = document.getElementById('buscar').value.toLowerCase();
+    fetch('/api/ordenes')
+        .then(response => response.json())
+        .then(data => {
+            var tbody = document.getElementById('tablaOrdenes');
+            tbody.innerHTML = '';
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty">No hay órdenes registradas</td></tr>';
+            } else {
+                // Filtrar por búsqueda
+                var filtradas = data;
+                if (busqueda) {
+                    filtradas = data.filter(function(o) {
+                        return o.numero_orden && o.numero_orden.toLowerCase().includes(busqueda);
+                    });
+                }
+                for (var i = 0; i < filtradas.length; i++) {
+                    var o = filtradas[i];
+                    var badgeClass = o.estado === 'ACTIVA' ? 'badge-activa' : 'badge-vencida';
+                    var row = '<tr>' +
+                        '<td><strong>' + o.numero_orden + '</strong></td>' +
+                        '<td>' + o.persona_nombre + '</td>' +
+                        '<td>' + formatMoney(o.monto_deuda) + '</td>' +
+                        '<td>' + o.juzgado + '</td>' +
+                        '<td><span class="badge ' + badgeClass + '">' + o.estado + '</span></td>' +
+                        '<td><button class="btn-icon" onclick="window.open(\'/ficha/' + o.persona_id + '\')"><i class="fas fa-eye"></i></button></td>' +
+                        '</tr>';
+                    tbody.innerHTML += row;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('tablaOrdenes').innerHTML = '<tr><td colspan="6" class="empty">Error al cargar datos</td></tr>';
+        });
+}
+
+document.getElementById('buscar').addEventListener('keyup', cargarOrdenes);
+document.addEventListener('DOMContentLoaded', cargarOrdenes);
+</script>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+    .info-table td { padding: 8px; border-bottom: 1px solid #eee; }
+    .info-table td:first-child { font-weight: bold; width: 30%; background: #f8f9fa; }
+    .section-title { background: #2c3e50; color: white; padding: 8px 15px; border-radius: 5px; margin: 15px 0 10px 0; }
+    .badge-check { background: #28a745; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
+    .badge-cross { background: #dc3545; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
+    .btn-volver { background: #6c757d; color: white; }
+    .btn-volver:hover { background: #5a6268; }
+    .btn-editar { background: #ffc107; color: #333; }
+    .btn-editar:hover { background: #e0a800; }
+    .btn-imprimir { background: #17a2b8; color: white; }
+    .btn-imprimir:hover { background: #138496; }
+    
+    /* Estilos para impresión */
+    @media print {
+        .navbar, .sidebar, .btn, .btn-volver, .btn-editar, .btn-imprimir, .no-print, .card-header .float-end {
+            display: none !important;
+        }
+        .main { margin: 0 !important; padding: 0 !important; }
+        .card { border: none !important; box-shadow: none !important; }
+        .section-title { background: #2c3e50 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .badge-check { background: #28a745 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .badge-cross { background: #dc3545 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { background: white; }
+    }
+</style>
+
+<h1>Detalle de Acción Operativa</h1>
+<p class="subtitle">Balance de acción operativa - Delegación de Mora</p>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-info-circle"></i> Información de la Acción
+        <div class="float-end">
+            <button onclick="window.print()" class="btn btn-sm btn-imprimir no-print" style="margin-right: 10px;">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+            <a href="/acciones_operativas" class="btn btn-sm btn-volver">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            {% if tiene_permiso(current_user, 'editar_acciones') %}
+            <a href="/accion_operativa/editar/{{ accion.id }}" class="btn btn-sm btn-editar" style="margin-left: 10px;">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Datos generales -->
+        <div class="section-title">Datos Generales</div>
+        <table class="info-table">
+            <tr>
+                <td>Código Unidad</td>
+                <td>{{ accion.cod_unidad }}</td>
+                <td>Fecha</td>
+                <td>{{ accion.fecha }}</td>
+             </tr>
+            <tr>
+                <td>Hora Inicio</td>
+                <td>{{ accion.hora_inicio }}</td>
+                <td>Hora Fin</td>
+                <td>{{ accion.hora_fin }}</td>
+             </tr>
+            <tr>
+                <td>Lugar</td>
+                <td colspan="3">{{ accion.lugar }}</td>
+             </tr>
+            <tr>
+                <td>Acción Realizada</td>
+                <td colspan="3">{{ accion.accion_realizada }}</td>
+             </tr>
+            <tr>
+                <td>Instituciones</td>
+                <td colspan="3">{{ accion.instituciones or 'Ninguna' }}</td>
+             </tr>
+        </table>
+        
+        <!-- Escuadras -->
+        <div class="section-title">Escuadras</div>
+        <table class="info-table">
+            <tr>
+                <td>Escuadra 1</td>
+                <td><span class="badge {{ 'badge-check' if accion.escuadra_1 else 'badge-cross' }}">{{ 'X' if accion.escuadra_1 else ' ' }}</span></td>
+                <td>Escuadra 2</td>
+                <td><span class="badge {{ 'badge-check' if accion.escuadra_2 else 'badge-cross' }}">{{ 'X' if accion.escuadra_2 else ' ' }}</span></td>
+             </tr>
+            <tr>
+                <td>Escuadra 3</td>
+                <td><span class="badge {{ 'badge-check' if accion.escuadra_3 else 'badge-cross' }}">{{ 'X' if accion.escuadra_3 else ' ' }}</span></td>
+                <td>Escuadra 4</td>
+                <td><span class="badge {{ 'badge-check' if accion.escuadra_4 else 'badge-cross' }}">{{ 'X' if accion.escuadra_4 else ' ' }}</span></td>
+             </tr>
+        </table>
+        
+        <!-- Personal -->
+        <div class="section-title">Personal</div>
+        <table class="info-table">
+            <tr>
+                <td>Mando</td>
+                <td colspan="3">{{ accion.mando }}</td>
+             </tr>
+            <tr>
+                <td>Oficiales</td>
+                <td colspan="3">{{ accion.oficiales }}</td>
+             </tr>
+        </table>
+        
+        <!-- Resultados -->
+        <div class="section-title">Resultados Operativos</div>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="info-table">
+                    <tr><td>Personas Abordadas</td><td>{{ accion.personas_abordadas }}</td></tr>
+                    <tr><td>Personas OIJ</td><td>{{ accion.personas_investigadas_oij }}</td></tr>
+                    <tr><td>Motos</td><td>{{ accion.motos }}</td></tr>
+                    <tr><td>Carros</td><td>{{ accion.carros }}</td></tr>
+                    <tr><td>Armas</td><td>{{ accion.armas }}</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="info-table">
+                    <tr><td>Control Carretera</td><td>{{ accion.control_carretera }}</td></tr>
+                    <tr><td>Op. Interinstitucionales</td><td>{{ accion.op_inter_institucionales }}</td></tr>
+                    <tr><td>Visitas Comercio</td><td>{{ accion.visitas_comercio }}</td></tr>
+                    <tr><td>Partes Tránsito</td><td>{{ accion.partes_transito }}</td></tr>
+                    <tr><td>Placas Decomisadas</td><td>{{ accion.placas_decomisadas }}</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Incautaciones -->
+        <div class="section-title">Incautaciones</div>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="info-table">
+                    <tr><td>Vehículos Incautados</td><td>{{ accion.vehiculos_incautados }}</td></tr>
+                    <tr><td>Puchos Marihuana</td><td>{{ accion.puchos_marihuana }}</td></tr>
+                    <tr><td>Cigarillos Marihuana</td><td>{{ accion.cigarillos_marihuana }}</td></tr>
+                    <tr><td>Gramos Marihuana</td><td>{{ accion.gramos_marihuana }}</td></tr>
+                    <tr><td>Piedras Crack</td><td>{{ accion.piedras_crack }}</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="info-table">
+                    <tr><td>Gramos Crack</td><td>{{ accion.gramos_crack }}</td></tr>
+                    <tr><td>Puntas Cocaína</td><td>{{ accion.puntas_cocaina }}</td></tr>
+                    <tr><td>Gramos Cocaína</td><td>{{ accion.gramos_cocaina }}</td></tr>
+                    <tr><td>Armas de Fuego</td><td>{{ accion.armas_fuego }}</td></tr>
+                    <tr><td>Armas Blancas</td><td>{{ accion.armas_blancas }}</td></tr>
+                    <tr><td>Dinero Efectivo</td><td>₡{{ "{:,.2f}".format(accion.dinero_efectivo) if accion.dinero_efectivo else '0' }}</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Anotaciones -->
+        {% if accion.anotaciones %}
+        <div class="section-title">Anotaciones</div>
+        <div class="card bg-light">
+            <div class="card-body">
+                {{ accion.anotaciones }}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Metadatos -->
+        <div class="section-title">Metadatos</div>
+        <table class="info-table">
+            <tr>
+                <td>Registrado por</td>
+                <td>{{ accion.usuario_registro or 'N/A' }}</td>
+                <td>Fecha Registro</td>
+                <td>{{ accion.fecha_registro or 'N/A' }}</td>
+             </tr>
+            <tr>
+                <td>Estado</td>
+                <td colspan="3"><span class="badge badge-activa">{{ accion.estado }}</span></td>
+             </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}
