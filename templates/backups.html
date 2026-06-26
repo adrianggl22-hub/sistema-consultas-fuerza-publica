@@ -1,0 +1,731 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA BACKUPS
+       ============================================================ */
+    .backup-card-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    
+    .backup-card-dark:hover {
+        border-color: #fbbf24;
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.05);
+    }
+    
+    .backup-item-dark {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #1f2937;
+        transition: all 0.2s;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .backup-item-dark:hover {
+        background-color: rgba(255,255,255,0.03);
+    }
+    
+    .backup-item-dark:last-child {
+        border-bottom: none;
+    }
+    
+    .backup-item-dark.corrupto {
+        background-color: rgba(239, 68, 68, 0.05);
+        border-left: 4px solid #ef4444;
+    }
+    
+    .backup-info-dark {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .backup-name-dark {
+        font-weight: 600;
+        color: #e5e7eb;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .backup-name-dark i {
+        font-size: 16px;
+    }
+    
+    .backup-name-dark .text-success {
+        color: #4ade80 !important;
+    }
+    
+    .backup-name-dark .text-danger {
+        color: #f87171 !important;
+    }
+    
+    .backup-date-dark {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 3px;
+    }
+    
+    .backup-size-dark {
+        font-size: 12px;
+        padding: 2px 10px;
+        border-radius: 12px;
+        margin-left: 10px;
+        display: inline-block;
+    }
+    
+    .backup-size-dark.normal {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .backup-size-dark.corrupto {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .badge-corrupto-dark {
+        background: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 600;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .backup-actions-dark {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn-restaurar-dark {
+        background: #22c55e;
+        color: white;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    .btn-restaurar-dark:hover:not(:disabled) {
+        background: #16a34a;
+        transform: scale(1.05);
+        color: white;
+    }
+    .btn-restaurar-dark:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .btn-eliminar-dark {
+        background: #dc2626;
+        color: white;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    .btn-eliminar-dark:hover {
+        background: #b91c1c;
+        transform: scale(1.05);
+        color: white;
+    }
+    
+    .btn-crear-backup-dark {
+        background: #fbbf24;
+        color: #111827;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    .btn-crear-backup-dark:hover {
+        background: #f59e0b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        color: #111827;
+    }
+    
+    .btn-configurar-dark {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    .btn-configurar-dark:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        color: white;
+    }
+    
+    .empty-backups-dark {
+        text-align: center;
+        padding: 40px;
+        color: #9ca3af;
+    }
+    .empty-backups-dark i {
+        font-size: 48px;
+        color: #374151;
+        margin-bottom: 15px;
+    }
+    .empty-backups-dark h4 {
+        color: #e5e7eb;
+    }
+    
+    .backup-stats-dark {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    
+    .stat-item-dark {
+        background: #1a2236;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: 1px solid #1f2937;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .stat-item-dark .number {
+        font-weight: 700;
+        font-size: 18px;
+        color: #fbbf24;
+    }
+    
+    .stat-item-dark .label {
+        font-size: 12px;
+        color: #9ca3af;
+    }
+    
+    .stat-item-dark i {
+        color: #fbbf24;
+    }
+    
+    .alert-dark-danger {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #f87171;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .alert-dark-success {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        color: #4ade80;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .loading-container-dark {
+        text-align: center;
+        padding: 40px;
+        color: #9ca3af;
+    }
+    
+    .spinner-dark {
+        border: 3px solid #1f2937;
+        border-top: 3px solid #fbbf24;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .text-center-dark {
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .text-danger-dark {
+        color: #f87171 !important;
+    }
+    
+    .text-muted-dark {
+        color: #9ca3af !important;
+    }
+    
+    .w-100 {
+        width: 100%;
+    }
+    
+    .mb-2 {
+        margin-bottom: 10px;
+    }
+    
+    .mb-md-0 {
+        margin-bottom: 0;
+    }
+    
+    .mt-2 {
+        margin-top: 10px;
+    }
+    
+    .float-end {
+        float: right;
+    }
+    
+    .btn-sm {
+        padding: 4px 12px;
+        font-size: 12px;
+    }
+    
+    .fa-2x {
+        font-size: 2rem;
+    }
+    
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -10px;
+    }
+    
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding: 0 10px;
+    }
+    
+    h1 {
+        color: #e5e7eb;
+    }
+    
+    h1 i {
+        color: #fbbf24;
+    }
+    
+    .subtitle-dark {
+        color: #9ca3af;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .backup-card-dark h4 {
+        color: #e5e7eb;
+    }
+    
+    .backup-card-dark h4 i {
+        color: #fbbf24;
+    }
+    
+    .backup-card-dark hr {
+        border-color: #1f2937;
+    }
+    
+    @media (max-width: 768px) {
+        .backup-item-dark {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .backup-actions-dark {
+            justify-content: flex-start;
+            margin-top: 5px;
+        }
+        .backup-stats-dark {
+            flex-direction: column;
+        }
+        .backup-name-dark {
+            font-size: 14px;
+        }
+        .col-md-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+            margin-bottom: 10px;
+        }
+        .float-end {
+            float: none !important;
+            display: inline-block;
+        }
+    }
+</style>
+
+<h1>
+    <i class="fas fa-database"></i> Gestión de Backups
+    <button class="btn-crear-backup-dark float-end" onclick="crearBackup()">
+        <i class="fas fa-plus-circle"></i> Crear Backup Manual
+    </button>
+</h1>
+<p class="subtitle-dark">Administre las copias de seguridad de la base de datos</p>
+
+<!-- Acciones -->
+<div class="backup-card-dark">
+    <div class="row">
+        <div class="col-md-6 mb-2 mb-md-0">
+            <button class="btn-crear-backup-dark w-100" onclick="crearBackup()">
+                <i class="fas fa-plus-circle"></i> Crear Backup Manual
+            </button>
+        </div>
+        <div class="col-md-6">
+            <button class="btn-configurar-dark w-100" onclick="configurarBackupAutomatico()">
+                <i class="fas fa-clock"></i> Configurar Backup Automático
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="backup-stats-dark" id="backupStats">
+    <div class="stat-item-dark">
+        <i class="fas fa-file-archive"></i>
+        <span class="number" id="totalBackups">0</span>
+        <span class="label">Backups disponibles</span>
+    </div>
+    <div class="stat-item-dark">
+        <i class="fas fa-weight-hanging"></i>
+        <span class="number" id="totalSize">0 KB</span>
+        <span class="label">Espacio total usado</span>
+    </div>
+    <div class="stat-item-dark">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span class="number" id="corruptosCount">0</span>
+        <span class="label">Backups corruptos</span>
+    </div>
+</div>
+
+<!-- Lista de Backups -->
+<div class="backup-card-dark">
+    <h4><i class="fas fa-list"></i> Backups Disponibles</h4>
+    <hr>
+    
+    <div id="backupList">
+        <div class="loading-container-dark">
+            <div class="spinner-dark"></div>
+            <p class="mt-2 text-muted-dark">Cargando backups...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// ==================== VARIABLES GLOBALES ====================
+
+// ==================== FUNCIONES PARA CARGAR BACKUPS ====================
+function cargarBackups() {
+    console.log('🔄 Cargando backups...');
+    
+    const container = document.getElementById('backupList');
+    container.innerHTML = `
+        <div class="loading-container-dark">
+            <div class="spinner-dark"></div>
+            <p class="mt-2 text-muted-dark">Cargando backups...</p>
+        </div>
+    `;
+    
+    fetch('/api/backups')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('✅ Backups cargados:', data.length);
+            renderBackups(data);
+            actualizarEstadisticas(data);
+        })
+        .catch(error => {
+            console.error('❌ Error cargando backups:', error);
+            container.innerHTML = `
+                <div class="text-center-dark text-danger-dark">
+                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    <p class="mt-2">Error al cargar los backups: ${error.message}</p>
+                    <button class="btn-crear-backup-dark btn-sm" onclick="cargarBackups()">
+                        <i class="fas fa-sync-alt"></i> Reintentar
+                    </button>
+                </div>
+            `;
+        });
+}
+
+function renderBackups(backups) {
+    const container = document.getElementById('backupList');
+    
+    if (!backups || backups.length === 0) {
+        container.innerHTML = `
+            <div class="empty-backups-dark">
+                <i class="fas fa-database"></i>
+                <h4>No hay backups disponibles</h4>
+                <p class="text-muted-dark">Crea tu primer backup usando el botón "Crear Backup Manual"</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    let corruptos = 0;
+    
+    backups.forEach((backup) => {
+        const isCorrupto = backup.tamaño_kb === 0;
+        if (isCorrupto) corruptos++;
+        
+        const sizeClass = isCorrupto ? 'corrupto' : 'normal';
+        const sizeText = isCorrupto ? '0 KB (Corrupto)' : `${backup.tamaño_kb} KB`;
+        
+        html += `
+            <div class="backup-item-dark ${isCorrupto ? 'corrupto' : ''}">
+                <div class="backup-info-dark">
+                    <div class="backup-name-dark">
+                        <i class="fas ${isCorrupto ? 'fa-exclamation-circle text-danger' : 'fa-file-archive text-success'}"></i>
+                        <span>${backup.nombre}</span>
+                        ${isCorrupto ? '<span class="badge-corrupto-dark">CORRUPTO</span>' : ''}
+                    </div>
+                    <div class="backup-date-dark">
+                        <i class="far fa-calendar-alt"></i> 
+                        ${backup.fecha_humana || 'Fecha no disponible'}
+                        <span class="backup-size-dark ${sizeClass}">
+                            <i class="fas fa-weight-hanging"></i> ${sizeText}
+                        </span>
+                    </div>
+                </div>
+                <div class="backup-actions-dark">
+                    <button class="btn-restaurar-dark" onclick="restaurarBackup('${backup.nombre}')" 
+                            ${isCorrupto ? 'disabled' : ''}
+                            title="${isCorrupto ? 'No se puede restaurar un backup corrupto' : 'Restaurar este backup'}">
+                        <i class="fas fa-undo-alt"></i> Restaurar
+                    </button>
+                    <button class="btn-eliminar-dark" onclick="eliminarBackup('${backup.nombre}')">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    // Actualizar contador de corruptos
+    document.getElementById('corruptosCount').textContent = corruptos;
+    
+    container.innerHTML = html;
+}
+
+function actualizarEstadisticas(backups) {
+    const total = backups.length;
+    let totalSize = 0;
+    let corruptos = 0;
+    
+    backups.forEach(b => {
+        if (b.tamaño_kb === 0) {
+            corruptos++;
+        } else {
+            totalSize += b.tamaño_kb || 0;
+        }
+    });
+    
+    document.getElementById('totalBackups').textContent = total;
+    document.getElementById('corruptosCount').textContent = corruptos;
+    
+    // Formatear tamaño
+    if (totalSize > 1024) {
+        document.getElementById('totalSize').textContent = (totalSize / 1024).toFixed(2) + ' MB';
+    } else {
+        document.getElementById('totalSize').textContent = totalSize.toFixed(0) + ' KB';
+    }
+}
+
+// ==================== FUNCIONES PARA BACKUPS ====================
+function crearBackup() {
+    if (!confirm('¿Está seguro de crear un nuevo backup?')) return;
+    
+    const btn = document.querySelector('.btn-crear-backup-dark');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+    btn.disabled = true;
+    
+    fetch('/api/backups/crear', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarNotificacion('✅ Backup creado correctamente', 'success');
+            cargarBackups();
+        } else {
+            mostrarNotificacion('❌ Error al crear backup: ' + (data.error || 'Error desconocido'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarNotificacion('❌ Error al crear backup', 'danger');
+    })
+    .finally(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
+function restaurarBackup(nombre) {
+    if (!confirm(`⚠️ ¿Está seguro de restaurar el backup "${nombre}"?\n\nEsto reemplazará la base de datos actual. Se creará un backup automático del estado actual.`)) return;
+    
+    // Buscar el botón específico
+    const btns = document.querySelectorAll('.btn-restaurar-dark');
+    let btn = null;
+    btns.forEach(b => {
+        if (b.getAttribute('onclick') === `restaurarBackup('${nombre}')`) {
+            btn = b;
+        }
+    });
+    
+    if (btn) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+    }
+    
+    fetch('/api/backups/restaurar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre: nombre })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarNotificacion('✅ Backup restaurado correctamente', 'success');
+            cargarBackups();
+        } else {
+            mostrarNotificacion('❌ Error al restaurar: ' + (data.error || 'Error desconocido'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarNotificacion('❌ Error al restaurar backup', 'danger');
+    })
+    .finally(() => {
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-undo-alt"></i> Restaurar';
+            btn.disabled = false;
+        }
+    });
+}
+
+function eliminarBackup(nombre) {
+    if (!confirm(`¿Está seguro de eliminar el backup "${nombre}"?`)) return;
+    
+    // Buscar el botón específico
+    const btns = document.querySelectorAll('.btn-eliminar-dark');
+    let btn = null;
+    btns.forEach(b => {
+        if (b.getAttribute('onclick') === `eliminarBackup('${nombre}')`) {
+            btn = b;
+        }
+    });
+    
+    if (btn) {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+    }
+    
+    fetch('/api/backups/eliminar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre: nombre })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarNotificacion('✅ Backup eliminado correctamente', 'success');
+            cargarBackups();
+        } else {
+            mostrarNotificacion('❌ Error al eliminar: ' + (data.error || 'Error desconocido'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarNotificacion('❌ Error al eliminar backup', 'danger');
+    })
+    .finally(() => {
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-trash"></i> Eliminar';
+            btn.disabled = false;
+        }
+    });
+}
+
+function configurarBackupAutomatico() {
+    alert('⚙️ Configuración de Backup Automático\n\n' +
+          'Para configurar backups automáticos, puedes usar:\n' +
+          '1. Windows: Programador de tareas\n' +
+          '2. Linux: Cron job\n' +
+          '3. Script: Crear un script que ejecute el backup diariamente\n\n' +
+          'Comando para backup:\n' +
+          'curl -X POST http://localhost:3000/api/backups/crear');
+}
+
+// ==================== NOTIFICACIONES ====================
+function mostrarNotificacion(mensaje, tipo) {
+    const alertClass = tipo === 'success' ? 'alert-dark-success' : 'alert-dark-danger';
+    const icono = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    
+    const notificacion = document.createElement('div');
+    notificacion.className = `${alertClass} position-fixed top-0 end-0 m-3`;
+    notificacion.style.zIndex = '9999';
+    notificacion.style.minWidth = '300px';
+    notificacion.style.animation = 'slideIn 0.3s ease';
+    notificacion.style.boxShadow = '0 4px 20px rgba(0,0,0,0.5)';
+    notificacion.innerHTML = `<i class="fas ${icono} me-2"></i> ${mensaje}`;
+    document.body.appendChild(notificacion);
+    
+    setTimeout(() => {
+        notificacion.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notificacion.remove(), 300);
+    }, 4000);
+}
+
+// Agregar animaciones CSS
+const styleSheet = document.createElement("style");
+styleSheet.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(styleSheet);
+
+// ==================== INICIALIZACIÓN ====================
+document.addEventListener('DOMContentLoaded', function() {
+    cargarBackups();
+    
+    // Recargar backups cada 60 segundos
+    setInterval(cargarBackups, 60000);
+});
+</script>
+{% endblock %}

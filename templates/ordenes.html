@@ -1,79 +1,1378 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Órdenes de Captura</h1>
-<p class="subtitle">Gestione las órdenes de captura</p>
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA ÓRDENES
+       ============================================================ */
+    .table-container-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
 
-<div class="card">
-    <div class="card-header"><i class="fas fa-search"></i> Buscar Órdenes</div>
-    <div class="card-body">
-        <div class="search-box">
-            <input type="text" id="buscar" placeholder="Buscar por número de orden...">
-            <button class="btn-search" onclick="cargarOrdenes()"><i class="fas fa-search"></i> Buscar</button>
+    .form-container-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        display: none;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    .form-container-dark h4 {
+        color: #e5e7eb;
+    }
+
+    .form-container-dark h4 i {
+        color: #fbbf24;
+    }
+
+    .form-container-dark .form-group label {
+        color: #9ca3af;
+        font-weight: 600;
+    }
+
+    .form-container-dark .form-control,
+    .form-container-dark .form-select {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        color: #e5e7eb;
+        border-radius: 8px;
+        padding: 10px 14px;
+        transition: all 0.3s ease;
+    }
+
+    .form-container-dark .form-control:focus,
+    .form-container-dark .form-select:focus {
+        background: #1f2937;
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        color: #fff;
+    }
+
+    .form-container-dark .form-control::placeholder {
+        color: #6b7280;
+    }
+
+    .form-container-dark .form-control option {
+        background: #1a2236;
+        color: #e5e7eb;
+    }
+
+    .form-container-dark .text-muted {
+        color: #6b7280 !important;
+    }
+
+    /* Badge estado dark */
+    .badge-estado-dark {
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    .badge-estado-dark.activa { 
+        background: rgba(34, 197, 94, 0.15); 
+        color: #4ade80;
+    }
+    .badge-estado-dark.vencida { 
+        background: rgba(239, 68, 68, 0.15); 
+        color: #f87171;
+    }
+    .badge-estado-dark.cancelada { 
+        background: rgba(107, 114, 128, 0.15); 
+        color: #9ca3af;
+    }
+    .badge-estado-dark.cumplida { 
+        background: rgba(96, 165, 250, 0.15); 
+        color: #60a5fa;
+    }
+
+    /* ===== ESTILO DE ICONOS DARK ===== */
+    .action-buttons-dark {
+        display: flex;
+        gap: 2px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .btn-icon-dark {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+        font-size: 16px;
+        color: #6b7280;
+    }
+    .btn-icon-dark:hover {
+        background: rgba(255,255,255,0.05);
+        color: #e5e7eb;
+    }
+    .btn-icon-dark i {
+        font-size: 16px;
+        color: #60a5fa;
+    }
+    .btn-icon-dark:hover i {
+        color: #fbbf24;
+    }
+
+    /* Estilos para el mapa dark */
+    #mapa_ubicacion {
+        height: 300px;
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #1f2937;
+        margin-top: 10px;
+    }
+    .mapa-container-dark {
+        margin-top: 15px;
+        padding: 15px;
+        background: #1a2236;
+        border-radius: 8px;
+        border: 1px solid #1f2937;
+    }
+    .mapa-container-dark label {
+        font-weight: 600;
+        color: #9ca3af;
+    }
+
+    .btn-nueva-orden-dark {
+        background: #fbbf24;
+        color: #111827;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-nueva-orden-dark:hover {
+        background: #f59e0b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+        color: #111827;
+    }
+
+    .table-dark-custom {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    .table-dark-custom thead th {
+        background: #1a2236;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 12px 8px;
+        border-bottom: 1px solid #1f2937;
+    }
+
+    .table-dark-custom tbody td {
+        padding: 10px 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        color: #e5e7eb;
+        vertical-align: middle;
+        font-size: 13px;
+    }
+
+    .table-dark-custom tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table-dark-custom tbody tr:hover td {
+        background: rgba(255,255,255,0.03);
+    }
+
+    .search-box-dark {
+        border-radius: 25px;
+        border: 1px solid #1f2937;
+        background: #1a2236;
+        color: #e5e7eb;
+        padding: 8px 15px;
+        transition: all 0.3s ease;
+    }
+    .search-box-dark:focus {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        background: #1f2937;
+        color: #fff;
+    }
+    .search-box-dark::placeholder {
+        color: #6b7280;
+    }
+    .search-icon-dark {
+        border-radius: 25px 0 0 25px;
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        border-right: none;
+        color: #6b7280;
+    }
+
+    /* Estilos para el modal dark */
+    .modal-content-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .modal-header-dark {
+        background: #1a2236;
+        border-radius: 15px 15px 0 0;
+        padding: 20px 25px;
+        border-bottom: 1px solid #1f2937;
+    }
+    .modal-header-dark .modal-title {
+        color: #e5e7eb;
+        font-weight: 600;
+        font-size: 18px;
+    }
+    .modal-header-dark .modal-title i {
+        color: #fbbf24;
+        margin-right: 10px;
+    }
+    .modal-header-dark .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.6;
+    }
+    .modal-header-dark .btn-close:hover {
+        opacity: 1;
+    }
+    .modal-body-dark {
+        padding: 25px;
+        color: #e5e7eb;
+    }
+    .modal-footer-dark {
+        border-top: 1px solid #1f2937;
+        padding: 15px 25px;
+        border-radius: 0 0 15px 15px;
+        background: #1a2236;
+    }
+
+    .detalle-orden-container-dark {
+        padding: 5px 0;
+    }
+    .detalle-header-dark {
+        background: #1a2236;
+        padding: 12px 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 4px solid #fbbf24;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .detalle-header-dark h6 {
+        margin: 0;
+        color: #e5e7eb;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    .detalle-header-dark h6 i {
+        color: #fbbf24;
+        margin-right: 8px;
+    }
+
+    .detalle-seccion-dark {
+        background: #1a2236;
+        border-radius: 10px;
+        padding: 15px 18px;
+        margin-bottom: 15px;
+        border: 1px solid #1f2937;
+    }
+    .detalle-seccion-dark h6 {
+        color: #fbbf24;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #1f2937;
+        padding-bottom: 8px;
+    }
+    .detalle-seccion-dark h6 i {
+        margin-right: 8px;
+        width: 18px;
+        text-align: center;
+    }
+
+    .detalle-item-dark {
+        display: flex;
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        align-items: flex-start;
+    }
+    .detalle-item-dark:last-child {
+        border-bottom: none;
+    }
+    .detalle-label-dark {
+        font-weight: 600;
+        color: #9ca3af;
+        width: 140px;
+        flex-shrink: 0;
+        font-size: 13px;
+    }
+    .detalle-value-dark {
+        color: #e5e7eb;
+        font-size: 13px;
+        flex: 1;
+        word-break: break-word;
+    }
+    .detalle-value-dark strong {
+        color: #fbbf24;
+    }
+
+    .badge-estado-detalle-dark {
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-estado-detalle-dark.activa {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    .badge-estado-detalle-dark.vencida {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .badge-estado-detalle-dark.cancelada {
+        background: rgba(107, 114, 128, 0.15);
+        color: #9ca3af;
+        border: 1px solid rgba(107, 114, 128, 0.2);
+    }
+    .badge-estado-detalle-dark.cumplida {
+        background: rgba(96, 165, 250, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+
+    .detalle-observaciones-dark {
+        background: rgba(251, 191, 36, 0.05);
+        border-radius: 8px;
+        padding: 12px 15px;
+        border-left: 4px solid #fbbf24;
+        margin-top: 5px;
+        font-size: 13px;
+        color: #d1d5db;
+        line-height: 1.6;
+        max-height: 150px;
+        overflow-y: auto;
+    }
+
+    .detalle-ubicacion-dark {
+        background: rgba(59, 130, 246, 0.05);
+        border-radius: 8px;
+        padding: 12px 15px;
+        border-left: 4px solid #3b82f6;
+        margin-top: 5px;
+    }
+    .detalle-ubicacion-dark a {
+        color: #60a5fa;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .detalle-ubicacion-dark a:hover {
+        text-decoration: underline;
+    }
+    .detalle-ubicacion-dark .direccion-text {
+        font-size: 13px;
+        color: #9ca3af;
+        display: block;
+        margin-top: 4px;
+    }
+
+    .detalle-monto-dark {
+        font-size: 20px;
+        font-weight: 700;
+        color: #fbbf24;
+        text-align: center;
+        padding: 8px 0;
+    }
+    .detalle-monto-dark i {
+        color: #fbbf24;
+        margin-right: 8px;
+    }
+
+    .detalle-grid-dark {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .btn-whatsapp-modal-dark {
+        background: #22c55e;
+        color: white;
+        border: none;
+        padding: 8px 25px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+    .btn-whatsapp-modal-dark:hover {
+        background: #16a34a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        color: white;
+    }
+
+    .btn-cerrar-modal-dark {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+        padding: 8px 25px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+    .btn-cerrar-modal-dark:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+
+    .btn-guardar-dark {
+        background: #22c55e;
+        color: white;
+        border: none;
+        padding: 8px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-guardar-dark:hover {
+        background: #16a34a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        color: white;
+    }
+
+    .btn-cancelar-dark {
+        background: #1f2937;
+        color: #9ca3af;
+        border: none;
+        padding: 8px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-cancelar-dark:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+
+    .btn-secondary-map-dark {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+    .btn-secondary-map-dark:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+
+    .btn-danger-map-dark {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+    .btn-danger-map-dark:hover {
+        background: #dc2626;
+        color: #fff;
+    }
+
+    .text-muted-dark {
+        color: #6b7280 !important;
+    }
+
+    .subtitle-dark {
+        color: #9ca3af;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .detalle-grid-dark {
+            grid-template-columns: 1fr;
+        }
+        .detalle-item-dark {
+            flex-wrap: wrap;
+        }
+        .detalle-label-dark {
+            width: 100%;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+        .detalle-value-dark {
+            font-size: 12px;
+        }
+        .detalle-header-dark {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .detalle-monto-dark {
+            font-size: 16px;
+        }
+        .modal-body-dark {
+            padding: 15px;
+        }
+        .btn-icon-dark {
+            padding: 3px 6px;
+            font-size: 14px;
+        }
+        .btn-icon-dark i {
+            font-size: 14px;
+        }
+    }
+</style>
+
+<h1>
+    <i class="fas fa-gavel" style="color: #fbbf24;"></i> Órdenes de Captura
+    <button class="btn btn-nueva-orden-dark float-end" onclick="mostrarFormularioNuevo()">
+        <i class="fas fa-plus-circle"></i> Nueva Orden
+    </button>
+</h1>
+<p class="subtitle-dark">Gestión de órdenes de captura por pensión alimentaria</p>
+
+<!-- Formulario para nueva/editar orden -->
+<div id="formularioOrden" class="form-container-dark">
+    <h4><i class="fas fa-plus-circle"></i> <span id="formularioTitulo">Nueva Orden de Captura</span></h4>
+    <hr style="border-color: #1f2937;">
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="persona_id">Persona Deudora *</label>
+                <select class="form-select" id="persona_id" required>
+                    <option value="">Seleccione una persona...</option>
+                </select>
+            </div>
         </div>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>N° Orden</th>
-                        <th>Deudor</th>
-                        <th>Monto</th>
-                        <th>Juzgado</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaOrdenes">
-                </tbody>
-            </table>
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="numero_orden">N° Orden *</label>
+                <input type="text" class="form-control" id="numero_orden" placeholder="Ej: 23-000067-0312-PA" required>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="monto_deuda">Monto Deuda *</label>
+                <input type="number" class="form-control" id="monto_deuda" placeholder="0" step="0.01" required>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="juzgado">Juzgado *</label>
+                <input type="text" class="form-control" id="juzgado" placeholder="Ej: JUZGADO CONTRAVENCIONAL DE ATENAS" required>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="expediente">Expediente</label>
+                <input type="text" class="form-control" id="expediente" placeholder="Ej: 23-000067-0312-PA">
+                <small class="text-muted-dark">Si no se especifica, se usará el N° Orden</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="fecha_emision">Fecha Emisión</label>
+                <input type="date" class="form-control" id="fecha_emision">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="fecha_vencimiento">Fecha Vencimiento</label>
+                <input type="date" class="form-control" id="fecha_vencimiento">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="estado">Estado</label>
+                <select class="form-select" id="estado">
+                    <option value="ACTIVA">ACTIVA</option>
+                    <option value="VENCIDA">VENCIDA</option>
+                    <option value="CUMPLIDA">CUMPLIDA</option>
+                    <option value="CANCELADA">CANCELADA</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group mb-3">
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" id="observaciones" rows="3" placeholder="Observaciones adicionales..." style="background: #1a2236; border: 1px solid #1f2937; color: #e5e7eb; border-radius: 8px;"></textarea>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mapa de ubicación -->
+    <div class="mapa-container-dark">
+        <label><i class="fas fa-map-marker-alt" style="color: #fbbf24;"></i> Ubicación en el Mapa</label>
+        <p class="text-muted-dark small">Haz clic en el mapa para marcar la ubicación del deudor</p>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group mb-2">
+                    <label for="latitud">Latitud</label>
+                    <input type="text" class="form-control" id="latitud" placeholder="9.9159706" readonly>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-2">
+                    <label for="longitud">Longitud</label>
+                    <input type="text" class="form-control" id="longitud" placeholder="-84.2471255" readonly>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-2">
+                    <label for="direccion_ubicacion">Dirección</label>
+                    <input type="text" class="form-control" id="direccion_ubicacion" placeholder="Dirección completa...">
+                </div>
+            </div>
+        </div>
+        
+        <div id="mapa_ubicacion"></div>
+        <div class="mt-2">
+            <button class="btn btn-secondary-map-dark" onclick="centrarMapa()">
+                <i class="fas fa-crosshairs"></i> Centrar en Mora
+            </button>
+            <button class="btn btn-danger-map-dark" onclick="limpiarUbicacion()">
+                <i class="fas fa-eraser"></i> Limpiar ubicación
+            </button>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <button class="btn btn-guardar-dark" id="btnGuardar" onclick="guardarOrden()">
+            <i class="fas fa-save"></i> Guardar Orden
+        </button>
+        <button class="btn btn-cancelar-dark" onclick="cerrarFormulario()">
+            <i class="fas fa-times"></i> Cancelar
+        </button>
+    </div>
+</div>
+
+<!-- Tabla de órdenes -->
+<div class="table-container-dark" id="tablaOrdenesContainer">
+    <div class="mb-3">
+        <div class="input-group">
+            <span class="input-group-text search-icon-dark"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control search-box-dark" id="buscarOrden" placeholder="Buscar por número de orden, deudor o juzgado...">
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table-dark-custom" id="tablaOrdenes">
+            <thead>
+                <tr>
+                    <th>N° Orden</th>
+                    <th>Deudor</th>
+                    <th>Cédula</th>
+                    <th>Juzgado</th>
+                    <th>Expediente</th>
+                    <th>Fecha Emisión</th>
+                    <th>Vence</th>
+                    <th>Estado</th>
+                    <th style="text-align: center; min-width: 150px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaOrdenesBody">
+                <tr><td colspan="9" class="text-center" style="color: #6b7280; padding: 30px;"><i class="fas fa-spinner fa-spin" style="color: #fbbf24;"></i> Cargando datos...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal para ver detalles -->
+<div class="modal fade" id="modalDetalleOrden" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content-dark">
+            <div class="modal-header-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-file-alt"></i> Detalle de Orden
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body-dark" id="modalDetalleContenido">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer-dark">
+                <button type="button" class="btn-cerrar-modal-dark" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+                <button type="button" class="btn-whatsapp-modal-dark" onclick="enviarWhatsAppDesdeModal()">
+                    <i class="fab fa-whatsapp"></i> Compartir por WhatsApp
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Librerías para el mapa -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-function formatMoney(amount) {
-    return '₡' + (amount || 0).toLocaleString();
+// ==================== VARIABLES GLOBALES ====================
+let ordenIdEnEdicion = null;
+let mapaUbicacion = null;
+let marcadorUbicacion = null;
+let ordenActualId = null;
+
+// ==================== FUNCIONES DEL MAPA ====================
+function inicializarMapa() {
+    const container = document.getElementById('mapa_ubicacion');
+    if (!container) return;
+    
+    const centroMora = [9.918, -84.245];
+    
+    if (mapaUbicacion) {
+        mapaUbicacion.remove();
+        mapaUbicacion = null;
+    }
+    
+    mapaUbicacion = L.map('mapa_ubicacion').setView(centroMora, 13);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(mapaUbicacion);
+    
+    mapaUbicacion.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        
+        document.getElementById('latitud').value = lat.toFixed(7);
+        document.getElementById('longitud').value = lng.toFixed(7);
+        
+        if (marcadorUbicacion) {
+            mapaUbicacion.removeLayer(marcadorUbicacion);
+        }
+        
+        marcadorUbicacion = L.marker([lat, lng], {
+            draggable: true
+        }).addTo(mapaUbicacion);
+        
+        marcadorUbicacion.on('dragend', function() {
+            const pos = marcadorUbicacion.getLatLng();
+            document.getElementById('latitud').value = pos.lat.toFixed(7);
+            document.getElementById('longitud').value = pos.lng.toFixed(7);
+        });
+        
+        obtenerDireccion(lat, lng);
+    });
+}
+
+function obtenerDireccion(lat, lng) {
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.display_name) {
+                document.getElementById('direccion_ubicacion').value = data.display_name;
+            }
+        })
+        .catch(error => {
+            console.error('Error obteniendo dirección:', error);
+        });
+}
+
+function centrarMapa() {
+    if (mapaUbicacion) {
+        mapaUbicacion.setView([9.918, -84.245], 13);
+    }
+}
+
+function limpiarUbicacion() {
+    document.getElementById('latitud').value = '';
+    document.getElementById('longitud').value = '';
+    document.getElementById('direccion_ubicacion').value = '';
+    
+    if (marcadorUbicacion) {
+        mapaUbicacion.removeLayer(marcadorUbicacion);
+        marcadorUbicacion = null;
+    }
+}
+
+function marcarUbicacion(lat, lng, direccion) {
+    if (!mapaUbicacion) return;
+    
+    if (marcadorUbicacion) {
+        mapaUbicacion.removeLayer(marcadorUbicacion);
+    }
+    
+    if (lat && lng) {
+        const latNum = parseFloat(lat);
+        const lngNum = parseFloat(lng);
+        
+        if (!isNaN(latNum) && !isNaN(lngNum)) {
+            marcadorUbicacion = L.marker([latNum, lngNum], {
+                draggable: true
+            }).addTo(mapaUbicacion);
+            
+            marcadorUbicacion.on('dragend', function() {
+                const pos = marcadorUbicacion.getLatLng();
+                document.getElementById('latitud').value = pos.lat.toFixed(7);
+                document.getElementById('longitud').value = pos.lng.toFixed(7);
+            });
+            
+            mapaUbicacion.setView([latNum, lngNum], 15);
+            
+            if (direccion) {
+                document.getElementById('direccion_ubicacion').value = direccion;
+            }
+        }
+    }
+}
+
+// ==================== FUNCIONES PARA CARGAR DATOS ====================
+function cargarPersonas() {
+    fetch('/api/personas')
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('persona_id');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">Seleccione una persona...</option>';
+            data.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.cedula} - ${p.nombre}</option>`;
+            });
+        })
+        .catch(error => console.error('Error cargando personas:', error));
 }
 
 function cargarOrdenes() {
-    var busqueda = document.getElementById('buscar').value.toLowerCase();
-    fetch('/api/ordenes')
+    const tbody = document.getElementById('tablaOrdenesBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="color: #6b7280; padding: 30px;"><i class="fas fa-spinner fa-spin" style="color: #fbbf24;"></i> Cargando datos...</td></tr>';
+    
+    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
+    fetch('/api/ordenes_captura')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="color: #6b7280; padding: 30px;">No hay órdenes registradas</td></tr>';
+                return;
+            }
+            
+            data.forEach(orden => {
+                const fechaVence = orden.fecha_vencimiento ? new Date(orden.fecha_vencimiento).toLocaleDateString('es-CR', {day:'2-digit',month:'2-digit',year:'numeric'}) : 'No especificada';
+                const fechaEmision = orden.fecha_emision ? new Date(orden.fecha_emision).toLocaleDateString('es-CR', {day:'2-digit',month:'2-digit',year:'numeric'}) : 'No especificada';
+                
+                let estadoClass = 'badge-estado-dark ';
+                estadoClass += orden.estado === 'ACTIVA' ? 'activa' : 
+                              orden.estado === 'VENCIDA' ? 'vencida' : 
+                              orden.estado === 'CANCELADA' ? 'cancelada' : 'cumplida';
+                
+                const expedienteMostrar = orden.expediente || orden.numero_orden || 'No especificado';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${orden.numero_orden}</strong></td>
+                        <td>${orden.persona_nombre}</td>
+                        <td>${orden.persona_cedula}</td>
+                        <td>${orden.juzgado || 'No especificado'}</td>
+                        <td>${expedienteMostrar}</td>
+                        <td>${fechaEmision}</td>
+                        <td>${fechaVence}</td>
+                        <td><span class="${estadoClass}">${orden.estado}</span></td>
+                        <td>
+                            <div class="action-buttons-dark">
+                                <button class="btn-icon-dark" onclick="verOrden(${orden.id})" title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-icon-dark" onclick="editarOrden(${orden.id})" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-icon-dark" onclick="enviarWhatsApp(${orden.id})" title="Enviar por WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button class="btn-icon-dark" onclick="eliminarOrden(${orden.id})" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error('Error cargando órdenes:', error);
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center" style="color: #f87171; padding: 30px;"><i class="fas fa-exclamation-triangle"></i> Error al cargar los datos</td></tr>`;
+        });
+}
+
+// ==================== FUNCIONES DE BÚSQUEDA ====================
+document.addEventListener('DOMContentLoaded', function() {
+    cargarPersonas();
+    cargarOrdenes();
+    inicializarMapa();
+    
+    const buscarInput = document.getElementById('buscarOrden');
+    if (buscarInput) {
+        buscarInput.addEventListener('keyup', function() {
+            const filtro = this.value.toLowerCase();
+            const filas = document.querySelectorAll('#tablaOrdenesBody tr');
+            
+            filas.forEach(fila => {
+                const texto = fila.textContent.toLowerCase();
+                fila.style.display = texto.includes(filtro) ? '' : 'none';
+            });
+        });
+    }
+});
+
+// ==================== FUNCIONES DEL FORMULARIO ====================
+function mostrarFormularioNuevo() {
+    ordenIdEnEdicion = null;
+    limpiarFormulario();
+    document.getElementById('formularioOrden').style.display = 'block';
+    document.getElementById('tablaOrdenesContainer').style.display = 'none';
+    document.getElementById('formularioTitulo').textContent = 'Nueva Orden de Captura';
+    document.getElementById('btnGuardar').innerHTML = '<i class="fas fa-save"></i> Guardar Orden';
+    cargarPersonas();
+    limpiarUbicacion();
+    centrarMapa();
+    
+    setTimeout(() => {
+        if (mapaUbicacion) {
+            mapaUbicacion.invalidateSize();
+        }
+    }, 300);
+}
+
+function cerrarFormulario() {
+    document.getElementById('formularioOrden').style.display = 'none';
+    document.getElementById('tablaOrdenesContainer').style.display = 'block';
+    ordenIdEnEdicion = null;
+    limpiarFormulario();
+    cargarOrdenes();
+}
+
+function limpiarFormulario() {
+    document.getElementById('persona_id').value = '';
+    document.getElementById('numero_orden').value = '';
+    document.getElementById('monto_deuda').value = '';
+    document.getElementById('juzgado').value = '';
+    document.getElementById('expediente').value = '';
+    document.getElementById('fecha_emision').value = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha_vencimiento').value = '';
+    document.getElementById('estado').value = 'ACTIVA';
+    document.getElementById('observaciones').value = '';
+    document.getElementById('latitud').value = '';
+    document.getElementById('longitud').value = '';
+    document.getElementById('direccion_ubicacion').value = '';
+    limpiarUbicacion();
+}
+
+// ==================== FUNCIONES CRUD ====================
+function guardarOrden() {
+    const persona_id = document.getElementById('persona_id').value;
+    const numero_orden = document.getElementById('numero_orden').value;
+    const monto_deuda = document.getElementById('monto_deuda').value;
+    const juzgado = document.getElementById('juzgado').value;
+    const expediente = document.getElementById('expediente').value || numero_orden;
+    const fecha_emision = document.getElementById('fecha_emision').value || new Date().toISOString().split('T')[0];
+    const fecha_vencimiento = document.getElementById('fecha_vencimiento').value || '';
+    const estado = document.getElementById('estado').value || 'ACTIVA';
+    const observaciones = document.getElementById('observaciones').value || '';
+    const latitud = document.getElementById('latitud').value || null;
+    const longitud = document.getElementById('longitud').value || null;
+    const direccion_ubicacion = document.getElementById('direccion_ubicacion').value || '';
+    
+    if (!persona_id || !numero_orden || !juzgado) {
+        alert('❌ Por favor complete todos los campos requeridos');
+        return;
+    }
+    
+    const datosOrden = {
+        persona_id: parseInt(persona_id),
+        numero_orden: numero_orden,
+        monto_deuda: parseFloat(monto_deuda) || 0,
+        juzgado: juzgado.toUpperCase(),
+        expediente: expediente,
+        fecha_emision: fecha_emision,
+        fecha_vencimiento: fecha_vencimiento,
+        estado: estado,
+        observaciones: observaciones,
+        latitud: latitud ? parseFloat(latitud) : null,
+        longitud: longitud ? parseFloat(longitud) : null,
+        direccion_ubicacion: direccion_ubicacion
+    };
+    
+    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
+    const url = ordenIdEnEdicion ? `/api/ordenes_captura/${ordenIdEnEdicion}` : '/api/ordenes_captura';
+    const method = ordenIdEnEdicion ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datosOrden)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ Orden guardada correctamente');
+            cerrarFormulario();
+        } else {
+            alert('❌ Error al guardar: ' + (data.error || 'Error desconocido'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Error al guardar la orden');
+    });
+}
+
+function editarOrden(id) {
+    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
+    fetch(`/api/ordenes_captura/${id}`)
+        .then(response => response.json())
+        .then(orden => {
+            ordenIdEnEdicion = id;
+            
+            cargarPersonas();
+            
+            setTimeout(() => {
+                document.getElementById('persona_id').value = orden.persona_id;
+            }, 300);
+            
+            document.getElementById('numero_orden').value = orden.numero_orden || '';
+            document.getElementById('monto_deuda').value = orden.monto_deuda || '';
+            document.getElementById('juzgado').value = orden.juzgado || '';
+            document.getElementById('expediente').value = orden.expediente || orden.numero_orden || '';
+            document.getElementById('fecha_emision').value = orden.fecha_emision || '';
+            document.getElementById('fecha_vencimiento').value = orden.fecha_vencimiento || '';
+            document.getElementById('estado').value = orden.estado || 'ACTIVA';
+            document.getElementById('observaciones').value = orden.observaciones || '';
+            document.getElementById('latitud').value = orden.latitud || '';
+            document.getElementById('longitud').value = orden.longitud || '';
+            document.getElementById('direccion_ubicacion').value = orden.direccion_ubicacion || '';
+            
+            if (orden.latitud && orden.longitud) {
+                marcarUbicacion(orden.latitud, orden.longitud, orden.direccion_ubicacion);
+            } else {
+                centrarMapa();
+            }
+            
+            document.getElementById('formularioOrden').style.display = 'block';
+            document.getElementById('tablaOrdenesContainer').style.display = 'none';
+            document.getElementById('formularioTitulo').textContent = 'Editar Orden de Captura';
+            document.getElementById('btnGuardar').innerHTML = '<i class="fas fa-save"></i> Actualizar Orden';
+            
+            setTimeout(() => {
+                if (mapaUbicacion) {
+                    mapaUbicacion.invalidateSize();
+                }
+            }, 300);
+        })
+        .catch(error => {
+            console.error('Error cargando orden para editar:', error);
+            alert('Error al cargar los datos de la orden');
+        });
+}
+
+// ==================== FUNCIÓN VER ORDEN ====================
+function verOrden(id) {
+    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
+    fetch(`/api/ordenes_captura/${id}`)
+        .then(response => response.json())
+        .then(orden => {
+            ordenActualId = id;
+            
+            let estadoClass = 'badge-estado-detalle-dark ';
+            estadoClass += orden.estado === 'ACTIVA' ? 'activa' : 
+                          orden.estado === 'VENCIDA' ? 'vencida' : 
+                          orden.estado === 'CANCELADA' ? 'cancelada' : 'cumplida';
+            
+            const fechaEmision = orden.fecha_emision ? new Date(orden.fecha_emision).toLocaleDateString('es-CR', {day:'2-digit',month:'2-digit',year:'numeric'}) : 'No especificada';
+            const fechaVencimiento = orden.fecha_vencimiento ? new Date(orden.fecha_vencimiento).toLocaleDateString('es-CR', {day:'2-digit',month:'2-digit',year:'numeric'}) : 'No especificada';
+            const montoFormateado = orden.monto_deuda ? `₡${orden.monto_deuda.toLocaleString('es-CR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}` : '₡0';
+            
+            const contenido = `
+                <div class="detalle-orden-container-dark">
+                    <div class="detalle-header-dark">
+                        <h6><i class="fas fa-gavel"></i> Orden: <strong>${orden.numero_orden}</strong></h6>
+                        <span class="${estadoClass}">${orden.estado}</span>
+                    </div>
+                    
+                    <div class="detalle-grid-dark">
+                        <div>
+                            <div class="detalle-seccion-dark">
+                                <h6><i class="fas fa-user"></i> Datos del Deudor</h6>
+                                <div class="detalle-item-dark">
+                                    <span class="detalle-label-dark">Nombre:</span>
+                                    <span class="detalle-value-dark"><strong>${orden.persona_nombre}</strong></span>
+                                </div>
+                                <div class="detalle-item-dark">
+                                    <span class="detalle-label-dark">Cédula:</span>
+                                    <span class="detalle-value-dark">${orden.persona_cedula}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="detalle-seccion-dark">
+                                <h6><i class="fas fa-legal"></i> Datos de la Orden</h6>
+                                <div class="detalle-item-dark">
+                                    <span class="detalle-label-dark">N° Orden:</span>
+                                    <span class="detalle-value-dark"><strong>${orden.numero_orden}</strong></span>
+                                </div>
+                                <div class="detalle-item-dark">
+                                    <span class="detalle-label-dark">Expediente:</span>
+                                    <span class="detalle-value-dark">${orden.expediente || orden.numero_orden}</span>
+                                </div>
+                                <div class="detalle-item-dark">
+                                    <span class="detalle-label-dark">Juzgado:</span>
+                                    <span class="detalle-value-dark">${orden.juzgado}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="detalle-seccion-dark">
+                                <h6><i class="fas fa-money-bill-wave"></i> Monto</h6>
+                                <div class="detalle-monto-dark"><i class="fas fa-coins"></i> ${montoFormateado}</div>
+                            </div>
+                            
+                            <div class="detalle-seccion-dark">
+                                <h6><i class="fas fa-calendar-alt"></i> Fechas</h6>
+                                <div class="detalle-item-dark">
+                                    <span class="detalle-label-dark">Fecha Emisión:</span>
+                                    <span class="detalle-value-dark">${fechaEmision}</span>
+                                </div>
+                                <div class="detalle-item-dark">
+                                    <span class="detalle-label-dark">Fecha Vencimiento:</span>
+                                    <span class="detalle-value-dark">${fechaVencimiento}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${orden.observaciones ? `
+                        <div class="detalle-seccion-dark" style="margin-bottom: 0;">
+                            <h6><i class="fas fa-comment"></i> Observaciones</h6>
+                            <div class="detalle-observaciones-dark">${orden.observaciones}</div>
+                        </div>
+                    ` : ''}
+                    
+                    ${orden.latitud && orden.longitud ? `
+                        <div class="detalle-seccion-dark" style="margin-top: 15px; margin-bottom: 0;">
+                            <h6><i class="fas fa-map-marker-alt"></i> Ubicación</h6>
+                            <div class="detalle-ubicacion-dark">
+                                <a href="https://www.google.com/maps?q=${orden.latitud},${orden.longitud}" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i> Ver en Google Maps
+                                </a>
+                                ${orden.direccion_ubicacion ? `<span class="direccion-text">${orden.direccion_ubicacion}</span>` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            document.getElementById('modalDetalleContenido').innerHTML = contenido;
+            const modal = new bootstrap.Modal(document.getElementById('modalDetalleOrden'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar la orden');
+        });
+}
+
+function eliminarOrden(id) {
+    if (!confirm('¿Está seguro de eliminar esta orden?')) return;
+    
+    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
+    fetch(`/api/ordenes_captura/${id}`, { method: 'DELETE' })
         .then(response => response.json())
         .then(data => {
-            var tbody = document.getElementById('tablaOrdenes');
-            tbody.innerHTML = '';
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty">No hay órdenes registradas</td></tr>';
+            if (data.success) {
+                alert('✅ Orden eliminada correctamente');
+                cargarOrdenes();
             } else {
-                // Filtrar por búsqueda
-                var filtradas = data;
-                if (busqueda) {
-                    filtradas = data.filter(function(o) {
-                        return o.numero_orden && o.numero_orden.toLowerCase().includes(busqueda);
-                    });
-                }
-                for (var i = 0; i < filtradas.length; i++) {
-                    var o = filtradas[i];
-                    var badgeClass = o.estado === 'ACTIVA' ? 'badge-activa' : 'badge-vencida';
-                    var row = '<tr>' +
-                        '<td><strong>' + o.numero_orden + '</strong></td>' +
-                        '<td>' + o.persona_nombre + '</td>' +
-                        '<td>' + formatMoney(o.monto_deuda) + '</td>' +
-                        '<td>' + o.juzgado + '</td>' +
-                        '<td><span class="badge ' + badgeClass + '">' + o.estado + '</span></td>' +
-                        '<td><button class="btn-icon" onclick="window.open(\'/ficha/' + o.persona_id + '\')"><i class="fas fa-eye"></i></button></td>' +
-                        '</tr>';
-                    tbody.innerHTML += row;
-                }
+                alert('❌ Error al eliminar: ' + (data.error || 'Error desconocido'));
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            document.getElementById('tablaOrdenes').innerHTML = '<tr><td colspan="6" class="empty">Error al cargar datos</td></tr>';
+            alert('❌ Error al eliminar la orden');
         });
 }
 
-document.getElementById('buscar').addEventListener('keyup', cargarOrdenes);
-document.addEventListener('DOMContentLoaded', cargarOrdenes);
+// ==================== FUNCIÓN PARA WHATSAPP ====================
+function enviarWhatsApp(id) {
+    console.log('📱 Enviando WhatsApp para orden ID:', id);
+    
+    const btn = document.querySelector(`button[onclick="enviarWhatsApp(${id})"]`);
+    if (btn) {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+    }
+    
+    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
+    fetch(`/api/ordenes_captura/${id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(orden => {
+            return fetch(`/api/personas/${orden.persona_id}`)
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(persona => {
+                    orden.persona = persona;
+                    return orden;
+                });
+        })
+        .then(ordenCompleta => {
+            const mensaje = generarMensajeWhatsApp(ordenCompleta);
+            const mensajeCodificado = encodeURIComponent(mensaje);
+            const url = `https://api.whatsapp.com/send?text=${mensajeCodificado}`;
+            
+            const ventana = window.open(url, '_blank');
+            
+            if (!ventana) {
+                const copiarUrl = confirm(
+                    '⚠️ El navegador bloqueó la ventana emergente.\n\n' +
+                    '¿Deseas copiar el enlace para pegarlo manualmente en tu navegador?'
+                );
+                if (copiarUrl) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        alert('✅ Enlace copiado al portapapeles.\n\nPégalo en tu navegador para abrir WhatsApp.');
+                    }).catch(() => {
+                        prompt('Copia este enlace manualmente:', url);
+                    });
+                }
+            }
+            
+            if (btn) {
+                btn.innerHTML = '<i class="fab fa-whatsapp"></i>';
+                btn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error:', error);
+            alert('Error al generar el mensaje de WhatsApp: ' + error.message);
+            
+            if (btn) {
+                btn.innerHTML = '<i class="fab fa-whatsapp"></i>';
+                btn.disabled = false;
+            }
+        });
+}
+
+function enviarWhatsAppDesdeModal() {
+    if (ordenActualId) {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalDetalleOrden'));
+        if (modal) modal.hide();
+        setTimeout(() => {
+            enviarWhatsApp(ordenActualId);
+        }, 300);
+    } else {
+        alert('No se pudo obtener el ID de la orden');
+    }
+}
+
+function generarMensajeWhatsApp(orden) {
+    if (!orden) return 'Error: Datos de orden incompletos';
+    
+    const persona = orden.persona || {};
+    const nombre = persona.nombre || 'No especificado';
+    const cedula = persona.cedula || 'No especificada';
+    
+    const numeroOrden = orden.numero_orden || 'No especificado';
+    const montoDeuda = orden.monto_deuda || 0;
+    const juzgado = orden.juzgado || 'No especificado';
+    const expediente = orden.expediente || orden.numero_orden || 'No especificado';
+    const fechaEmision = orden.fecha_emision || 'No especificada';
+    const fechaVencimiento = orden.fecha_vencimiento || 'No especificada';
+    const estado = orden.estado || 'No especificado';
+    const observaciones = orden.observaciones || 'Sin observaciones';
+    
+    const montoFormateado = montoDeuda ? `₡${montoDeuda.toLocaleString('es-CR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}` : '₡0';
+    
+    let mensaje = '';
+    mensaje += '=== FUERZA PUBLICA - ORDEN DE CAPTURA ===\n';
+    mensaje += '----------------------------------------\n\n';
+    mensaje += 'DATOS DEL DEUDOR:\n';
+    mensaje += `* Nombre: ${nombre.toUpperCase()}\n`;
+    mensaje += `* Cédula: ${cedula}\n\n`;
+    mensaje += 'DATOS DE LA ORDEN:\n';
+    mensaje += `* N° Orden: ${numeroOrden}\n`;
+    mensaje += `* Monto Deuda: ${montoFormateado}\n`;
+    mensaje += `* Juzgado: ${juzgado}\n`;
+    mensaje += `* Expediente: ${expediente}\n`;
+    mensaje += `* Fecha Emisión: ${fechaEmision}\n`;
+    mensaje += `* Fecha Vencimiento: ${fechaVencimiento}\n`;
+    mensaje += `* Estado: ${estado}\n`;
+    
+    if (observaciones && observaciones !== 'Sin observaciones') {
+        mensaje += `\nOBSERVACIONES:\n${observaciones}\n`;
+    }
+    
+    if (orden.latitud && orden.longitud) {
+        mensaje += `\nUBICACIÓN:\n`;
+        mensaje += `https://www.google.com/maps?q=${orden.latitud},${orden.longitud}\n`;
+        if (orden.direccion_ubicacion) {
+            mensaje += `${orden.direccion_ubicacion}\n`;
+        }
+    }
+    
+    mensaje += '\n----------------------------------------\n';
+    mensaje += 'Sistema de Consultas - Fuerza Publica\n';
+    mensaje += `Reporte generado el ${new Date().toLocaleString('es-CR', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        hour12: false
+    })}`;
+    
+    return mensaje;
+}
 </script>
 {% endblock %}

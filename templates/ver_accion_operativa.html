@@ -2,184 +2,686 @@
 
 {% block content %}
 <style>
-    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-    .info-table td { padding: 8px; border-bottom: 1px solid #eee; }
-    .info-table td:first-child { font-weight: bold; width: 30%; background: #f8f9fa; }
-    .section-title { background: #2c3e50; color: white; padding: 8px 15px; border-radius: 5px; margin: 15px 0 10px 0; }
-    .badge-check { background: #28a745; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
-    .badge-cross { background: #dc3545; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
-    .btn-volver { background: #6c757d; color: white; }
-    .btn-volver:hover { background: #5a6268; }
-    .btn-editar { background: #ffc107; color: #333; }
-    .btn-editar:hover { background: #e0a800; }
-    .btn-imprimir { background: #17a2b8; color: white; }
-    .btn-imprimir:hover { background: #138496; }
+    /* ============================================================
+       ESTILOS DARK MODE PARA ACCIONES OPERATIVAS
+       ============================================================ */
+    .action-detail-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
     
-    /* Estilos para impresión */
+    .action-header-dark {
+        background: linear-gradient(135deg, #0f172a 0%, #1a2236 100%);
+        color: #e5e7eb;
+        padding: 20px;
+        border-bottom: 1px solid #1f2937;
+    }
+    
+    .action-header-dark h1 {
+        color: #e5e7eb;
+        margin: 0;
+        font-size: 24px;
+    }
+    
+    .action-header-dark h1 i {
+        color: #fbbf24;
+    }
+    
+    .action-header-dark p {
+        margin: 5px 0 0;
+        color: #9ca3af;
+    }
+    
+    .section-title-dark {
+        font-size: 18px;
+        font-weight: 600;
+        color: #e5e7eb;
+        margin: 0 0 15px 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #1f2937;
+    }
+    
+    .section-title-dark i {
+        color: #fbbf24;
+        margin-right: 8px;
+    }
+    
+    .info-row-dark {
+        display: flex;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    
+    .info-label-dark {
+        width: 180px;
+        font-weight: 600;
+        color: #9ca3af;
+        flex-shrink: 0;
+    }
+    
+    .info-value-dark {
+        flex: 1;
+        color: #e5e7eb;
+    }
+    
+    .info-value-dark strong {
+        color: #fbbf24;
+    }
+    
+    .badge-escuadra-dark {
+        display: inline-block;
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        margin: 3px;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .badge-escuadra-dark i {
+        color: #4ade80;
+        margin-right: 4px;
+    }
+    
+    .stats-grid-dark {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+    
+    .stat-item-dark {
+        background: #1a2236;
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid #1f2937;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-item-dark:hover {
+        border-color: #fbbf24;
+        transform: translateY(-2px);
+    }
+    
+    .stat-number-dark {
+        font-size: 20px;
+        font-weight: 700;
+        color: #fbbf24;
+    }
+    
+    .stat-label-dark {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 5px;
+    }
+    
+    .btn-compartir-dark {
+        background: #22c55e;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-right: 10px;
+    }
+    
+    .btn-compartir-dark:hover {
+        background: #16a34a;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(34, 197, 94, 0.3);
+        color: white;
+    }
+    
+    .btn-compartir-dark i {
+        margin-right: 8px;
+    }
+    
+    .btn-volver-dark {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-volver-dark:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+    
+    .accion-realizada-dark {
+        background: #1a2236;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 10px 0;
+        border-left: 4px solid #fbbf24;
+        color: #e5e7eb;
+    }
+    
+    .text-muted-dark {
+        color: #6b7280 !important;
+    }
+    
+    .text-center-dark {
+        text-align: center;
+        padding: 30px;
+        color: #9ca3af;
+    }
+    
+    .detalle-content-dark {
+        padding: 20px;
+    }
+    
+    .btn-acciones-container-dark {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
     @media print {
-        .navbar, .sidebar, .btn, .btn-volver, .btn-editar, .btn-imprimir, .no-print, .card-header .float-end {
-            display: none !important;
+        .btn-compartir-dark, .btn-volver-dark {
+            display: none;
         }
-        .main { margin: 0 !important; padding: 0 !important; }
-        .card { border: none !important; box-shadow: none !important; }
-        .section-title { background: #2c3e50 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .badge-check { background: #28a745 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .badge-cross { background: #dc3545 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        body { background: white; }
+        .action-detail-dark {
+            border: 1px solid #333;
+            background: white;
+        }
+        .action-header-dark {
+            background: #2c3e50;
+        }
+        .action-header-dark h1 {
+            color: white;
+        }
+        .action-header-dark p {
+            color: #ccc;
+        }
+        .section-title-dark {
+            color: #2c3e50;
+            border-bottom-color: #e9ecef;
+        }
+        .section-title-dark i {
+            color: #3498db;
+        }
+        .info-label-dark {
+            color: #555;
+        }
+        .info-value-dark {
+            color: #333;
+        }
+        .stat-item-dark {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+        .stat-number-dark {
+            color: #3498db;
+        }
+        .stat-label-dark {
+            color: #666;
+        }
+        .accion-realizada-dark {
+            background: #f8f9fa;
+            border-left-color: #3498db;
+            color: #333;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .info-row-dark {
+            flex-wrap: wrap;
+        }
+        .info-label-dark {
+            width: 100%;
+            margin-bottom: 4px;
+        }
+        .stats-grid-dark {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        .btn-compartir-dark, .btn-volver-dark {
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+        }
+        .btn-acciones-container-dark {
+            flex-direction: column;
+        }
     }
 </style>
 
-<h1>Detalle de Acción Operativa</h1>
-<p class="subtitle">Balance de acción operativa - Delegación de Mora</p>
-
-<div class="card">
-    <div class="card-header">
-        <i class="fas fa-info-circle"></i> Información de la Acción
-        <div class="float-end">
-            <button onclick="window.print()" class="btn btn-sm btn-imprimir no-print" style="margin-right: 10px;">
-                <i class="fas fa-print"></i> Imprimir
-            </button>
-            <a href="/acciones_operativas" class="btn btn-sm btn-volver">
-                <i class="fas fa-arrow-left"></i> Volver
-            </a>
-            {% if tiene_permiso(current_user, 'editar_acciones') %}
-            <a href="/accion_operativa/editar/{{ accion.id }}" class="btn btn-sm btn-editar" style="margin-left: 10px;">
-                <i class="fas fa-edit"></i> Editar
-            </a>
-            {% endif %}
-        </div>
+<div class="action-detail-dark">
+    <div class="action-header-dark">
+        <h1><i class="fas fa-clipboard-list"></i> Detalle de Acción Operativa</h1>
+        <p>Balance de acción operativa - Delegación de Mora</p>
     </div>
-    <div class="card-body">
-        <!-- Datos generales -->
-        <div class="section-title">Datos Generales</div>
-        <table class="info-table">
-            <tr>
-                <td>Código Unidad</td>
-                <td>{{ accion.cod_unidad }}</td>
-                <td>Fecha</td>
-                <td>{{ accion.fecha }}</td>
-             </tr>
-            <tr>
-                <td>Hora Inicio</td>
-                <td>{{ accion.hora_inicio }}</td>
-                <td>Hora Fin</td>
-                <td>{{ accion.hora_fin }}</td>
-             </tr>
-            <tr>
-                <td>Lugar</td>
-                <td colspan="3">{{ accion.lugar }}</td>
-             </tr>
-            <tr>
-                <td>Acción Realizada</td>
-                <td colspan="3">{{ accion.accion_realizada }}</td>
-             </tr>
-            <tr>
-                <td>Instituciones</td>
-                <td colspan="3">{{ accion.instituciones or 'Ninguna' }}</td>
-             </tr>
-        </table>
+    
+    <div class="detalle-content-dark">
+        <!-- Botones de acción -->
+        <div class="btn-acciones-container-dark">
+            <button class="btn-compartir-dark" onclick="compartirWhatsApp()">
+                <i class="fab fa-whatsapp"></i> Compartir por WhatsApp
+            </button>
+            <button class="btn-volver-dark" onclick="window.location.href='/acciones_operativas'">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+        </div>
+        
+        <!-- Información General -->
+        <div class="section-title-dark">
+            <i class="fas fa-info-circle"></i> Información de la Acción
+        </div>
+        
+        <div class="info-row-dark">
+            <div class="info-label-dark">Código Unidad:</div>
+            <div class="info-value-dark">{{ accion.cod_unidad }}</div>
+        </div>
+        <div class="info-row-dark">
+            <div class="info-label-dark">Fecha:</div>
+            <div class="info-value-dark">{{ accion.fecha }}</div>
+        </div>
+        <div class="info-row-dark">
+            <div class="info-label-dark">Hora Inicio:</div>
+            <div class="info-value-dark">{{ accion.hora_inicio }}</div>
+        </div>
+        <div class="info-row-dark">
+            <div class="info-label-dark">Hora Fin:</div>
+            <div class="info-value-dark">{{ accion.hora_fin }}</div>
+        </div>
+        <div class="info-row-dark">
+            <div class="info-label-dark">Lugar:</div>
+            <div class="info-value-dark">{{ accion.lugar }}</div>
+        </div>
+        <div class="info-row-dark">
+            <div class="info-label-dark">Acción Realizada:</div>
+            <div class="info-value-dark">
+                <div class="accion-realizada-dark">
+                    {{ accion.accion_realizada }}
+                </div>
+            </div>
+        </div>
+        <div class="info-row-dark">
+            <div class="info-label-dark">Instituciones:</div>
+            <div class="info-value-dark">{{ accion.instituciones or 'No registradas' }}</div>
+        </div>
         
         <!-- Escuadras -->
-        <div class="section-title">Escuadras</div>
-        <table class="info-table">
-            <tr>
-                <td>Escuadra 1</td>
-                <td><span class="badge {{ 'badge-check' if accion.escuadra_1 else 'badge-cross' }}">{{ 'X' if accion.escuadra_1 else ' ' }}</span></td>
-                <td>Escuadra 2</td>
-                <td><span class="badge {{ 'badge-check' if accion.escuadra_2 else 'badge-cross' }}">{{ 'X' if accion.escuadra_2 else ' ' }}</span></td>
-             </tr>
-            <tr>
-                <td>Escuadra 3</td>
-                <td><span class="badge {{ 'badge-check' if accion.escuadra_3 else 'badge-cross' }}">{{ 'X' if accion.escuadra_3 else ' ' }}</span></td>
-                <td>Escuadra 4</td>
-                <td><span class="badge {{ 'badge-check' if accion.escuadra_4 else 'badge-cross' }}">{{ 'X' if accion.escuadra_4 else ' ' }}</span></td>
-             </tr>
-        </table>
+        <div class="section-title-dark" style="margin-top: 25px;">
+            <i class="fas fa-users"></i> Escuadras Participantes
+        </div>
+        <div style="margin-bottom: 15px;">
+            {% if accion.escuadra_1 %}
+                <span class="badge-escuadra-dark"><i class="fas fa-check-circle"></i> Escuadra 1</span>
+            {% endif %}
+            {% if accion.escuadra_2 %}
+                <span class="badge-escuadra-dark"><i class="fas fa-check-circle"></i> Escuadra 2</span>
+            {% endif %}
+            {% if accion.escuadra_3 %}
+                <span class="badge-escuadra-dark"><i class="fas fa-check-circle"></i> Escuadra 3</span>
+            {% endif %}
+            {% if accion.escuadra_4 %}
+                <span class="badge-escuadra-dark"><i class="fas fa-check-circle"></i> Escuadra 4</span>
+            {% endif %}
+            {% if not accion.escuadra_1 and not accion.escuadra_2 and not accion.escuadra_3 and not accion.escuadra_4 %}
+                <span class="text-muted-dark">No se registraron escuadras</span>
+            {% endif %}
+        </div>
         
         <!-- Personal -->
-        <div class="section-title">Personal</div>
-        <table class="info-table">
-            <tr>
-                <td>Mando</td>
-                <td colspan="3">{{ accion.mando }}</td>
-             </tr>
-            <tr>
-                <td>Oficiales</td>
-                <td colspan="3">{{ accion.oficiales }}</td>
-             </tr>
-        </table>
+        <div class="section-title-dark" style="margin-top: 25px;">
+            <i class="fas fa-user-shield"></i> Personal
+        </div>
+        <div class="info-row-dark">
+            <div class="info-label-dark">Mando:</div>
+            <div class="info-value-dark"><strong>{{ accion.mando }}</strong></div>
+        </div>
+        <div class="info-row-dark">
+            <div class="info-label-dark">Oficiales:</div>
+            <div class="info-value-dark">{{ accion.oficiales }}</div>
+        </div>
         
-        <!-- Resultados -->
-        <div class="section-title">Resultados Operativos</div>
-        <div class="row">
-            <div class="col-md-6">
-                <table class="info-table">
-                    <tr><td>Personas Abordadas</td><td>{{ accion.personas_abordadas }}</td></tr>
-                    <tr><td>Personas OIJ</td><td>{{ accion.personas_investigadas_oij }}</td></tr>
-                    <tr><td>Motos</td><td>{{ accion.motos }}</td></tr>
-                    <tr><td>Carros</td><td>{{ accion.carros }}</td></tr>
-                    <tr><td>Armas</td><td>{{ accion.armas }}</td></tr>
-                </table>
+        <!-- Resultados Operativos -->
+        <div class="section-title-dark" style="margin-top: 25px;">
+            <i class="fas fa-chart-line"></i> Resultados Operativos
+        </div>
+        
+        <div class="stats-grid-dark">
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.personas_abordadas or 0 }}</div>
+                <div class="stat-label-dark">Personas Abordadas</div>
             </div>
-            <div class="col-md-6">
-                <table class="info-table">
-                    <tr><td>Control Carretera</td><td>{{ accion.control_carretera }}</td></tr>
-                    <tr><td>Op. Interinstitucionales</td><td>{{ accion.op_inter_institucionales }}</td></tr>
-                    <tr><td>Visitas Comercio</td><td>{{ accion.visitas_comercio }}</td></tr>
-                    <tr><td>Partes Tránsito</td><td>{{ accion.partes_transito }}</td></tr>
-                    <tr><td>Placas Decomisadas</td><td>{{ accion.placas_decomisadas }}</td></tr>
-                </table>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.personas_investigadas_oij or 0 }}</div>
+                <div class="stat-label-dark">Personas Investigadas OIJ</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.motos or 0 }}</div>
+                <div class="stat-label-dark">Motos Revisadas</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.carros or 0 }}</div>
+                <div class="stat-label-dark">Carros Revisados</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.armas or 0 }}</div>
+                <div class="stat-label-dark">Armas Decomisadas</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.control_carretera or 0 }}</div>
+                <div class="stat-label-dark">Controles Carretera</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.op_inter_institucionales or 0 }}</div>
+                <div class="stat-label-dark">Op. Interinstitucionales</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.ganado_seguro or 0 }}</div>
+                <div class="stat-label-dark">Ganado Asegurado</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.visitas_comercio or 0 }}</div>
+                <div class="stat-label-dark">Visitas a Comercios</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.paso_escolar or 0 }}</div>
+                <div class="stat-label-dark">Paso Escolar</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.notificaciones or 0 }}</div>
+                <div class="stat-label-dark">Notificaciones</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.guardas_seguridad or 0 }}</div>
+                <div class="stat-label-dark">Guardas de Seguridad</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.orden_apremio_corporal or 0 }}</div>
+                <div class="stat-label-dark">Órdenes Apremio</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.partes_transito or 0 }}</div>
+                <div class="stat-label-dark">Partes Tránsito</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.placas_decomisadas or 0 }}</div>
+                <div class="stat-label-dark">Placas Decomisadas</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.informes_policiales or 0 }}</div>
+                <div class="stat-label-dark">Informes Policiales</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.incidentes_cerrados or 0 }}</div>
+                <div class="stat-label-dark">Incidentes Cerrados</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.vehiculos_incautados or 0 }}</div>
+                <div class="stat-label-dark">Vehículos Incautados</div>
             </div>
         </div>
         
-        <!-- Incautaciones -->
-        <div class="section-title">Incautaciones</div>
-        <div class="row">
-            <div class="col-md-6">
-                <table class="info-table">
-                    <tr><td>Vehículos Incautados</td><td>{{ accion.vehiculos_incautados }}</td></tr>
-                    <tr><td>Puchos Marihuana</td><td>{{ accion.puchos_marihuana }}</td></tr>
-                    <tr><td>Cigarillos Marihuana</td><td>{{ accion.cigarillos_marihuana }}</td></tr>
-                    <tr><td>Gramos Marihuana</td><td>{{ accion.gramos_marihuana }}</td></tr>
-                    <tr><td>Piedras Crack</td><td>{{ accion.piedras_crack }}</td></tr>
-                </table>
+        <!-- Incautaciones de Drogas -->
+        <div class="section-title-dark" style="margin-top: 25px;">
+            <i class="fas fa-cannabis"></i> Incautaciones de Drogas
+        </div>
+        
+        <div class="stats-grid-dark">
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.puchos_marihuana or 0 }}</div>
+                <div class="stat-label-dark">Puchos Marihuana</div>
             </div>
-            <div class="col-md-6">
-                <table class="info-table">
-                    <tr><td>Gramos Crack</td><td>{{ accion.gramos_crack }}</td></tr>
-                    <tr><td>Puntas Cocaína</td><td>{{ accion.puntas_cocaina }}</td></tr>
-                    <tr><td>Gramos Cocaína</td><td>{{ accion.gramos_cocaina }}</td></tr>
-                    <tr><td>Armas de Fuego</td><td>{{ accion.armas_fuego }}</td></tr>
-                    <tr><td>Armas Blancas</td><td>{{ accion.armas_blancas }}</td></tr>
-                    <tr><td>Dinero Efectivo</td><td>₡{{ "{:,.2f}".format(accion.dinero_efectivo) if accion.dinero_efectivo else '0' }}</td></tr>
-                </table>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.cigarillos_marihuana or 0 }}</div>
+                <div class="stat-label-dark">Cigarillos Marihuana</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.gramos_marihuana or 0 }}</div>
+                <div class="stat-label-dark">Gramos Marihuana</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.piedras_crack or 0 }}</div>
+                <div class="stat-label-dark">Piedras Crack</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.gramos_crack or 0 }}</div>
+                <div class="stat-label-dark">Gramos Crack</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.puntas_cocaina or 0 }}</div>
+                <div class="stat-label-dark">Puntas Cocaína</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.gramos_cocaina or 0 }}</div>
+                <div class="stat-label-dark">Gramos Cocaína</div>
             </div>
         </div>
         
-        <!-- Anotaciones -->
+        <!-- Armas y Dinero -->
+        <div class="section-title-dark" style="margin-top: 25px;">
+            <i class="fas fa-gun"></i> Armas y Dinero
+        </div>
+        
+        <div class="stats-grid-dark">
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.armas_fuego or 0 }}</div>
+                <div class="stat-label-dark">Armas de Fuego</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">{{ accion.armas_blancas or 0 }}</div>
+                <div class="stat-label-dark">Armas Blancas</div>
+            </div>
+            <div class="stat-item-dark">
+                <div class="stat-number-dark">₡{{ "{:,.0f}".format(accion.dinero_efectivo or 0) }}</div>
+                <div class="stat-label-dark">Dinero en Efectivo</div>
+            </div>
+        </div>
+        
+        <!-- Observaciones -->
         {% if accion.anotaciones %}
-        <div class="section-title">Anotaciones</div>
-        <div class="card bg-light">
-            <div class="card-body">
-                {{ accion.anotaciones }}
-            </div>
+        <div class="section-title-dark" style="margin-top: 25px;">
+            <i class="fas fa-comment"></i> Observaciones
+        </div>
+        <div class="accion-realizada-dark">
+            {{ accion.anotaciones }}
         </div>
         {% endif %}
         
-        <!-- Metadatos -->
-        <div class="section-title">Metadatos</div>
-        <table class="info-table">
-            <tr>
-                <td>Registrado por</td>
-                <td>{{ accion.usuario_registro or 'N/A' }}</td>
-                <td>Fecha Registro</td>
-                <td>{{ accion.fecha_registro or 'N/A' }}</td>
-             </tr>
-            <tr>
-                <td>Estado</td>
-                <td colspan="3"><span class="badge badge-activa">{{ accion.estado }}</span></td>
-             </tr>
-        </table>
+        {% if accion.otros_incautaciones %}
+        <div class="section-title-dark" style="margin-top: 25px;">
+            <i class="fas fa-box"></i> Otras Incautaciones
+        </div>
+        <div class="accion-realizada-dark">
+            {{ accion.otros_incautaciones }}
+        </div>
+        {% endif %}
+        
+        <!-- Información de registro -->
+        <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #1f2937; text-align: center; color: #6b7280; font-size: 12px;">
+            <i class="fas fa-calendar-alt"></i> Registrado: {{ accion.fecha_registro }} por {{ accion.usuario_registro }}
+        </div>
     </div>
 </div>
+
+<script>
+// Función para compartir por WhatsApp
+function compartirWhatsApp() {
+    const mensaje = generarMensajeWhatsApp();
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    const urlWhatsApp = `https://wa.me/?text=${mensajeCodificado}`;
+    window.open(urlWhatsApp, '_blank', 'width=800,height=600');
+}
+
+// Función para generar el mensaje formateado CON TODOS LOS DATOS
+function generarMensajeWhatsApp() {
+    // Obtener datos directamente de Jinja
+    const codUnidad = "{{ accion.cod_unidad }}";
+    const fecha = "{{ accion.fecha }}";
+    const horaInicio = "{{ accion.hora_inicio }}";
+    const horaFin = "{{ accion.hora_fin }}";
+    const lugar = "{{ accion.lugar }}".replace(/&/g, 'y');
+    const accionRealizada = "{{ accion.accion_realizada }}".replace(/&/g, 'y');
+    const instituciones = "{{ accion.instituciones or 'No registradas' }}".replace(/&/g, 'y');
+    const mando = "{{ accion.mando }}".replace(/&/g, 'y');
+    const oficiales = "{{ accion.oficiales }}".replace(/&/g, 'y');
+    
+    // Escuadras
+    const escuadra1 = {{ accion.escuadra_1|lower }};
+    const escuadra2 = {{ accion.escuadra_2|lower }};
+    const escuadra3 = {{ accion.escuadra_3|lower }};
+    const escuadra4 = {{ accion.escuadra_4|lower }};
+    
+    // Resultados Operativos - TODOS
+    const personasAbordadas = {{ accion.personas_abordadas or 0 }};
+    const personasInvestigadas = {{ accion.personas_investigadas_oij or 0 }};
+    const motos = {{ accion.motos or 0 }};
+    const carros = {{ accion.carros or 0 }};
+    const armas = {{ accion.armas or 0 }};
+    const controlCarretera = {{ accion.control_carretera or 0 }};
+    const opInterinstitucionales = {{ accion.op_inter_institucionales or 0 }};
+    const ganadoSeguro = {{ accion.ganado_seguro or 0 }};
+    const visitasComercio = {{ accion.visitas_comercio or 0 }};
+    const pasoEscolar = {{ accion.paso_escolar or 0 }};
+    const notificaciones = {{ accion.notificaciones or 0 }};
+    const guardasSeguridad = {{ accion.guardas_seguridad or 0 }};
+    const ordenApremio = {{ accion.orden_apremio_corporal or 0 }};
+    const partesTransito = {{ accion.partes_transito or 0 }};
+    const placasDecomisadas = {{ accion.placas_decomisadas or 0 }};
+    const informesPoliciales = {{ accion.informes_policiales or 0 }};
+    const incidentesCerrados = {{ accion.incidentes_cerrados or 0 }};
+    const vehiculosIncautados = {{ accion.vehiculos_incautados or 0 }};
+    
+    // Drogas - TODOS
+    const puchosMarihuana = {{ accion.puchos_marihuana or 0 }};
+    const cigarillosMarihuana = {{ accion.cigarillos_marihuana or 0 }};
+    const gramosMarihuana = {{ accion.gramos_marihuana or 0 }};
+    const piedrasCrack = {{ accion.piedras_crack or 0 }};
+    const gramosCrack = {{ accion.gramos_crack or 0 }};
+    const puntasCocaina = {{ accion.puntas_cocaina or 0 }};
+    const gramosCocaina = {{ accion.gramos_cocaina or 0 }};
+    
+    // Armas - TODOS
+    const armasFuego = {{ accion.armas_fuego or 0 }};
+    const armasBlancas = {{ accion.armas_blancas or 0 }};
+    
+    // Dinero
+    const dinero = {{ accion.dinero_efectivo or 0 }};
+    
+    // Observaciones
+    const anotaciones = "{{ accion.anotaciones or '' }}".replace(/&/g, 'y');
+    const otrosIncautaciones = "{{ accion.otros_incautaciones or '' }}".replace(/&/g, 'y');
+    
+    // Construir mensaje CON NEGRITAS Y TODOS LOS DATOS
+    let mensaje = `*=== FUERZA PUBLICA - DELEGACION DE MORA ===*\n`;
+    mensaje += `*=== REPORTE DE ACCION OPERATIVA ===*\n`;
+    mensaje += `----------------------------------------\n\n`;
+    
+    // Información General
+    mensaje += `*FECHA:* ${fecha}\n`;
+    mensaje += `*HORA:* ${horaInicio} - ${horaFin}\n`;
+    mensaje += `*LUGAR:* ${lugar}\n`;
+    mensaje += `*CODIGO UNIDAD:* ${codUnidad}\n\n`;
+    
+    // Acción Realizada
+    mensaje += `*[ACCION REALIZADA]*\n`;
+    mensaje += `${accionRealizada}\n\n`;
+    
+    // Instituciones
+    if (instituciones && instituciones !== 'No registradas') {
+        mensaje += `*[INSTITUCIONES PARTICIPANTES]*\n`;
+        mensaje += `${instituciones}\n\n`;
+    }
+    
+    // Escuadras participantes
+    mensaje += `*[ESCUADRAS PARTICIPANTES]*\n`;
+    if (escuadra1) mensaje += `• Escuadra 1\n`;
+    if (escuadra2) mensaje += `• Escuadra 2\n`;
+    if (escuadra3) mensaje += `• Escuadra 3\n`;
+    if (escuadra4) mensaje += `• Escuadra 4\n`;
+    if (!escuadra1 && !escuadra2 && !escuadra3 && !escuadra4) mensaje += `• Ninguna escuadra registrada\n`;
+    mensaje += `\n`;
+    
+    // Personal
+    mensaje += `*[PERSONAL PARTICIPANTE]*\n`;
+    mensaje += `*Mando:* ${mando}\n`;
+    mensaje += `*Oficiales:* ${oficiales}\n\n`;
+    
+    // RESULTADOS OPERATIVOS (TODOS)
+    mensaje += `*[RESULTADOS OPERATIVOS]*\n`;
+    mensaje += `• Personas abordadas: ${personasAbordadas}\n`;
+    mensaje += `• Personas investigadas OIJ: ${personasInvestigadas}\n`;
+    mensaje += `• Motos revisadas: ${motos}\n`;
+    mensaje += `• Carros revisados: ${carros}\n`;
+    mensaje += `• Armas decomisadas: ${armas}\n`;
+    mensaje += `• Controles carretera: ${controlCarretera}\n`;
+    mensaje += `• Operaciones interinstitucionales: ${opInterinstitucionales}\n`;
+    mensaje += `• Ganado asegurado: ${ganadoSeguro}\n`;
+    mensaje += `• Visitas a comercios: ${visitasComercio}\n`;
+    mensaje += `• Paso escolar: ${pasoEscolar}\n`;
+    mensaje += `• Notificaciones: ${notificaciones}\n`;
+    mensaje += `• Guardas de seguridad: ${guardasSeguridad}\n`;
+    mensaje += `• Ordenes de apremio corporal: ${ordenApremio}\n`;
+    mensaje += `• Partes de transito: ${partesTransito}\n`;
+    mensaje += `• Placas decomisadas: ${placasDecomisadas}\n`;
+    mensaje += `• Informes policiales: ${informesPoliciales}\n`;
+    mensaje += `• Incidentes cerrados: ${incidentesCerrados}\n`;
+    mensaje += `• Vehiculos incautados: ${vehiculosIncautados}\n\n`;
+    
+    // DROGAS INCAUTADAS (TODOS)
+    mensaje += `*[DROGAS INCAUTADAS]*\n`;
+    mensaje += `• Puchos de marihuana: ${puchosMarihuana}\n`;
+    mensaje += `• Cigarillos de marihuana: ${cigarillosMarihuana}\n`;
+    mensaje += `• Gramos de marihuana: ${gramosMarihuana}\n`;
+    mensaje += `• Piedras de crack: ${piedrasCrack}\n`;
+    mensaje += `• Gramos de crack: ${gramosCrack}\n`;
+    mensaje += `• Puntas de cocaina: ${puntasCocaina}\n`;
+    mensaje += `• Gramos de cocaina: ${gramosCocaina}\n\n`;
+    
+    // ARMAS INCAUTADAS
+    mensaje += `*[ARMAS INCAUTADAS]*\n`;
+    mensaje += `• Armas de fuego: ${armasFuego}\n`;
+    mensaje += `• Armas blancas: ${armasBlancas}\n\n`;
+    
+    // DINERO INCAUTADO
+    if (dinero > 0) {
+        mensaje += `*[DINERO INCAUTADO]*\n`;
+        mensaje += `• ₡${dinero.toLocaleString()}\n\n`;
+    } else {
+        mensaje += `*[DINERO INCAUTADO]*\n`;
+        mensaje += `• ₡0\n\n`;
+    }
+    
+    // OTRAS INCAUTACIONES
+    if (otrosIncautaciones && otrosIncautaciones !== '') {
+        mensaje += `*[OTRAS INCAUTACIONES]*\n`;
+        mensaje += `${otrosIncautaciones}\n\n`;
+    }
+    
+    // OBSERVACIONES
+    if (anotaciones && anotaciones !== '') {
+        mensaje += `*[OBSERVACIONES]*\n`;
+        mensaje += `${anotaciones}\n\n`;
+    }
+    
+    mensaje += `----------------------------------------\n`;
+    mensaje += `*Sistema de Consultas - Fuerza Publica*\n`;
+    
+    const ahora = new Date();
+    mensaje += `Reporte generado el ${ahora.toLocaleString('es-CR')}`;
+    
+    return mensaje;
+}
+</script>
 {% endblock %}

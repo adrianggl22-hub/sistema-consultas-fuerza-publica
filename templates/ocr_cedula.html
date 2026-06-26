@@ -1,0 +1,686 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA OCR
+       ============================================================ */
+    .ocr-container-dark {
+        background: #111827;
+        border-radius: 12px;
+        border: 1px solid #1f2937;
+        padding: 25px;
+        max-width: 800px;
+        margin: 0 auto;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    
+    .ocr-container-dark h3 {
+        color: #e5e7eb;
+        margin-bottom: 20px;
+    }
+    
+    .ocr-container-dark h3 i {
+        color: #fbbf24;
+    }
+    
+    .ocr-container-dark .text-muted {
+        color: #9ca3af !important;
+    }
+    
+    .drop-zone-dark {
+        border: 2px dashed #1f2937;
+        border-radius: 12px;
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #1a2236;
+        color: #9ca3af;
+    }
+    
+    .drop-zone-dark:hover {
+        border-color: #fbbf24;
+        background: rgba(251, 191, 36, 0.05);
+    }
+    
+    .drop-zone-dark i {
+        font-size: 48px;
+        color: #6b7280;
+        margin-bottom: 10px;
+    }
+    
+    .drop-zone-dark p {
+        margin: 5px 0;
+    }
+    
+    .drop-zone-dark .drop-hint {
+        font-size: 12px;
+        color: #6b7280;
+    }
+    
+    .drop-zone-dark.dragover {
+        border-color: #fbbf24;
+        background: rgba(251, 191, 36, 0.1);
+    }
+    
+    .preview-container-dark {
+        margin-top: 15px;
+        text-align: center;
+        display: none;
+    }
+    
+    .preview-container-dark img {
+        max-width: 100%;
+        max-height: 400px;
+        border-radius: 8px;
+        border: 1px solid #1f2937;
+    }
+    
+    .resultados-container-dark {
+        margin-top: 20px;
+        display: none;
+    }
+    
+    .resultados-container-dark .card-dark {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .resultados-container-dark .card-dark h5 {
+        color: #fbbf24;
+        margin-bottom: 10px;
+    }
+    
+    .info-row-ocr {
+        display: flex;
+        padding: 6px 0;
+        border-bottom: 1px solid #1f2937;
+    }
+    
+    .info-row-ocr .label {
+        font-weight: 600;
+        color: #9ca3af;
+        width: 140px;
+        flex-shrink: 0;
+        font-size: 13px;
+    }
+    
+    .info-row-ocr .value {
+        color: #e5e7eb;
+        font-size: 13px;
+        flex: 1;
+    }
+    
+    .btn-ocr-dark {
+        padding: 10px 25px;
+        border-radius: 25px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-ocr-dark.primary {
+        background: #fbbf24;
+        color: #111827;
+    }
+    
+    .btn-ocr-dark.primary:hover {
+        background: #f59e0b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+    
+    .btn-ocr-dark.secondary {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+    }
+    
+    .btn-ocr-dark.secondary:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+    
+    .btn-ocr-dark.success {
+        background: #22c55e;
+        color: white;
+    }
+    
+    .btn-ocr-dark.success:hover {
+        background: #16a34a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+    }
+    
+    .btn-ocr-dark.danger {
+        background: #dc2626;
+        color: white;
+    }
+    
+    .btn-ocr-dark.danger:hover {
+        background: #b91c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    }
+    
+    .spinner-dark-ocr {
+        border: 3px solid #1f2937;
+        border-top: 3px solid #fbbf24;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 10px auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .text-muted-dark {
+        color: #9ca3af !important;
+    }
+    
+    .mt-3 { margin-top: 15px; }
+    .mt-2 { margin-top: 10px; }
+    .mb-3 { margin-bottom: 15px; }
+    .gap-2 { gap: 10px; }
+    
+    .btn-group-ocr {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+    
+    .badge-ocr-dark {
+        display: inline-block;
+        padding: 3px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .badge-ocr-dark.success {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .badge-ocr-dark.warning {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+    
+    .badge-ocr-dark.danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .texto-extraido-dark {
+        background: #0f172a;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 12px;
+        color: #9ca3af;
+        max-height: 150px;
+        overflow-y: auto;
+        border: 1px solid #1f2937;
+        margin-top: 10px;
+        white-space: pre-wrap;
+    }
+    
+    .loading-container-dark {
+        display: none;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .loading-container-dark p {
+        color: #9ca3af;
+    }
+    
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .feedback-ocr-dark {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        z-index: 9999;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        animation: slideIn 0.3s ease;
+        max-width: 400px;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .feedback-ocr-dark.success {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border-color: rgba(34, 197, 94, 0.2);
+    }
+    
+    .feedback-ocr-dark.error {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+    
+    .feedback-ocr-dark.warning {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+        border-color: rgba(251, 191, 36, 0.2);
+    }
+    
+    .feedback-ocr-dark.info {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border-color: rgba(59, 130, 246, 0.2);
+    }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes slideOut {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(30px); }
+    }
+    
+    @media (max-width: 768px) {
+        .info-row-ocr {
+            flex-wrap: wrap;
+        }
+        .info-row-ocr .label {
+            width: 100%;
+        }
+        .btn-group-ocr {
+            flex-direction: column;
+        }
+        .btn-ocr-dark {
+            justify-content: center;
+        }
+        .drop-zone-dark {
+            padding: 20px;
+        }
+        .drop-zone-dark i {
+            font-size: 32px;
+        }
+        .ocr-container-dark {
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="ocr-container-dark">
+    <h3><i class="fas fa-camera"></i> Escanear Cédula con OCR</h3>
+    <p class="text-muted">Tome una foto de la cédula de identidad para extraer los datos automáticamente</p>
+    
+    <!-- Área de Drop -->
+    <div class="drop-zone-dark" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p><strong>Haga clic aquí o arrastre una imagen</strong></p>
+        <p class="drop-hint">Formatos: JPG, PNG, JPEG</p>
+        <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none" onchange="procesarImagen(this)">
+    </div>
+    
+    <!-- Vista previa -->
+    <div class="preview-container-dark" id="previewContainer">
+        <img id="previewImg" alt="Vista previa de la imagen">
+        <div class="btn-group-ocr">
+            <button class="btn-ocr-dark secondary" onclick="limpiarPreview()">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
+            <button class="btn-ocr-dark primary" id="btnProcesar" onclick="procesarOCR()">
+                <i class="fas fa-magic"></i> Procesar con OCR
+            </button>
+        </div>
+    </div>
+    
+    <!-- Loading -->
+    <div class="loading-container-dark" id="loadingContainer">
+        <div class="spinner-dark-ocr"></div>
+        <p>Procesando imagen con OCR...</p>
+        <p style="font-size: 12px; color: #6b7280;">Esto puede tomar unos segundos</p>
+    </div>
+    
+    <!-- Resultados -->
+    <div class="resultados-container-dark" id="resultadosContainer">
+        <!-- Datos extraídos -->
+        <div class="card-dark">
+            <h5><i class="fas fa-user-check"></i> Datos Extraídos</h5>
+            <div id="resultadosContent">
+                <p style="color: #6b7280; text-align: center;">Procesa una imagen para ver los resultados</p>
+            </div>
+        </div>
+        
+        <!-- Persona existente -->
+        <div class="card-dark" id="personaExistente" style="display: none;">
+            <h5><i class="fas fa-user"></i> Persona Encontrada en el Sistema</h5>
+            <div id="personaExistenteContent"></div>
+            <div class="btn-group-ocr">
+                <button class="btn-ocr-dark success" onclick="verFichaPersona()">
+                    <i class="fas fa-eye"></i> Ver Ficha
+                </button>
+                <button class="btn-ocr-dark secondary" onclick="window.location.href='/personas'">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+            </div>
+        </div>
+        
+        <!-- Texto extraído -->
+        <div class="card-dark">
+            <h5><i class="fas fa-file-alt"></i> Texto Extraído</h5>
+            <div class="texto-extraido-dark" id="textoExtraido">Esperando imagen...</div>
+        </div>
+        
+        <!-- Acciones -->
+        <div class="btn-group-ocr">
+            <button class="btn-ocr-dark success" onclick="llenarFormulario()">
+                <i class="fas fa-pen"></i> Llenar Formulario con Datos
+            </button>
+            <button class="btn-ocr-dark secondary" onclick="window.location.href='/personas'">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ==================== VARIABLES GLOBALES ====================
+let datosOCR = null;
+let personaExistente = null;
+let imagenBase64 = null;
+let nombreArchivo = null;
+
+// ==================== MANEJO DE ARCHIVOS ====================
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+    
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+    });
+    
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.type.startsWith('image/')) {
+                procesarArchivo(file);
+            } else {
+                mostrarFeedback('⚠️ Por favor, selecciona una imagen', 'warning');
+            }
+        }
+    });
+});
+
+function procesarImagen(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        if (file.type.startsWith('image/')) {
+            procesarArchivo(file);
+        } else {
+            mostrarFeedback('⚠️ Por favor, selecciona una imagen', 'warning');
+        }
+    }
+}
+
+function procesarArchivo(file) {
+    nombreArchivo = file.name;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        imagenBase64 = e.target.result;
+        document.getElementById('previewImg').src = imagenBase64;
+        document.getElementById('previewContainer').style.display = 'block';
+        document.getElementById('resultadosContainer').style.display = 'none';
+        document.getElementById('dropZone').style.display = 'none';
+        document.getElementById('textoExtraido').textContent = 'Imagen cargada. Haz clic en "Procesar con OCR"';
+        mostrarFeedback('📸 Imagen cargada correctamente', 'success');
+    };
+    reader.readAsDataURL(file);
+}
+
+function limpiarPreview() {
+    document.getElementById('previewContainer').style.display = 'none';
+    document.getElementById('previewImg').src = '';
+    document.getElementById('resultadosContainer').style.display = 'none';
+    document.getElementById('dropZone').style.display = 'block';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('textoExtraido').textContent = 'Esperando imagen...';
+    datosOCR = null;
+    personaExistente = null;
+    imagenBase64 = null;
+    nombreArchivo = null;
+    document.getElementById('btnProcesar').disabled = false;
+    document.getElementById('btnProcesar').innerHTML = '<i class="fas fa-magic"></i> Procesar con OCR';
+}
+
+// ==================== PROCESAR OCR ====================
+function procesarOCR() {
+    const fileInput = document.getElementById('fileInput');
+    if (!fileInput.files || !fileInput.files[0]) {
+        mostrarFeedback('⚠️ Por favor, selecciona una imagen primero', 'warning');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('imagen', fileInput.files[0]);
+    
+    document.getElementById('loadingContainer').style.display = 'block';
+    document.getElementById('btnProcesar').disabled = true;
+    document.getElementById('btnProcesar').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+    document.getElementById('resultadosContainer').style.display = 'none';
+    
+    fetch('/api/ocr/cedula', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('loadingContainer').style.display = 'none';
+        document.getElementById('btnProcesar').disabled = false;
+        document.getElementById('btnProcesar').innerHTML = '<i class="fas fa-magic"></i> Procesar con OCR';
+        
+        if (data.success) {
+            datosOCR = data.datos;
+            personaExistente = data.persona_existente || null;
+            
+            mostrarResultados(data);
+            mostrarFeedback('✅ OCR completado correctamente', 'success');
+        } else {
+            mostrarFeedback('❌ ' + (data.error || 'Error al procesar la imagen'), 'error');
+            if (data.texto_completo) {
+                document.getElementById('textoExtraido').textContent = data.texto_completo;
+                document.getElementById('resultadosContainer').style.display = 'block';
+                document.getElementById('resultadosContent').innerHTML = `
+                    <p style="color: #f87171; text-align: center;">
+                        <i class="fas fa-exclamation-triangle"></i> No se pudieron extraer datos estructurados
+                    </p>
+                    <p style="color: #9ca3af; font-size: 13px;">Revisa el texto extraído abajo para verificar la calidad de la imagen.</p>
+                `;
+            }
+        }
+    })
+    .catch(error => {
+        document.getElementById('loadingContainer').style.display = 'none';
+        document.getElementById('btnProcesar').disabled = false;
+        document.getElementById('btnProcesar').innerHTML = '<i class="fas fa-magic"></i> Procesar con OCR';
+        mostrarFeedback('❌ Error de conexión: ' + error.message, 'error');
+    });
+}
+
+// ==================== MOSTRAR RESULTADOS ====================
+function mostrarResultados(data) {
+    const container = document.getElementById('resultadosContainer');
+    const content = document.getElementById('resultadosContent');
+    const textoExtraido = document.getElementById('textoExtraido');
+    
+    // Mostrar texto extraído
+    textoExtraido.textContent = data.texto_completo || 'No se pudo extraer texto';
+    
+    // Mostrar datos extraídos
+    let html = '';
+    const d = data.datos;
+    
+    if (d.cedula) {
+        html += `<div class="info-row-ocr">
+            <span class="label">Cédula:</span>
+            <span class="value"><strong style="color: #fbbf24;">${d.cedula}</strong></span>
+        </div>`;
+    }
+    
+    if (d.nombre) {
+        html += `<div class="info-row-ocr">
+            <span class="label">Nombre:</span>
+            <span class="value"><strong>${d.nombre}</strong></span>
+        </div>`;
+    }
+    
+    if (d.fecha_nacimiento) {
+        html += `<div class="info-row-ocr">
+            <span class="label">Fecha Nacimiento:</span>
+            <span class="value">${d.fecha_nacimiento}</span>
+        </div>`;
+    }
+    
+    if (d.genero) {
+        html += `<div class="info-row-ocr">
+            <span class="label">Género:</span>
+            <span class="value">${d.genero}</span>
+        </div>`;
+    }
+    
+    if (d.nacionalidad) {
+        html += `<div class="info-row-ocr">
+            <span class="label">Nacionalidad:</span>
+            <span class="value">${d.nacionalidad}</span>
+        </div>`;
+    }
+    
+    if (!html) {
+        html = `<p style="color: #f87171; text-align: center;">
+            <i class="fas fa-exclamation-triangle"></i> No se pudieron extraer datos estructurados.
+            <br><span style="font-size: 13px; color: #9ca3af;">Revisa el texto extraído abajo.</span>
+        </p>`;
+    }
+    
+    content.innerHTML = html;
+    
+    // Mostrar persona existente
+    const personaExistenteDiv = document.getElementById('personaExistente');
+    if (data.persona_existente) {
+        const p = data.persona_existente;
+        document.getElementById('personaExistenteContent').innerHTML = `
+            <div class="info-row-ocr">
+                <span class="label">ID:</span>
+                <span class="value">${p.id}</span>
+            </div>
+            <div class="info-row-ocr">
+                <span class="label">Nombre:</span>
+                <span class="value"><strong>${p.nombre}</strong></span>
+            </div>
+            <div class="info-row-ocr">
+                <span class="label">Cédula:</span>
+                <span class="value">${p.cedula}</span>
+            </div>
+            <div class="info-row-ocr">
+                <span class="label">Estado:</span>
+                <span class="value"><span class="badge-ocr-dark ${p.estado === 'ACTIVO' ? 'success' : 'warning'}">${p.estado}</span></span>
+            </div>
+        `;
+        personaExistenteDiv.style.display = 'block';
+    } else {
+        personaExistenteDiv.style.display = 'none';
+    }
+    
+    container.style.display = 'block';
+}
+
+// ==================== ACCIONES ====================
+function llenarFormulario() {
+    if (!datosOCR) {
+        mostrarFeedback('⚠️ Primero procesa una imagen con OCR', 'warning');
+        return;
+    }
+    
+    // Verificar que tengamos datos mínimos
+    if (!datosOCR.cedula && !datosOCR.nombre) {
+        mostrarFeedback('⚠️ No hay datos suficientes para llenar el formulario', 'warning');
+        return;
+    }
+    
+    // Guardar datos en sessionStorage para usar en la página de nueva persona
+    sessionStorage.setItem('ocr_datos', JSON.stringify(datosOCR));
+    
+    // Mostrar confirmación
+    if (personaExistente) {
+        if (!confirm(`La persona "${personaExistente.nombre}" ya existe en el sistema.\n\n¿Deseas ir a su ficha en lugar de crear una nueva?`)) {
+            window.location.href = '/personas/nueva?ocr=true';
+        } else {
+            window.location.href = `/ficha/${personaExistente.id}`;
+        }
+    } else {
+        // Ir a la página de nueva persona
+        window.location.href = '/personas/nueva?ocr=true';
+    }
+}
+
+function verFichaPersona() {
+    if (personaExistente && personaExistente.id) {
+        window.location.href = `/ficha/${personaExistente.id}`;
+    } else {
+        mostrarFeedback('⚠️ No hay persona para ver', 'warning');
+    }
+}
+
+// ==================== FEEDBACK ====================
+function mostrarFeedback(mensaje, tipo) {
+    // Limpiar feedback anterior
+    const old = document.querySelector('.feedback-ocr-dark');
+    if (old) old.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = `feedback-ocr-dark ${tipo}`;
+    const iconos = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+    toast.innerHTML = `<i class="fas ${iconos[tipo] || 'fa-info-circle'}"></i> ${mensaje}`;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+</script>
+{% endblock %}

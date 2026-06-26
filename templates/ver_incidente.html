@@ -1,0 +1,722 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA DETALLE DE INCIDENTE
+       ============================================================ */
+    .detail-card-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    
+    .detail-header-dark {
+        background: linear-gradient(135deg, #0f172a 0%, #1a2236 100%);
+        padding: 20px 25px;
+        border-bottom: 1px solid #1f2937;
+        color: #e5e7eb;
+    }
+    
+    .detail-header-dark h1 {
+        color: #e5e7eb;
+        margin: 0;
+        font-size: 24px;
+    }
+    
+    .detail-header-dark h1 i {
+        color: #fbbf24;
+    }
+    
+    .detail-header-dark p {
+        margin: 5px 0 0;
+        color: #9ca3af;
+    }
+    
+    .detail-header-dark p strong {
+        color: #fbbf24;
+    }
+    
+    .detail-body-dark {
+        padding: 20px;
+    }
+    
+    .info-row-dark {
+        display: flex;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .info-row-dark:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label-dark {
+        width: 200px;
+        font-weight: 600;
+        color: #9ca3af;
+        flex-shrink: 0;
+    }
+    
+    .info-label-dark i {
+        color: #fbbf24;
+        width: 20px;
+    }
+    
+    .info-value-dark {
+        flex: 1;
+        color: #e5e7eb;
+    }
+    
+    .badge-estado-dark {
+        padding: 3px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .badge-estado-dark.activo {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .badge-estado-dark.inactivo {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .stats-box-dark {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin: 15px 0;
+    }
+    
+    .stats-box-dark h4 {
+        color: #e5e7eb;
+        margin: 0 0 15px 0;
+    }
+    
+    .stats-box-dark h4 i {
+        color: #fbbf24;
+    }
+    
+    .stats-grid-dark {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+    }
+    
+    .stats-item-dark {
+        text-align: center;
+        background: #0f172a;
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        padding: 12px 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .stats-item-dark:hover {
+        border-color: #fbbf24;
+        transform: translateY(-2px);
+    }
+    
+    .stats-number-dark {
+        font-size: 24px;
+        font-weight: 700;
+        color: #fbbf24;
+    }
+    
+    .stats-label-dark {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 4px;
+    }
+    
+    .btn-action-dark {
+        padding: 8px 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 13px;
+        font-weight: 600;
+        margin-right: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-action-dark:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-whatsapp-dark {
+        background: #25D366;
+        color: white;
+    }
+    
+    .btn-whatsapp-dark:hover {
+        box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+    }
+    
+    .btn-volver-dark {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+    }
+    
+    .btn-volver-dark:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+    
+    .btn-mapa-dark {
+        background: #3b82f6;
+        color: white;
+    }
+    
+    .btn-mapa-dark:hover {
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-imprimir-dark {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+    }
+    
+    .btn-imprimir-dark:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+    
+    .btn-editar-dark {
+        background: #fbbf24;
+        color: #111827;
+    }
+    
+    .btn-editar-dark:hover {
+        box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+    
+    #mapa_detalle {
+        height: 250px;
+        width: 100%;
+        border-radius: 8px;
+        margin-top: 10px;
+        border: 2px solid #1f2937;
+    }
+    
+    .modal-mapa-dark {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 2000;
+    }
+    
+    .modal-mapa-content-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        width: 90%;
+        max-width: 1000px;
+        margin: 30px auto;
+        padding: 0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+    
+    .modal-mapa-header-dark {
+        background: #1a2236;
+        color: #e5e7eb;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #1f2937;
+    }
+    
+    .modal-mapa-header-dark h3 {
+        margin: 0;
+        color: #e5e7eb;
+    }
+    
+    .modal-mapa-header-dark h3 i {
+        color: #fbbf24;
+    }
+    
+    .modal-mapa-header-dark .close {
+        background: none;
+        border: none;
+        color: #9ca3af;
+        font-size: 28px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .modal-mapa-header-dark .close:hover {
+        color: #f87171;
+        transform: rotate(90deg);
+    }
+    
+    .modal-mapa-body-dark {
+        padding: 20px;
+    }
+    
+    .modal-mapa-body-dark .mapa-info-dark {
+        color: #9ca3af;
+        margin-top: 10px;
+    }
+    
+    .modal-mapa-body-dark .mapa-info-dark strong {
+        color: #e5e7eb;
+    }
+    
+    #mapa_completo_detalle {
+        height: 400px;
+        width: 100%;
+        border-radius: 8px;
+    }
+    
+    .btn-actions-dark {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    @media (max-width: 768px) {
+        .info-row-dark {
+            flex-direction: column;
+            padding: 12px 0;
+        }
+        .info-label-dark {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .detail-body-dark {
+            padding: 15px;
+        }
+        .stats-grid-dark {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        .btn-actions-dark {
+            justify-content: center;
+        }
+        .btn-action-dark {
+            font-size: 12px;
+            padding: 6px 14px;
+        }
+        #mapa_detalle {
+            height: 180px;
+        }
+        #mapa_completo_detalle {
+            height: 250px;
+        }
+        .modal-mapa-content-dark {
+            width: 95%;
+            margin: 15px auto;
+        }
+    }
+    
+    @media print {
+        .btn-actions-dark { display: none; }
+        .detail-card-dark {
+            border: 1px solid #ddd;
+            box-shadow: none;
+        }
+        .detail-header-dark {
+            background: #2c3e50 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .stats-item-dark {
+            background: #f8f9fa !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .stats-number-dark {
+            color: #2c3e50 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .badge-estado-dark.activo {
+            background: #d4edda !important;
+            color: #155724 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        #mapa_detalle {
+            border: 1px solid #ddd;
+        }
+    }
+</style>
+
+<div class="detail-card-dark">
+    <div class="detail-header-dark">
+        <h1><i class="fas fa-exclamation-triangle"></i> Detalle del Incidente</h1>
+        <p><strong>N° de Unidad:</strong> {{ incidente.numero_incidente }}</p>
+    </div>
+    <div class="detail-body-dark">
+        <!-- Botones de acción -->
+        <div class="btn-actions-dark">
+            <button class="btn-action-dark btn-whatsapp-dark" onclick="compartirWhatsApp()">
+                <i class="fab fa-whatsapp"></i> Compartir
+            </button>
+            <button class="btn-action-dark btn-volver-dark" onclick="window.location.href='/incidentes'">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+            {% if incidente.latitud and incidente.longitud %}
+            <button class="btn-action-dark btn-mapa-dark" onclick="verMapaCompleto()">
+                <i class="fas fa-map-marked-alt"></i> Ver Mapa
+            </button>
+            {% endif %}
+            <button class="btn-action-dark btn-imprimir-dark" onclick="window.print()">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+            <button class="btn-action-dark btn-editar-dark" onclick="window.location.href='/incidentes'">
+                <i class="fas fa-edit"></i> Editar
+            </button>
+        </div>
+
+        <!-- Información del incidente -->
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-user-shield"></i> Oficial Actuante:</div>
+            <div class="info-value-dark"><strong>{{ incidente.oficial_actuante }}</strong></div>
+        </div>
+        
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-user"></i> Oficial Asistente:</div>
+            <div class="info-value-dark">{{ incidente.oficial_asistente or 'No registrado' }}</div>
+        </div>
+        
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-calendar-alt"></i> Fecha del Incidente:</div>
+            <div class="info-value-dark">{{ incidente.fecha_incidente }}</div>
+        </div>
+        
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-map-marker-alt"></i> Lugar (texto):</div>
+            <div class="info-value-dark">{{ incidente.lugar or 'No registrado' }}</div>
+        </div>
+        
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-tag"></i> Tipo de Incidente:</div>
+            <div class="info-value-dark"><span class="badge-estado-dark activo">{{ incidente.tipo_incidente }}</span></div>
+        </div>
+        
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-align-left"></i> Descripción:</div>
+            <div class="info-value-dark" style="white-space: pre-wrap;">{{ incidente.descripcion }}</div>
+        </div>
+        
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-clipboard-list"></i> Diligencias Policiales:</div>
+            <div class="info-value-dark" style="white-space: pre-wrap;">{{ incidente.diligencias_policiales or 'No registradas' }}</div>
+        </div>
+        
+        <!-- Estadísticas -->
+        <div class="stats-box-dark">
+            <h4><i class="fas fa-chart-simple"></i> Estadísticas del Incidente</h4>
+            <div class="stats-grid-dark">
+                <div class="stats-item-dark">
+                    <div class="stats-number-dark">{{ incidente.aprehendidos or 0 }}</div>
+                    <div class="stats-label-dark"><i class="fas fa-handcuffs"></i> Aprehendidos</div>
+                </div>
+                <div class="stats-item-dark">
+                    <div class="stats-number-dark">{{ incidente.ofendidos or 0 }}</div>
+                    <div class="stats-label-dark"><i class="fas fa-users"></i> Ofendidos</div>
+                </div>
+                <div class="stats-item-dark">
+                    <div class="stats-number-dark">{{ incidente.testigos or 0 }}</div>
+                    <div class="stats-label-dark"><i class="fas fa-eye"></i> Testigos</div>
+                </div>
+                <div class="stats-item-dark">
+                    <div class="stats-number-dark">{{ incidente.personas_interes or 0 }}</div>
+                    <div class="stats-label-dark"><i class="fas fa-user-secret"></i> Personas de Interés</div>
+                </div>
+                <div class="stats-item-dark">
+                    <div class="stats-number-dark">{{ incidente.vehiculos_involucrados or 0 }}</div>
+                    <div class="stats-label-dark"><i class="fas fa-car"></i> Vehículos</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Decomisos e informes -->
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-box-open"></i> Decomisos:</div>
+            <div class="info-value-dark">{{ incidente.decomisos or 'No registrados' }}</div>
+        </div>
+        
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-file-alt"></i> Informe Policial:</div>
+            <div class="info-value-dark">
+                <span class="badge-estado-dark {{ 'activo' if incidente.informe_policial else 'inactivo' }}">
+                    {{ 'Sí' if incidente.informe_policial else 'No' }}
+                </span>
+                {% if incidente.numero_informe %} (N° {{ incidente.numero_informe }}){% endif %}
+            </div>
+        </div>
+        
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-file-signature"></i> Acta de Decomiso:</div>
+            <div class="info-value-dark">
+                <span class="badge-estado-dark {{ 'activo' if incidente.acta_decomiso else 'inactivo' }}">
+                    {{ 'Sí' if incidente.acta_decomiso else 'No' }}
+                </span>
+                {% if incidente.numero_acta_decomiso %} (N° {{ incidente.numero_acta_decomiso }}){% endif %}
+            </div>
+        </div>
+        
+        <!-- Mapa -->
+        {% if incidente.latitud and incidente.longitud %}
+        <div class="info-row-dark" style="flex-direction: column; padding-bottom: 0;">
+            <div class="info-label-dark" style="width: 100%; margin-bottom: 10px;">
+                <i class="fas fa-map-marker-alt"></i> Ubicación en Mapa:
+            </div>
+            <div class="info-value-dark" style="width: 100%;">
+                <div id="mapa_detalle"></div>
+                <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;">
+                    <small class="text-muted-dark" style="color: #6b7280;">
+                        <i class="fas fa-info-circle"></i> Coordenadas: {{ incidente.latitud }}, {{ incidente.longitud }}
+                    </small>
+                    {% if incidente.direccion_ubicacion %}
+                    <small style="color: #9ca3af;">
+                        <i class="fas fa-location-dot" style="color: #fbbf24;"></i> {{ incidente.direccion_ubicacion }}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Estado y registro -->
+        <div class="info-row-dark" style="margin-top: 10px;">
+            <div class="info-label-dark"><i class="fas fa-circle"></i> Estado:</div>
+            <div class="info-value-dark">
+                <span class="badge-estado-dark {{ 'activo' if incidente.estado == 'ACTIVO' else 'inactivo' }}">
+                    {{ 'Activo' if incidente.estado == 'ACTIVO' else 'Inactivo' }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="info-row-dark">
+            <div class="info-label-dark"><i class="fas fa-user-check"></i> Registrado por:</div>
+            <div class="info-value-dark">
+                {{ incidente.creado_por or 'Sistema' }}
+                <small class="text-muted-dark" style="color: #6b7280; display: block; font-size: 12px;">
+                    {{ incidente.fecha_registro }}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Mapa Completo -->
+<div id="modalMapaCompleto" class="modal-mapa-dark">
+    <div class="modal-mapa-content-dark">
+        <div class="modal-mapa-header-dark">
+            <h3><i class="fas fa-map-marked-alt"></i> Ubicación Detallada del Incidente</h3>
+            <button class="close" onclick="cerrarMapaCompleto()">&times;</button>
+        </div>
+        <div class="modal-mapa-body-dark">
+            <div id="mapa_completo_detalle"></div>
+            <div class="mapa-info-dark mt-2">
+                <p><strong>Coordenadas:</strong> <span id="coordLat">{{ incidente.latitud }}</span>, <span id="coordLng">{{ incidente.longitud }}</span></p>
+                {% if incidente.direccion_ubicacion %}
+                <p><strong>Dirección:</strong> <span id="dirCompleta">{{ incidente.direccion_ubicacion }}</span></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<script>
+let mapDetalle = null;
+let mapCompletoDetalle = null;
+
+function inicializarMapaDetalle() {
+    const lat = {{ incidente.latitud or 'null' }};
+    const lng = {{ incidente.longitud or 'null' }};
+    if (!lat || !lng) return;
+    
+    const mapaDiv = document.getElementById('mapa_detalle');
+    if (!mapaDiv) return;
+    if (mapDetalle) { mapDetalle.remove(); mapDetalle = null; }
+    
+    mapDetalle = L.map('mapa_detalle').setView([lat, lng], 15);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CartoDB',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(mapDetalle);
+    
+    L.marker([lat, lng], {
+        icon: L.divIcon({
+            className: 'custom-marker',
+            html: '<i class="fas fa-map-pin" style="color: #fbbf24; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);"></i>',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32]
+        })
+    }).addTo(mapDetalle).bindPopup(`
+        <b style="color: #fbbf24;">📍 Ubicación del Incidente</b><br>
+        <b>N° de Unidad:</b> {{ incidente.numero_incidente }}<br>
+        <b>Tipo:</b> {{ incidente.tipo_incidente }}
+    `).openPopup();
+    
+    setTimeout(() => mapDetalle.invalidateSize(), 100);
+}
+
+function verMapaCompleto() {
+    const lat = {{ incidente.latitud or 'null' }};
+    const lng = {{ incidente.longitud or 'null' }};
+    if (!lat || !lng) return;
+    
+    document.getElementById('modalMapaCompleto').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    setTimeout(() => {
+        if (mapCompletoDetalle) { mapCompletoDetalle.remove(); mapCompletoDetalle = null; }
+        
+        mapCompletoDetalle = L.map('mapa_completo_detalle').setView([lat, lng], 16);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(mapCompletoDetalle);
+        
+        L.marker([lat, lng], {
+            icon: L.divIcon({
+                className: 'custom-marker',
+                html: '<i class="fas fa-map-pin" style="color: #fbbf24; font-size: 40px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);"></i>',
+                iconSize: [40, 40],
+                iconAnchor: [20, 40]
+            })
+        }).addTo(mapCompletoDetalle).bindPopup(`
+            <b style="color: #fbbf24;">📍 Ubicación del Incidente</b><br>
+            <b>N° de Unidad:</b> {{ incidente.numero_incidente }}<br>
+            <b>Tipo:</b> {{ incidente.tipo_incidente }}
+        `).openPopup();
+        
+        setTimeout(() => mapCompletoDetalle.invalidateSize(), 100);
+    }, 100);
+}
+
+function cerrarMapaCompleto() {
+    document.getElementById('modalMapaCompleto').style.display = 'none';
+    document.body.style.overflow = '';
+    if (mapCompletoDetalle) { mapCompletoDetalle.remove(); mapCompletoDetalle = null; }
+}
+
+function compartirWhatsApp() {
+    const mensaje = generarMensajeWhatsApp();
+    window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
+}
+
+function generarMensajeWhatsApp() {
+    const numeroUnidad = "{{ incidente.numero_incidente }}";
+    const fecha = "{{ incidente.fecha_incidente }}";
+    const lugar = "{{ incidente.lugar or 'No registrado' }}".replace(/&/g, 'y');
+    const tipoIncidente = "{{ incidente.tipo_incidente }}".replace(/&/g, 'y');
+    const oficialActuante = "{{ incidente.oficial_actuante }}".replace(/&/g, 'y');
+    const oficialAsistente = "{{ incidente.oficial_asistente or 'No registrado' }}".replace(/&/g, 'y');
+    const descripcion = "{{ incidente.descripcion }}".replace(/&/g, 'y').replace(/\n/g, ' ');
+    const diligencias = "{{ incidente.diligencias_policiales or 'No registradas' }}".replace(/&/g, 'y').replace(/\n/g, ' ');
+    const lat = "{{ incidente.latitud or '' }}";
+    const lng = "{{ incidente.longitud or '' }}";
+    const direccionMapa = "{{ incidente.direccion_ubicacion or '' }}".replace(/&/g, 'y');
+    const aprehendidos = {{ incidente.aprehendidos or 0 }};
+    const ofendidos = {{ incidente.ofendidos or 0 }};
+    const testigos = {{ incidente.testigos or 0 }};
+    const personasInteres = {{ incidente.personas_interes or 0 }};
+    const vehiculos = {{ incidente.vehiculos_involucrados or 0 }};
+    const decomisos = "{{ incidente.decomisos or 'No registrados' }}".replace(/&/g, 'y');
+    const informePolicial = {{ 'true' if incidente.informe_policial else 'false' }};
+    const numeroInforme = "{{ incidente.numero_informe or '' }}";
+    const actaDecomiso = {{ 'true' if incidente.acta_decomiso else 'false' }};
+    const numeroActa = "{{ incidente.numero_acta_decomiso or '' }}";
+    
+    let msg = `*=== FUERZA PUBLICA - REPORTE DE INCIDENTE ===*\n`;
+    msg += `*=== N° DE UNIDAD: ${numeroUnidad} ===*\n`;
+    msg += `----------------------------------------\n\n`;
+    msg += `*FECHA:* ${fecha}\n`;
+    msg += `*LUGAR:* ${lugar}\n`;
+    msg += `*TIPO:* ${tipoIncidente}\n\n`;
+    
+    if (lat && lng) {
+        msg += `*UBICACIÓN GPS:* https://www.google.com/maps?q=${lat},${lng}\n`;
+        if (direccionMapa) msg += `*Dirección:* ${direccionMapa}\n`;
+        msg += `\n`;
+    }
+    
+    msg += `*[PERSONAL ACTUANTE]*\n`;
+    msg += `*Oficial Actuante:* ${oficialActuante}\n`;
+    msg += `*Oficial Asistente:* ${oficialAsistente}\n\n`;
+    
+    msg += `*[DESCRIPCION]*\n${descripcion}\n\n`;
+    
+    if (diligencias !== 'No registradas') {
+        msg += `*[DILIGENCIAS POLICIALES]*\n${diligencias}\n\n`;
+    }
+    
+    msg += `*[ESTADISTICAS]*\n`;
+    msg += `• Aprehendidos: ${aprehendidos}\n`;
+    msg += `• Ofendidos: ${ofendidos}\n`;
+    msg += `• Testigos: ${testigos}\n`;
+    msg += `• Personas de Interés: ${personasInteres}\n`;
+    msg += `• Vehículos: ${vehiculos}\n\n`;
+    
+    if (decomisos !== 'No registrados') {
+        msg += `*[DECOMISOS]*\n${decomisos}\n\n`;
+    }
+    
+    msg += `*[INFORMES]*\n`;
+    msg += `• Informe Policial: ${informePolicial ? 'SI' : 'NO'}`;
+    if (numeroInforme) msg += ` (N° ${numeroInforme})`;
+    msg += `\n• Acta Decomiso: ${actaDecomiso ? 'SI' : 'NO'}`;
+    if (numeroActa) msg += ` (N° ${numeroActa})`;
+    msg += `\n\n`;
+    
+    msg += `----------------------------------------\n`;
+    msg += `*Sistema de Consultas - Fuerza Publica*\n`;
+    msg += `Reporte generado el ${new Date().toLocaleString('es-CR')}`;
+    
+    return msg;
+}
+
+// Cerrar modal con ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarMapaCompleto();
+    }
+});
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('modalMapaCompleto').addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarMapaCompleto();
+    }
+});
+
+$(document).ready(function() {
+    inicializarMapaDetalle();
+});
+</script>
+{% endblock %}

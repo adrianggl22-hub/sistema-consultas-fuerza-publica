@@ -2,25 +2,293 @@
 
 {% block content %}
 <style>
-    .badge-admin { background: #dc3545; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
-    .badge-supervisor { background: #fd7e14; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
-    .badge-agente { background: #17a2b8; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
-    .badge-usuario { background: #6c757d; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
-    .badge-activo { background: #28a745; }
-    .badge-inactivo { background: #6c757d; }
+    /* ============================================================
+       ESTILOS DARK MODE PARA USUARIOS
+       ============================================================ */
+    .badge-dark-user {
+        padding: 3px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .badge-dark-user.admin {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .badge-dark-user.supervisor {
+        background: rgba(251, 146, 60, 0.15);
+        color: #fb923c;
+        border: 1px solid rgba(251, 146, 60, 0.2);
+    }
+    
+    .badge-dark-user.agente {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .badge-dark-user.usuario {
+        background: rgba(107, 114, 128, 0.15);
+        color: #9ca3af;
+        border: 1px solid rgba(107, 114, 128, 0.2);
+    }
+    
+    .badge-dark-user.activo {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .badge-dark-user.inactivo {
+        background: rgba(107, 114, 128, 0.15);
+        color: #9ca3af;
+        border: 1px solid rgba(107, 114, 128, 0.2);
+    }
+    
+    .card-dark-user {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    
+    .card-header-dark-user {
+        background: #1a2236;
+        padding: 12px 20px;
+        border-bottom: 1px solid #1f2937;
+        font-weight: 600;
+        color: #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .card-header-dark-user i {
+        color: #fbbf24;
+        margin-right: 8px;
+    }
+    
+    .card-body-dark-user {
+        padding: 20px;
+        overflow-x: auto;
+    }
+    
+    .table-dark-user {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        color: #e5e7eb;
+    }
+    
+    .table-dark-user thead th {
+        background: #1a2236;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #1f2937;
+    }
+    
+    .table-dark-user tbody td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        color: #e5e7eb;
+        vertical-align: middle;
+    }
+    
+    .table-dark-user tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .table-dark-user tbody tr:hover td {
+        background: rgba(255,255,255,0.03);
+    }
+    
+    .btn-icon-dark-user {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 5px;
+        color: #60a5fa;
+        transition: all 0.2s ease;
+    }
+    .btn-icon-dark-user:hover {
+        background: rgba(255,255,255,0.05);
+        color: #fbbf24;
+    }
+    .btn-icon-dark-user i {
+        font-size: 16px;
+    }
+    
+    .btn-primary-dark-user {
+        background: #fbbf24;
+        color: #111827;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .btn-primary-dark-user:hover {
+        background: #f59e0b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        color: #111827;
+    }
+    
+    .btn-secondary-dark-user {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-right: 10px;
+    }
+    .btn-secondary-dark-user:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+    
+    .modal-dark-user {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 1000;
+        overflow-y: auto;
+    }
+    
+    .modal-content-dark-user {
+        background: #111827;
+        border: 1px solid #1f2937;
+        width: 450px;
+        margin: 50px auto;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    
+    .modal-content-dark-user h3 {
+        color: #e5e7eb;
+        margin-top: 0;
+    }
+    
+    .modal-content-dark-user h3 i {
+        color: #fbbf24;
+    }
+    
+    .modal-content-dark-user label {
+        color: #9ca3af;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    .modal-content-dark-user .mb-2 {
+        margin-bottom: 10px;
+    }
+    
+    .modal-content-dark-user .mt-3 {
+        margin-top: 15px;
+    }
+    
+    .form-control-dark-user {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        font-size: 14px;
+        background: #0f172a;
+        color: #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    .form-control-dark-user:focus {
+        border-color: #fbbf24;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        background: #1a2236;
+    }
+    .form-control-dark-user::placeholder {
+        color: #6b7280;
+    }
+    .form-control-dark-user option {
+        background: #0f172a;
+        color: #e5e7eb;
+    }
+    
+    .text-right-dark {
+        text-align: right;
+    }
+    
+    h1 {
+        color: #e5e7eb;
+    }
+    h1 i {
+        color: #fbbf24;
+    }
+    .subtitle-dark {
+        color: #9ca3af;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .btn-sm-dark-user {
+        padding: 4px 12px;
+        font-size: 12px;
+    }
+    
+    @media (max-width: 768px) {
+        .modal-content-dark-user {
+            width: 95%;
+            margin: 30px auto;
+            padding: 15px;
+        }
+        .card-header-dark-user {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .table-dark-user {
+            font-size: 12px;
+        }
+        .table-dark-user thead th,
+        .table-dark-user tbody td {
+            padding: 6px 8px;
+        }
+        .text-right-dark {
+            text-align: left;
+        }
+    }
 </style>
 
-<h1>Gestión de Usuarios</h1>
-<p class="subtitle">Administre los usuarios del sistema</p>
+<h1><i class="fas fa-users"></i> Gestión de Usuarios</h1>
+<p class="subtitle-dark">Administre los usuarios del sistema</p>
 
-<div class="card">
-    <div class="card-header">
-        <i class="fas fa-users"></i> Usuarios del Sistema
-        <button class="btn btn-sm btn-primary float-end" onclick="abrirModal()"><i class="fas fa-plus"></i> Nuevo Usuario</button>
+<div class="card-dark-user">
+    <div class="card-header-dark-user">
+        <span><i class="fas fa-users"></i> Usuarios del Sistema</span>
+        <button class="btn-primary-dark-user" onclick="abrirModal()"><i class="fas fa-plus"></i> Nuevo Usuario</button>
     </div>
-    <div class="card-body">
+    <div class="card-body-dark-user">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table-dark-user" id="tablaUsuarios">
                 <thead>
                     <tr>
                         <th>Usuario</th>
@@ -28,10 +296,10 @@
                         <th>Rol</th>
                         <th>Estado</th>
                         <th>Registro</th>
-                        <th>Acciones</th>
+                        <th style="text-align: center; min-width: 80px;">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="tablaUsuarios">
+                <tbody id="tbodyUsuarios">
                 </tbody>
             </table>
         </div>
@@ -39,26 +307,26 @@
 </div>
 
 <!-- Modal para agregar/editar usuario -->
-<div id="modalUsuario" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
-    <div style="background:white; width:450px; margin:50px auto; padding:20px; border-radius:10px;">
-        <h3 id="modalTitulo" style="margin-top:0;">Nuevo Usuario</h3>
+<div id="modalUsuario" class="modal-dark-user">
+    <div class="modal-content-dark-user">
+        <h3 id="modalTitulo"><i class="fas fa-user-plus"></i> Nuevo Usuario</h3>
         <form id="formUsuario">
             <input type="hidden" id="usuario_id">
             <div class="mb-2">
                 <label>Usuario *</label>
-                <input type="text" id="username" class="form-control" required>
+                <input type="text" id="username" class="form-control-dark-user" required>
             </div>
             <div class="mb-2">
                 <label>Email *</label>
-                <input type="email" id="email" class="form-control" required>
+                <input type="email" id="email" class="form-control-dark-user" required>
             </div>
             <div class="mb-2">
                 <label>Contraseña</label>
-                <input type="password" id="password" class="form-control" placeholder="Dejar en blanco para no cambiar">
+                <input type="password" id="password" class="form-control-dark-user" placeholder="Dejar en blanco para no cambiar">
             </div>
             <div class="mb-2">
                 <label>Rol</label>
-                <select id="rol" class="form-control">
+                <select id="rol" class="form-control-dark-user">
                     <option value="usuario">Usuario (solo lectura)</option>
                     <option value="agente">Agente (puede crear/editar)</option>
                     <option value="supervisor">Supervisor (puede crear/editar/eliminar)</option>
@@ -67,14 +335,14 @@
             </div>
             <div class="mb-2">
                 <label>Estado</label>
-                <select id="activo" class="form-control">
+                <select id="activo" class="form-control-dark-user">
                     <option value="true">Activo</option>
                     <option value="false">Inactivo</option>
                 </select>
             </div>
-            <div class="mt-3" style="text-align:right;">
-                <button type="button" class="btn btn-secondary" onclick="cerrarModal()" style="margin-right:10px;">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="guardarUsuario()">Guardar</button>
+            <div class="mt-3 text-right-dark">
+                <button type="button" class="btn-secondary-dark-user" onclick="cerrarModal()">Cancelar</button>
+                <button type="button" class="btn-primary-dark-user" onclick="guardarUsuario()">Guardar</button>
             </div>
         </form>
     </div>
@@ -85,31 +353,40 @@ function cargarUsuarios() {
     fetch('/api/usuarios')
         .then(response => response.json())
         .then(data => {
-            var tbody = document.getElementById('tablaUsuarios');
+            var tbody = document.getElementById('tbodyUsuarios');
             tbody.innerHTML = '';
             data.forEach(u => {
-                var rolClass = u.rol === 'admin' ? 'badge-admin' : (u.rol === 'supervisor' ? 'badge-supervisor' : (u.rol === 'agente' ? 'badge-agente' : 'badge-usuario'));
-                var estadoClass = u.activo ? 'badge-activo' : 'badge-inactivo';
+                var rolClass = u.rol === 'admin' ? 'badge-dark-user admin' : 
+                              (u.rol === 'supervisor' ? 'badge-dark-user supervisor' : 
+                              (u.rol === 'agente' ? 'badge-dark-user agente' : 'badge-dark-user usuario'));
+                var estadoClass = u.activo ? 'badge-dark-user activo' : 'badge-dark-user inactivo';
+                var estadoText = u.activo ? 'ACTIVO' : 'INACTIVO';
+                
                 var row = '<tr>' +
                     '<td><strong>' + u.username + '</strong></td>' +
                     '<td>' + u.email + '</td>' +
-                    '<td><span class="badge ' + rolClass + '">' + u.rol + '</span></td>' +
-                    '<td><span class="badge ' + estadoClass + '">' + (u.activo ? 'ACTIVO' : 'INACTIVO') + '</span></td>' +
+                    '<td><span class="' + rolClass + '">' + u.rol + '</span></td>' +
+                    '<td><span class="' + estadoClass + '">' + estadoText + '</span></td>' +
                     '<td>' + (u.fecha_registro ? u.fecha_registro.split(' ')[0] : '-') + '</td>' +
-                    '<td>' +
-                        '<button class="btn-icon" onclick="editarUsuario(' + u.id + ')"><i class="fas fa-edit"></i></button>' +
-                        '<button class="btn-icon" onclick="eliminarUsuario(' + u.id + ')"><i class="fas fa-trash"></i></button>' +
-                    '<\/td><\/tr>';
+                    '<td style="text-align: center; white-space: nowrap;">' +
+                        '<button class="btn-icon-dark-user" onclick="editarUsuario(' + u.id + ')" title="Editar"><i class="fas fa-edit"></i></button>' +
+                        '<button class="btn-icon-dark-user" onclick="eliminarUsuario(' + u.id + ')" title="Eliminar"><i class="fas fa-trash"></i></button>' +
+                    '</td></tr>';
                 tbody.innerHTML += row;
             });
+        })
+        .catch(error => {
+            console.error('Error cargando usuarios:', error);
+            document.getElementById('tbodyUsuarios').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #f87171; padding: 20px;">Error al cargar usuarios</td></tr>';
         });
 }
 
 function abrirModal() {
-    document.getElementById('modalTitulo').innerText = 'Nuevo Usuario';
+    document.getElementById('modalTitulo').innerHTML = '<i class="fas fa-user-plus"></i> Nuevo Usuario';
     document.getElementById('usuario_id').value = '';
     document.getElementById('formUsuario').reset();
     document.getElementById('password').required = true;
+    document.getElementById('password').placeholder = 'Contraseña *';
     document.getElementById('modalUsuario').style.display = 'block';
 }
 
@@ -123,13 +400,14 @@ function editarUsuario(id) {
         .then(data => {
             var usuario = data.find(u => u.id === id);
             if (usuario) {
-                document.getElementById('modalTitulo').innerText = 'Editar Usuario';
+                document.getElementById('modalTitulo').innerHTML = '<i class="fas fa-user-edit"></i> Editar Usuario';
                 document.getElementById('usuario_id').value = usuario.id;
                 document.getElementById('username').value = usuario.username;
                 document.getElementById('email').value = usuario.email;
                 document.getElementById('rol').value = usuario.rol;
-                document.getElementById('activo').value = usuario.activo;
+                document.getElementById('activo').value = usuario.activo ? 'true' : 'false';
                 document.getElementById('password').required = false;
+                document.getElementById('password').placeholder = 'Dejar en blanco para no cambiar';
                 document.getElementById('modalUsuario').style.display = 'block';
             }
         });
@@ -137,15 +415,29 @@ function editarUsuario(id) {
 
 function guardarUsuario() {
     var id = document.getElementById('usuario_id').value;
+    var username = document.getElementById('username').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var password = document.getElementById('password').value;
+    var rol = document.getElementById('rol').value;
+    var activo = document.getElementById('activo').value === 'true';
+    
+    if (!username || !email) {
+        alert('⚠️ Usuario y Email son obligatorios');
+        return;
+    }
+    
     var data = {
-        username: document.getElementById('username').value,
-        email: document.getElementById('email').value,
-        rol: document.getElementById('rol').value,
-        activo: document.getElementById('activo').value === 'true'
+        username: username,
+        email: email,
+        rol: rol,
+        activo: activo
     };
     
-    if (document.getElementById('password').value) {
-        data.password = document.getElementById('password').value;
+    if (password) {
+        data.password = password;
+    } else if (!id) {
+        alert('⚠️ La contraseña es obligatoria para usuarios nuevos');
+        return;
     }
     
     var url = id ? '/api/usuarios/' + id : '/api/usuarios';
@@ -159,12 +451,15 @@ function guardarUsuario() {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            alert(id ? 'Usuario actualizado' : 'Usuario creado');
+            alert(id ? '✅ Usuario actualizado' : '✅ Usuario creado');
             cerrarModal();
             cargarUsuarios();
         } else {
-            alert('Error: ' + result.error);
+            alert('❌ Error: ' + (result.error || 'Error desconocido'));
         }
+    })
+    .catch(error => {
+        alert('❌ Error de conexión: ' + error);
     });
 }
 
@@ -174,14 +469,20 @@ function eliminarUsuario(id) {
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
+                    alert('✅ Usuario eliminado');
                     cargarUsuarios();
                 } else {
-                    alert('Error: ' + result.error);
+                    alert('❌ Error: ' + (result.error || 'Error desconocido'));
                 }
+            })
+            .catch(error => {
+                alert('❌ Error de conexión: ' + error);
             });
     }
 }
 
-$(document).ready(cargarUsuarios);
+$(document).ready(function() {
+    cargarUsuarios();
+});
 </script>
 {% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .orden-card {
+        background: white;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .orden-header {
+        background: linear-gradient(135deg, #6c3483, #512e5f);
+        color: white;
+        padding: 15px 20px;
+    }
+    .badge-activa { background: #d4edda; color: #155724; }
+    .badge-cumplida { background: #cce5ff; color: #004085; }
+</style>
+
+<h1><i class="fas fa-gavel"></i> Órdenes Judiciales</h1>
+<p class="subtitle">Gestión de órdenes de captura, localización y citación</p>
+
+<div class="orden-card">
+    <div class="orden-header">
+        <h4 style="margin:0;"><i class="fas fa-list"></i> Lista de Órdenes Judiciales</h4>
+    </div>
+    <div style="padding: 20px;">
+        <div class="table-responsive">
+            <table class="table" id="tablaOrdenesJudiciales">
+                <thead>
+                    <tr>
+                        <th>N° Único</th>
+                        <th>Despacho</th>
+                        <th>Fecha Emisión</th>
+                        <th>Imputado</th>
+                        <th>Delitos</th>
+                        <th>Tipo Solicitud</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="8" class="text-center">Cargando órdenes...<\/td><\/tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function cargarOrdenes() {
+    fetch('/api/ordenes_judiciales')
+        .then(response => response.json())
+        .then(data => {
+            const tbody = $('#tablaOrdenesJudiciales tbody');
+            tbody.empty();
+            
+            if (!data || data.length === 0) {
+                tbody.html('<tr><td colspan="8" class="empty">No hay órdenes judiciales registradas<\/td><\/tr>');
+                return;
+            }
+            
+            data.forEach(o => {
+                const estadoClass = o.estado === 'ACTIVA' ? 'badge-activa' : 'badge-cumplida';
+                tbody.append(`
+                    <tr>
+                        <td><strong>${o.numero_unico}</strong></td>
+                        <td>${o.despacho || '-'}</td>
+                        <td>${o.fecha_emision || '-'}</td>
+                        <td>${o.imputado_nombre || '-'}</td>
+                        <td>${o.delitos || '-'}</td>
+                        <td>${o.tipo_solicitud || '-'}</td>
+                        <td><span class="badge ${estadoClass}">${o.estado}</span></td>
+                        <td>
+                            <button class="btn-icon" onclick="verFicha(${o.persona_id})" title="Ver Ficha"><i class="fas fa-eye"></i></button>
+                        </td>
+                    </tr>
+                `);
+            });
+        });
+}
+
+function verFicha(id) {
+    window.open(`/ficha/${id}`, '_blank');
+}
+
+$(document).ready(function() {
+    cargarOrdenes();
+});
+</script>
+{% endblock %}

@@ -1,84 +1,1796 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Estadísticas</h1>
-<p class="subtitle">Reportes y gráficos del sistema</p>
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA ESTADÍSTICAS
+       ============================================================ */
+    .chart-container-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: transform 0.2s, border-color 0.3s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .chart-container-dark:hover {
+        transform: translateY(-3px);
+        border-color: #fbbf24;
+        box-shadow: 0 5px 15px rgba(251, 191, 36, 0.05);
+    }
+    .chart-title-dark {
+        font-size: 16px;
+        font-weight: 600;
+        color: #e5e7eb;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #1f2937;
+    }
+    .chart-title-dark i {
+        color: #fbbf24;
+        margin-right: 8px;
+    }
+    
+    .stat-box-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .stat-box-dark:hover {
+        transform: translateY(-3px);
+        border-color: #fbbf24;
+        box-shadow: 0 5px 15px rgba(251, 191, 36, 0.05);
+    }
+    .stat-number-dark {
+        font-size: 28px;
+        font-weight: 700;
+        color: #fbbf24;
+    }
+    .stat-label-dark {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 5px;
+    }
+    
+    .period-selector-dark {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+    .period-btn-dark {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        color: #9ca3af;
+        padding: 5px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+    .period-btn-dark:hover, .period-btn-dark.active {
+        background: #fbbf24;
+        color: #111827;
+        border-color: #fbbf24;
+    }
+    
+    .badge-delito-dark {
+        background: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        margin: 2px;
+        display: inline-block;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .refresh-btn-dark {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+        padding: 5px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-left: 10px;
+        transition: all 0.3s ease;
+    }
+    .refresh-btn-dark:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+        border-color: #fbbf24;
+    }
+    
+    /* Estilos para el mapa */
+    #mapa_incidentes {
+        height: 500px;
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #1f2937;
+    }
+    
+    .custom-marker {
+        background: transparent;
+    }
+    
+    .info-row-dark {
+        display: flex;
+        padding: 8px 0;
+        border-bottom: 1px solid #1f2937;
+    }
+    .info-label-dark {
+        width: 120px;
+        font-weight: 600;
+        color: #9ca3af;
+    }
+    .info-value-dark {
+        flex: 1;
+        color: #e5e7eb;
+    }
+    
+    .incidentes-count-dark {
+        background: #fbbf24;
+        color: #111827;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 12px;
+        margin-left: 10px;
+    }
+    
+    .table-dark-custom {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        color: #e5e7eb;
+    }
+    .table-dark-custom thead th {
+        background: #1a2236;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #1f2937;
+    }
+    .table-dark-custom tbody td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        color: #e5e7eb;
+        vertical-align: middle;
+    }
+    .table-dark-custom tbody tr:hover td {
+        background: rgba(255,255,255,0.03);
+    }
+    .table-dark-custom .text-center {
+        text-align: center;
+        padding: 30px;
+        color: #6b7280;
+    }
+    
+    .form-select-dark {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        color: #e5e7eb;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+    .form-select-dark:focus {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        outline: none;
+    }
+    .form-select-dark option {
+        background: #1a2236;
+        color: #e5e7eb;
+    }
+    
+    h1 {
+        color: #e5e7eb;
+    }
+    h1 i {
+        color: #fbbf24;
+    }
+    .subtitle-dark {
+        color: #9ca3af;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    .float-end {
+        float: right;
+    }
+    
+    /* Modal dark */
+    .modal-dark {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 2000;
+        display: none;
+    }
+    .modal-dark-content {
+        background: #111827;
+        border: 1px solid #1f2937;
+        width: 550px;
+        margin: 80px auto;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .modal-dark-content h3 {
+        color: #e5e7eb;
+        border-bottom: 1px solid #1f2937;
+        padding-bottom: 12px;
+        margin-bottom: 15px;
+    }
+    .modal-dark-content h3 i {
+        color: #fbbf24;
+    }
+    .btn-primary-dark {
+        background: #fbbf24;
+        color: #111827;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .btn-primary-dark:hover {
+        background: #f59e0b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+    .btn-secondary-dark {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+        padding: 8px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .btn-secondary-dark:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+    .mt-3 { margin-top: 15px; }
+    .text-center { text-align: center; }
+    .text-muted-dark { color: #6b7280; }
+    
+    /* Alerts */
+    .alert-dark {
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        color: white;
+        border: none;
+    }
+    .alert-dark.success { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .alert-dark.danger { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .alert-dark.warning { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+    .alert-dark.info { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
+    
+    @media (max-width: 768px) {
+        .modal-dark-content {
+            width: 95%;
+            margin: 40px auto;
+            padding: 15px;
+        }
+        .float-end {
+            float: none !important;
+        }
+        .chart-title-dark .float-end {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .info-row-dark {
+            flex-wrap: wrap;
+        }
+        .info-label-dark {
+            width: 100%;
+            margin-bottom: 4px;
+        }
+        .stat-number-dark {
+            font-size: 22px;
+        }
+        #mapa_incidentes {
+            height: 300px;
+        }
+    }
+</style>
 
-<div class="stats">
-    <div class="stat-card">
-        <div class="stat-number" id="totalPersonas">0</div>
-        <div class="stat-label">Personas</div>
+<h1><i class="fas fa-chart-bar"></i> Estadísticas Avanzadas</h1>
+<p class="subtitle-dark">Visualización de datos y análisis del sistema</p>
+
+<!-- Tarjetas de resumen - Órdenes -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-box-dark">
+            <div class="stat-number-dark" id="totalPersonas">0</div>
+            <div class="stat-label-dark">Personas Registradas</div>
+        </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-number" id="ordenesActivas">0</div>
-        <div class="stat-label">Órdenes Activas</div>
+    <div class="col-md-3">
+        <div class="stat-box-dark">
+            <div class="stat-number-dark" id="totalOrdenes">0</div>
+            <div class="stat-label-dark">Órdenes Totales</div>
+        </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-number" id="deudaTotal">₡0</div>
-        <div class="stat-label">Deuda Total</div>
+    <div class="col-md-3">
+        <div class="stat-box-dark">
+            <div class="stat-number-dark" id="deudaTotal">₡0</div>
+            <div class="stat-label-dark">Deuda Total</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-box-dark">
+            <div class="stat-number-dark" id="promedioDeuda">₡0</div>
+            <div class="stat-label-dark">Promedio por Orden</div>
+        </div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header"><i class="fas fa-chart-pie"></i> Distribución de Órdenes</div>
-    <div class="card-body">
-        <canvas id="ordenesChart" style="max-height: 300px; width: 100%;"></canvas>
+<!-- Tarjetas de ANTECEDENTES -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="stat-box-dark" style="border-color: #667eea;">
+            <div class="stat-number-dark" style="color: #818cf8;" id="totalAntecedentes">0</div>
+            <div class="stat-label-dark">Total Antecedentes</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-box-dark" style="border-color: #f093fb;">
+            <div class="stat-number-dark" style="color: #f472b6;" id="personasConAntecedentes">0</div>
+            <div class="stat-label-dark">Personas con Antecedentes</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-box-dark" style="border-color: #4facfe;">
+            <div class="stat-number-dark" style="color: #60a5fa;" id="promedioAntecedentes">0</div>
+            <div class="stat-label-dark">Promedio por Persona</div>
+        </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- NUEVAS TARJETAS DE ACCIONES OPERATIVAS -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-box-dark" style="border-color: #1e3c72;">
+            <div class="stat-number-dark" style="color: #60a5fa;" id="totalAcciones">0</div>
+            <div class="stat-label-dark">Total Acciones Operativas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-box-dark" style="border-color: #cb356b;">
+            <div class="stat-number-dark" style="color: #f87171;" id="totalPersonasAbordadas">0</div>
+            <div class="stat-label-dark">Personas Abordadas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-box-dark" style="border-color: #11998e;">
+            <div class="stat-number-dark" style="color: #34d399;" id="totalDrogasGramos">0</div>
+            <div class="stat-label-dark">Gramos de Droga Incautados</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-box-dark" style="border-color: #f12711;">
+            <div class="stat-number-dark" style="color: #fbbf24;" id="totalDineroIncautado">₡0</div>
+            <div class="stat-label-dark">Dinero Incautado</div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráfico de distribución de órdenes -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-pie"></i> Distribución de Órdenes por Estado
+                <button class="refresh-btn-dark" onclick="recargarTodo()"><i class="fas fa-sync-alt"></i> Recargar</button>
+            </div>
+            <canvas id="ordenesEstadoChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-line"></i> Evolución Mensual de Órdenes
+                <div class="period-selector-dark float-end">
+                    <button class="period-btn-dark active" data-period="6">6 meses</button>
+                    <button class="period-btn-dark" data-period="12">12 meses</button>
+                </div>
+            </div>
+            <canvas id="evolucionMensualChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-bar"></i> Top 5 Delitos Más Comunes
+            </div>
+            <canvas id="topDelitosChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-donut"></i> Distribución de Antecedentes por Estado
+            </div>
+            <canvas id="antecedentesEstadoChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-bar"></i> Top 5 Deudores por Monto
+            </div>
+            <canvas id="topDeudoresChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-donut"></i> Distribución por Juzgado
+            </div>
+            <canvas id="juzgadosChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- GRÁFICO: Distribución de Acciones Operativas -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-bar"></i> Top 5 Unidades con más Acciones
+            </div>
+            <canvas id="topUnidadesChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-line"></i> Acciones Operativas por Mes
+            </div>
+            <canvas id="accionesPorMesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- GRÁFICO: Incautaciones de Drogas -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-cannabis"></i> Distribución de Drogas Incautadas
+            </div>
+            <canvas id="drogasChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-bar"></i> Armas Incautadas
+            </div>
+            <canvas id="armasChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- GRÁFICO: Resultados Operativos -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-bar"></i> Resultados Operativos Acumulados
+            </div>
+            <canvas id="resultadosOperativosChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-line"></i> Tendencia de Antecedentes por Mes
+            </div>
+            <canvas id="tendenciaAntecedentesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-chart-line"></i> Tendencia de Deuda (Últimos 12 meses)
+            </div>
+            <canvas id="tendenciaDeudaChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-table"></i> Top 10 Personas con Más Antecedentes
+            </div>
+            <div class="table-responsive">
+                <table class="table-dark-custom" id="topAntecedentesTable">
+                    <thead>
+                        <tr>
+                            <th>Cédula</th>
+                            <th>Nombre</th>
+                            <th>Cantidad Antecedentes</th>
+                            <th>Delitos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="4" class="text-center">Cargando datos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- NUEVA TABLA: Últimas Acciones Operativas -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-table"></i> Últimas Acciones Operativas
+            </div>
+            <div class="table-responsive">
+                <table class="table-dark-custom" id="ultimasAccionesTable">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Unidad</th>
+                            <th>Lugar</th>
+                            <th>Personas Abordadas</th>
+                            <th>Acción Realizada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5" class="text-center">Cargando datos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MAPA DE INCIDENTES ==================== -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="chart-container-dark">
+            <div class="chart-title-dark">
+                <i class="fas fa-map-marked-alt"></i> Mapa de Incidentes - Cantón de Mora (Mes Actual)
+                <div class="float-end">
+                    <select id="filtroTipoIncidente" class="form-select-dark" style="width: 220px; display: inline-block; margin-left: 10px; font-size: 12px;" onchange="filtrarMapaPorTipo()">
+                        <option value="todos">Todos los tipos</option>
+                    </select>
+                    <button class="refresh-btn-dark" onclick="recargarMapa()" style="margin-left: 10px;">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+            </div>
+            <div id="mapa_incidentes"></div>
+            <div class="mt-2">
+                <small class="text-muted-dark">
+                    <i class="fas fa-info-circle"></i> 
+                    Los marcadores muestran la ubicación de los incidentes registrados durante el mes actual.
+                    Haga clic en un marcador para ver los detalles del incidente. Los colores varían según el tipo de incidente.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver detalle del incidente desde el mapa -->
+<div class="modal-dark" id="modalIncidenteMapa">
+    <div class="modal-dark-content">
+        <h3 id="modalIncidenteTitulo"><i class="fas fa-exclamation-triangle"></i> Detalle del Incidente</h3>
+        <div id="modalIncidenteContenido"></div>
+        <div class="mt-3" style="text-align:right;">
+            <button class="btn-primary-dark" onclick="verFichaIncidente()">Ver Ficha Completa</button>
+            <button class="btn-secondary-dark" onclick="cerrarModalIncidenteMapa()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
 <script>
+// Variables globales para los gráficos
+let ordenesEstadoChart = null;
+let evolucionMensualChart = null;
+let topDeudoresChart = null;
+let juzgadosChart = null;
+let tendenciaDeudaChart = null;
+let topDelitosChart = null;
+let antecedentesEstadoChart = null;
+let tendenciaAntecedentesChart = null;
+let currentPeriod = 6;
+
+// Variables para gráficos de acciones operativas
+let topUnidadesChart = null;
+let accionesPorMesChart = null;
+let drogasChart = null;
+let armasChart = null;
+let resultadosOperativosChart = null;
+
+// Variables para almacenar datos globales
+let personasData = [];
+let ordenesData = [];
+let antecedentesData = [];
+let accionesData = [];
+
+// ==================== VARIABLES PARA EL MAPA DE INCIDENTES ====================
+let mapaIncidentes = null;
+let marcadoresIncidentes = [];
+let incidentesMapa = [];
+let filtroTipoActual = 'todos';
+let incidenteSeleccionadoId = null;
+
+// Colores para diferentes tipos de incidentes
+const coloresPorTipo = {
+    'ROBO': '#e74c3c',
+    'HURTO': '#e67e22',
+    'AGRESIÓN': '#c0392b',
+    'LESIONES': '#e74c3c',
+    'HOMICIDIO': '#8b0000',
+    'VIOLENCIA DOMÉSTICA': '#9b59b6',
+    'TRÁFICO DE DROGAS': '#27ae60',
+    'POSESIÓN DE DROGAS': '#2ecc71',
+    'ALTERACION AL ORDEN PUBLICO': '#f39c12',
+    'ACCIDENTE DE TRÁNSITO': '#3498db',
+    'RIÑA': '#e67e22',
+    'BALACERA': '#c0392b',
+    'SECUESTRO': '#8b0000',
+    'EXTORSIÓN': '#d35400',
+    'ASALTO': '#e74c3c',
+    'default': '#95a5a6'
+};
+
+function obtenerColorPorTipo(tipo) {
+    return coloresPorTipo[tipo] || coloresPorTipo['default'];
+}
+
+// Función para formatear moneda
 function formatMoney(amount) {
     return '₡' + (amount || 0).toLocaleString();
 }
 
-let ordenesChart = null;
+function mostrarNotificacion(mensaje, tipo) {
+    const notificacion = document.createElement('div');
+    let icono = 'info-circle';
+    let clase = 'info';
+    
+    switch(tipo) {
+        case 'success':
+            icono = 'check-circle';
+            clase = 'success';
+            break;
+        case 'danger':
+            icono = 'exclamation-circle';
+            clase = 'danger';
+            break;
+        case 'warning':
+            icono = 'exclamation-triangle';
+            clase = 'warning';
+            break;
+        default:
+            icono = 'info-circle';
+            clase = 'info';
+    }
+    
+    notificacion.className = `alert-dark ${clase}`;
+    notificacion.style.position = 'fixed';
+    notificacion.style.top = '20px';
+    notificacion.style.right = '20px';
+    notificacion.style.zIndex = '9999';
+    notificacion.style.minWidth = '300px';
+    notificacion.style.borderRadius = '8px';
+    notificacion.style.border = '1px solid rgba(255,255,255,0.08)';
+    notificacion.innerHTML = `<i class="fas fa-${icono} me-2"></i> ${mensaje}`;
+    document.body.appendChild(notificacion);
+    
+    setTimeout(() => {
+        notificacion.style.opacity = '0';
+        notificacion.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => notificacion.remove(), 300);
+    }, 4000);
+}
 
-// Cargar estadísticas básicas
-fetch('/api/estadisticas')
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('totalPersonas').innerText = data.personas || 0;
-        document.getElementById('ordenesActivas').innerText = data.ordenes_activas || 0;
-        document.getElementById('deudaTotal').innerText = formatMoney(data.deuda_total);
-        
-        // También necesitamos órdenes vencidas para el gráfico
-        // Las obtenemos de otra llamada
-        fetch('/api/ordenes')
-            .then(res => res.json())
-            .then(ordenes => {
-                var activas = ordenes.filter(o => o.estado === 'ACTIVA').length;
-                var vencidas = ordenes.filter(o => o.estado === 'VENCIDA').length;
-                var cumplidas = ordenes.filter(o => o.estado === 'CUMPLIDA').length;
-                
-                // Destruir gráfico anterior si existe
-                if (ordenesChart) {
-                    ordenesChart.destroy();
+// ==================== FUNCIONES DEL MAPA ====================
+function cargarIncidentesMapa() {
+    return fetch('/api/incidentes/geolocalizados')
+        .then(response => response.json())
+        .then(data => {
+            incidentesMapa = data;
+            console.log(`📍 ${incidentesMapa.length} incidentes geolocalizados cargados`);
+            return incidentesMapa;
+        })
+        .catch(error => {
+            console.error('Error cargando incidentes para el mapa:', error);
+            return [];
+        });
+}
+
+function cargarTiposFiltro() {
+    fetch('/api/incidentes/geolocalizados/resumen')
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('filtroTipoIncidente');
+            if (select) {
+                select.innerHTML = '<option value="todos">Todos los tipos (' + data.total + ')</option>';
+                if (data.tipos) {
+                    data.tipos.forEach(tipo => {
+                        const option = document.createElement('option');
+                        option.value = tipo.nombre;
+                        option.textContent = `${tipo.nombre} (${tipo.cantidad})`;
+                        select.appendChild(option);
+                    });
                 }
-                
-                // Crear nuevo gráfico
-                var ctx = document.getElementById('ordenesChart').getContext('2d');
-                ordenesChart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Activas', 'Vencidas', 'Cumplidas'],
-                        datasets: [{
-                            data: [activas, vencidas, cumplidas],
-                            backgroundColor: ['#28a745', '#dc3545', '#17a2b8'],
-                            borderWidth: 0
-                        }]
+            }
+        })
+        .catch(error => console.error('Error cargando tipos:', error));
+}
+
+function inicializarMapaIncidentes() {
+    const container = document.getElementById('mapa_incidentes');
+    if (!container) return;
+    
+    const centroMora = [9.918, -84.245];
+    
+    if (mapaIncidentes) {
+        mapaIncidentes.remove();
+        mapaIncidentes = null;
+    }
+    
+    mapaIncidentes = L.map('mapa_incidentes').setView(centroMora, 13);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CartoDB</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(mapaIncidentes);
+    
+    L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(mapaIncidentes);
+    
+    const moraBounds = L.rectangle([[9.88, -84.30], [9.95, -84.20]], {
+        color: "#fbbf24",
+        weight: 2,
+        opacity: 0.3,
+        fillOpacity: 0.05
+    }).addTo(mapaIncidentes);
+    moraBounds.bindPopup("📌 Cantón de Mora - Límite aproximado");
+}
+
+function agregarMarcadoresIncidentes(incidentes) {
+    if (!mapaIncidentes) return;
+    
+    marcadoresIncidentes.forEach(m => {
+        if (m) mapaIncidentes.removeLayer(m);
+    });
+    marcadoresIncidentes = [];
+    
+    let incidentesFiltrados = incidentes;
+    if (filtroTipoActual !== 'todos') {
+        incidentesFiltrados = incidentes.filter(i => i.tipo_incidente === filtroTipoActual);
+    }
+    
+    const markerGroup = L.layerGroup().addTo(mapaIncidentes);
+    
+    incidentesFiltrados.forEach(incidente => {
+        if (incidente.latitud && incidente.longitud) {
+            const color = obtenerColorPorTipo(incidente.tipo_incidente);
+            
+            const customIcon = L.divIcon({
+                html: `<div style="background-color: ${color}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 0 0 1px ${color};"></div>`,
+                iconSize: [12, 12],
+                className: 'custom-marker'
+            });
+            
+            const marker = L.marker([incidente.latitud, incidente.longitud], { icon: customIcon }).addTo(markerGroup);
+            
+            const popupContent = `
+                <div style="min-width: 250px; color: #e5e7eb;">
+                    <h4 style="margin: 0 0 5px 0; color: ${color};">${incidente.tipo_incidente || 'Sin clasificar'}</h4>
+                    <p style="margin: 5px 0;"><strong>N° Unidad:</strong> ${incidente.numero_incidente || '-'}</p>
+                    <p style="margin: 5px 0;"><strong>Fecha:</strong> ${incidente.fecha_incidente || '-'}</p>
+                    <p style="margin: 5px 0;"><strong>Lugar:</strong> ${incidente.lugar || 'No especificado'}</p>
+                    <p style="margin: 5px 0;"><strong>Oficial:</strong> ${incidente.oficial_actuante || '-'}</p>
+                    <p style="margin: 5px 0;"><strong>Aprehendidos:</strong> ${incidente.aprehendidos || 0}</p>
+                    <button onclick="verDetalleIncidenteMapa(${incidente.id})" style="margin-top: 10px; background: #fbbf24; color: #111827; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: 600;">
+                        Ver detalle completo
+                    </button>
+                </div>
+            `;
+            
+            marker.bindPopup(popupContent);
+            marker.bindTooltip(`${incidente.tipo_incidente || 'Incidente'} - ${incidente.lugar || 'Sin lugar'}`, { sticky: true });
+            marcadoresIncidentes.push(marker);
+        }
+    });
+    
+    if (incidentesFiltrados.length > 0) {
+        const bounds = [];
+        incidentesFiltrados.forEach(i => {
+            if (i.latitud && i.longitud) {
+                bounds.push([i.latitud, i.longitud]);
+            }
+        });
+        if (bounds.length > 0) {
+            mapaIncidentes.fitBounds(bounds);
+        }
+    }
+    
+    const titulo = document.querySelector('#mapa_incidentes').closest('.chart-container-dark').querySelector('.chart-title-dark');
+    if (titulo) {
+        let span = titulo.querySelector('.incidentes-count-dark');
+        if (!span) {
+            titulo.innerHTML = titulo.innerHTML.replace('Mapa de Incidentes', 'Mapa de Incidentes <span class="incidentes-count-dark"></span>');
+            span = titulo.querySelector('.incidentes-count-dark');
+        }
+        if (span) span.textContent = incidentesFiltrados.length;
+    }
+}
+
+function filtrarMapaPorTipo() {
+    const select = document.getElementById('filtroTipoIncidente');
+    filtroTipoActual = select.value;
+    agregarMarcadoresIncidentes(incidentesMapa);
+}
+
+function recargarMapa() {
+    mostrarNotificacion('🔄 Actualizando mapa...', 'info');
+    cargarIncidentesMapa().then(() => {
+        agregarMarcadoresIncidentes(incidentesMapa);
+        cargarTiposFiltro();
+        mostrarNotificacion('✅ Mapa actualizado correctamente', 'success');
+    }).catch(error => {
+        mostrarNotificacion('❌ Error al actualizar el mapa', 'danger');
+    });
+}
+
+function verDetalleIncidenteMapa(id) {
+    incidenteSeleccionadoId = id;
+    const incidente = incidentesMapa.find(i => i.id === id);
+    if (incidente) {
+        document.getElementById('modalIncidenteTitulo').innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${incidente.tipo_incidente || 'Incidente'} - N° ${incidente.numero_incidente}`;
+        document.getElementById('modalIncidenteContenido').innerHTML = `
+            <div class="info-row-dark"><div class="info-label-dark">Fecha:</div><div class="info-value-dark">${incidente.fecha_incidente || '-'}</div></div>
+            <div class="info-row-dark"><div class="info-label-dark">Lugar:</div><div class="info-value-dark">${incidente.lugar || '-'}</div></div>
+            <div class="info-row-dark"><div class="info-label-dark">Oficial Actuante:</div><div class="info-value-dark">${incidente.oficial_actuante || '-'}</div></div>
+            <div class="info-row-dark"><div class="info-label-dark">Aprehendidos:</div><div class="info-value-dark">${incidente.aprehendidos || 0}</div></div>
+            <div class="info-row-dark"><div class="info-label-dark">Descripción:</div><div class="info-value-dark">${incidente.descripcion || '-'}</div></div>
+            ${incidente.direccion_ubicacion ? `<div class="info-row-dark"><div class="info-label-dark">Dirección:</div><div class="info-value-dark">${incidente.direccion_ubicacion}</div></div>` : ''}
+        `;
+        document.getElementById('modalIncidenteMapa').style.display = 'block';
+    }
+}
+
+function verFichaIncidente() {
+    if (incidenteSeleccionadoId) {
+        window.open(`/incidente/${incidenteSeleccionadoId}`, '_blank');
+    }
+}
+
+function cerrarModalIncidenteMapa() {
+    document.getElementById('modalIncidenteMapa').style.display = 'none';
+    incidenteSeleccionadoId = null;
+}
+
+function cargarMapaIncidentes() {
+    inicializarMapaIncidentes();
+    cargarTiposFiltro();
+    cargarIncidentesMapa().then(() => {
+        agregarMarcadoresIncidentes(incidentesMapa);
+    });
+}
+
+// ==================== FUNCIONES EXISTENTES ====================
+function cargarPersonas() {
+    return fetch('/api/personas')
+        .then(response => response.json())
+        .then(data => {
+            personasData = data;
+            console.log('✅ Personas cargadas:', data.length);
+            return data;
+        })
+        .catch(error => console.error('Error cargando personas:', error));
+}
+
+function cargarOrdenes() {
+    return fetch('/api/ordenes')
+        .then(response => response.json())
+        .then(data => {
+            ordenesData = data;
+            console.log('✅ Órdenes cargadas:', data.length);
+            return data;
+        })
+        .catch(error => console.error('Error cargando órdenes:', error));
+}
+
+function cargarAntecedentes() {
+    const promises = personasData.map(persona => 
+        fetch(`/api/antecedentes/${persona.id}`)
+            .then(response => response.json())
+            .then(antecedentes => ({ personaId: persona.id, antecedentes }))
+    );
+    
+    return Promise.all(promises).then(resultados => {
+        antecedentesData = [];
+        resultados.forEach(r => {
+            r.antecedentes.forEach(a => {
+                antecedentesData.push({
+                    ...a,
+                    persona_id: r.personaId,
+                    persona_nombre: personasData.find(p => p.id === r.personaId)?.nombre || 'Desconocido',
+                    persona_cedula: personasData.find(p => p.id === r.personaId)?.cedula || 'N/A'
+                });
+            });
+        });
+        console.log('✅ Antecedentes cargados:', antecedentesData.length);
+        return antecedentesData;
+    });
+}
+
+function cargarAccionesOperativas() {
+    return fetch('/api/acciones_operativas')
+        .then(response => response.json())
+        .then(data => {
+            accionesData = data;
+            console.log('✅ Acciones Operativas cargadas:', data.length);
+            if (data.length > 0) {
+                console.log('📋 Ejemplo de datos de acciones:', data.slice(0, 3));
+            }
+            return data;
+        })
+        .catch(error => {
+            console.error('❌ Error cargando acciones:', error);
+            return [];
+        });
+}
+
+function cargarEstadisticasAcciones() {
+    const totalAcciones = accionesData.length;
+    let totalPersonasAbordadas = 0;
+    let totalGramosDrogas = 0;
+    let totalDinero = 0;
+    
+    accionesData.forEach(a => {
+        totalPersonasAbordadas += parseInt(a.personas_abordadas) || 0;
+        totalGramosDrogas += parseFloat(a.gramos_marihuana) || 0;
+        totalGramosDrogas += parseFloat(a.gramos_crack) || 0;
+        totalGramosDrogas += parseFloat(a.gramos_cocaina) || 0;
+        totalDinero += parseFloat(a.dinero_efectivo) || 0;
+    });
+    
+    document.getElementById('totalAcciones').innerText = totalAcciones;
+    document.getElementById('totalPersonasAbordadas').innerText = totalPersonasAbordadas;
+    document.getElementById('totalDrogasGramos').innerText = totalGramosDrogas.toFixed(2);
+    document.getElementById('totalDineroIncautado').innerText = formatMoney(totalDinero);
+    
+    console.log(`📊 Estadísticas: Acciones=${totalAcciones}, Personas=${totalPersonasAbordadas}, Drogas=${totalGramosDrogas}g, Dinero=${totalDinero}`);
+}
+
+function cargarTopUnidades() {
+    const unidades = {};
+    accionesData.forEach(a => {
+        const unidad = a.cod_unidad || 'Sin especificar';
+        unidades[unidad] = (unidades[unidad] || 0) + 1;
+    });
+    
+    const topUnidades = Object.entries(unidades)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    
+    const ctx = document.getElementById('topUnidadesChart').getContext('2d');
+    if (topUnidadesChart) topUnidadesChart.destroy();
+    
+    if (topUnidades.length === 0) {
+        ctx.canvas.parentElement.innerHTML = '<div class="text-center p-4 text-muted-dark">No hay acciones registradas</div>';
+        return;
+    }
+    
+    topUnidadesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: topUnidades.map(u => u[0]),
+            datasets: [{
+                label: 'Cantidad de Acciones',
+                data: topUnidades.map(u => u[1]),
+                backgroundColor: ['#60a5fa', '#34d399', '#fbbf24', '#f87171', '#a78bfa'],
+                borderRadius: 8,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                tooltip: { callbacks: { label: (ctx) => `${ctx.raw} acciones` } }
+            }
+        }
+    });
+}
+
+function cargarAccionesPorMes() {
+    const accionesPorMes = {};
+    
+    accionesData.forEach(a => {
+        if (a.fecha && a.fecha.length >= 7) {
+            const mes = a.fecha.substring(0, 7);
+            accionesPorMes[mes] = (accionesPorMes[mes] || 0) + 1;
+        }
+    });
+    
+    const meses = Object.keys(accionesPorMes).sort().slice(-12);
+    const cantidades = meses.map(m => accionesPorMes[m]);
+    
+    const ctx = document.getElementById('accionesPorMesChart').getContext('2d');
+    if (accionesPorMesChart) accionesPorMesChart.destroy();
+    
+    if (meses.length === 0) {
+        ctx.canvas.parentElement.innerHTML = '<div class="text-center p-4 text-muted-dark">No hay datos de acciones por mes</div>';
+        return;
+    }
+    
+    accionesPorMesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: meses,
+            datasets: [{
+                label: 'Acciones Operativas',
+                data: cantidades,
+                borderColor: '#f87171',
+                backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#f87171',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true
+        }
+    });
+}
+
+function cargarDrogasChart() {
+    let marihuana = 0, crack = 0, cocaina = 0;
+    
+    if (!accionesData || accionesData.length === 0) {
+        console.warn('⚠️ No hay datos de acciones operativas para cargar drogas');
+        const ctx = document.getElementById('drogasChart').getContext('2d');
+        if (drogasChart) drogasChart.destroy();
+        ctx.canvas.parentElement.innerHTML = '<div class="text-center p-4 text-muted-dark">No hay datos de drogas incautadas</div>';
+        return;
+    }
+    
+    accionesData.forEach(a => {
+        marihuana += parseFloat(a.gramos_marihuana) || 0;
+        crack += parseFloat(a.gramos_crack) || 0;
+        cocaina += parseFloat(a.gramos_cocaina) || 0;
+    });
+    
+    console.log(`📊 Datos de drogas: Marihuana: ${marihuana}g, Crack: ${crack}g, Cocaína: ${cocaina}g`);
+    
+    const ctx = document.getElementById('drogasChart').getContext('2d');
+    if (drogasChart) drogasChart.destroy();
+    
+    if (marihuana === 0 && crack === 0 && cocaina === 0) {
+        ctx.canvas.parentElement.innerHTML = '<div class="text-center p-4 text-muted-dark">No hay datos de drogas incautadas</div>';
+        return;
+    }
+    
+    drogasChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Marihuana (g)', 'Crack (g)', 'Cocaína (g)'],
+            datasets: [{
+                data: [marihuana, crack, cocaina],
+                backgroundColor: ['#34d399', '#f87171', '#fbbf24'],
+                borderWidth: 2,
+                borderColor: '#111827'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { 
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12 },
+                        padding: 20,
+                        color: '#9ca3af'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = marihuana + crack + cocaina;
+                            const porcentaje = total > 0 ? ((context.raw / total) * 100).toFixed(1) : 0;
+                            return `${context.label}: ${context.raw.toFixed(2)}g (${porcentaje}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function cargarArmasChart() {
+    let armasFuego = 0, armasBlancas = 0;
+    
+    if (!accionesData || accionesData.length === 0) {
+        console.warn('⚠️ No hay datos de acciones operativas para cargar armas');
+        const ctx = document.getElementById('armasChart').getContext('2d');
+        if (armasChart) armasChart.destroy();
+        ctx.canvas.parentElement.innerHTML = '<div class="text-center p-4 text-muted-dark">No hay datos de armas incautadas</div>';
+        return;
+    }
+    
+    accionesData.forEach(a => {
+        armasFuego += parseInt(a.armas_fuego) || 0;
+        armasBlancas += parseInt(a.armas_blancas) || 0;
+    });
+    
+    console.log(`🔫 Datos de armas: Fuego: ${armasFuego}, Blancas: ${armasBlancas}`);
+    
+    const ctx = document.getElementById('armasChart').getContext('2d');
+    if (armasChart) armasChart.destroy();
+    
+    if (armasFuego === 0 && armasBlancas === 0) {
+        ctx.canvas.parentElement.innerHTML = '<div class="text-center p-4 text-muted-dark">No hay datos de armas incautadas</div>';
+        return;
+    }
+    
+    armasChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Armas de Fuego', 'Armas Blancas'],
+            datasets: [{
+                label: 'Cantidad Incautada',
+                data: [armasFuego, armasBlancas],
+                backgroundColor: ['#f87171', '#fbbf24'],
+                borderRadius: 8,
+                borderWidth: 0,
+                barPercentage: 0.6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.raw} unidades incautadas`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cantidad',
+                        font: { size: 12 },
+                        color: '#9ca3af'
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
+                    ticks: { color: '#9ca3af' }
+                },
+                x: {
+                    ticks: { color: '#9ca3af' }
+                }
+            }
+        }
+    });
+}
+
+function cargarResultadosOperativosChart() {
+    let totalMotos = 0, totalCarros = 0, totalControles = 0, totalVisitas = 0;
+    
+    accionesData.forEach(a => {
+        totalMotos += a.motos || 0;
+        totalCarros += a.carros || 0;
+        totalControles += a.control_carretera || 0;
+        totalVisitas += a.visitas_comercio || 0;
+    });
+    
+    const ctx = document.getElementById('resultadosOperativosChart').getContext('2d');
+    if (resultadosOperativosChart) resultadosOperativosChart.destroy();
+    
+    if (totalMotos === 0 && totalCarros === 0 && totalControles === 0 && totalVisitas === 0) {
+        ctx.canvas.parentElement.innerHTML = '<div class="text-center p-4 text-muted-dark">No hay datos de resultados operativos</div>';
+        return;
+    }
+    
+    resultadosOperativosChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Motos Revisadas', 'Carros Revisados', 'Controles Carretera', 'Visitas a Comercios'],
+            datasets: [{
+                label: 'Cantidad',
+                data: [totalMotos, totalCarros, totalControles, totalVisitas],
+                backgroundColor: ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa'],
+                borderRadius: 8,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                tooltip: { callbacks: { label: (ctx) => `${ctx.raw} registros` } }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#9ca3af' }
+                },
+                x: {
+                    ticks: { color: '#9ca3af' }
+                }
+            }
+        }
+    });
+}
+
+function cargarTablaUltimasAcciones() {
+    const ultimasAcciones = [...accionesData]
+        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+        .slice(0, 10);
+    
+    const tbody = document.querySelector('#ultimasAccionesTable tbody');
+    tbody.innerHTML = '';
+    
+    if (ultimasAcciones.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay acciones operativas registradas</td></tr>';
+    } else {
+        ultimasAcciones.forEach(a => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${a.fecha || '-'}</td>
+                    <td><strong>${a.cod_unidad || '-'}</strong></td>
+                    <td>${a.lugar || '-'}</td>
+                    <td>${a.personas_abordadas || 0}</td>
+                    <td>${a.accion_realizada ? a.accion_realizada.substring(0, 50) + '...' : '-'}</td>
+                </tr>
+            `;
+        });
+    }
+}
+
+function cargarEstadisticasAntecedentes() {
+    const totalAntecedentes = antecedentesData.length;
+    const personasConAntecedentes = new Set(antecedentesData.map(a => a.persona_id)).size;
+    const promedioAntecedentes = personasConAntecedentes > 0 ? (totalAntecedentes / personasConAntecedentes).toFixed(1) : 0;
+    
+    document.getElementById('totalAntecedentes').innerText = totalAntecedentes;
+    document.getElementById('personasConAntecedentes').innerText = personasConAntecedentes;
+    document.getElementById('promedioAntecedentes').innerText = promedioAntecedentes;
+}
+
+function cargarTopDelitos() {
+    const delitos = {};
+    antecedentesData.forEach(a => {
+        const delito = a.delito || 'Sin especificar';
+        delitos[delito] = (delitos[delito] || 0) + 1;
+    });
+    
+    const topDelitos = Object.entries(delitos)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    
+    const ctx = document.getElementById('topDelitosChart').getContext('2d');
+    if (topDelitosChart) topDelitosChart.destroy();
+    
+    if (topDelitos.length === 0) {
+        ctx.canvas.parentElement.innerHTML = '<div class="text-center p-4 text-muted-dark">No hay delitos registrados</div>';
+        return;
+    }
+    
+    topDelitosChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: topDelitos.map(d => d[0].length > 20 ? d[0].substring(0, 20) + '...' : d[0]),
+            datasets: [{
+                label: 'Cantidad de Antecedentes',
+                data: topDelitos.map(d => d[1]),
+                backgroundColor: '#f87171',
+                borderRadius: 8,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                tooltip: { callbacks: { label: (ctx) => `${ctx.raw} antecedentes` } }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: '#9ca3af' } },
+                x: { ticks: { color: '#9ca3af' } }
+            }
+        }
+    });
+}
+
+function cargarAntecedentesEstado() {
+    const estados = {};
+    antecedentesData.forEach(a => {
+        const estado = a.estado || 'REGISTRADO';
+        estados[estado] = (estados[estado] || 0) + 1;
+    });
+    
+    const ctx = document.getElementById('antecedentesEstadoChart').getContext('2d');
+    if (antecedentesEstadoChart) antecedentesEstadoChart.destroy();
+    
+    if (Object.keys(estados).length === 0) {
+        ctx.canvas.parentElement.innerHTML = '<div class="text-center p-4 text-muted-dark">No hay antecedentes registrados</div>';
+        return;
+    }
+    
+    antecedentesEstadoChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(estados),
+            datasets: [{
+                data: Object.values(estados),
+                backgroundColor: ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { 
+                legend: { 
+                    position: 'bottom',
+                    labels: { color: '#9ca3af' }
+                }
+            }
+        }
+    });
+}
+
+function cargarTendenciaAntecedentes() {
+    const antecedentesPorMes = {};
+    
+    antecedentesData.forEach(a => {
+        if (a.fecha_delito && a.fecha_delito.length >= 7) {
+            const mes = a.fecha_delito.substring(0, 7);
+            antecedentesPorMes[mes] = (antecedentesPorMes[mes] || 0) + 1;
+        }
+    });
+    
+    const meses = Object.keys(antecedentesPorMes).sort().slice(-12);
+    const cantidades = meses.map(m => antecedentesPorMes[m]);
+    
+    const ctx = document.getElementById('tendenciaAntecedentesChart').getContext('2d');
+    if (tendenciaAntecedentesChart) tendenciaAntecedentesChart.destroy();
+    
+    if (meses.length === 0) {
+        ctx.canvas.parentElement.innerHTML = '<div class="text-center p-4 text-muted-dark">No hay datos de tendencia de antecedentes</div>';
+        return;
+    }
+    
+    tendenciaAntecedentesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: meses,
+            datasets: [{
+                label: 'Antecedentes Registrados',
+                data: cantidades,
+                borderColor: '#f87171',
+                backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#f87171',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                tooltip: { callbacks: { label: (ctx) => `${ctx.raw} antecedentes` } }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: '#9ca3af' } },
+                x: { ticks: { color: '#9ca3af' } }
+            }
+        }
+    });
+}
+
+function cargarTablaTopAntecedentes() {
+    const antecedentesPorPersona = {};
+    
+    antecedentesData.forEach(a => {
+        if (!antecedentesPorPersona[a.persona_id]) {
+            antecedentesPorPersona[a.persona_id] = {
+                nombre: a.persona_nombre,
+                cedula: a.persona_cedula,
+                cantidad: 0,
+                delitos: []
+            };
+        }
+        antecedentesPorPersona[a.persona_id].cantidad++;
+        if (a.delito && !antecedentesPorPersona[a.persona_id].delitos.includes(a.delito)) {
+            antecedentesPorPersona[a.persona_id].delitos.push(a.delito);
+        }
+    });
+    
+    const top = Object.values(antecedentesPorPersona)
+        .sort((a, b) => b.cantidad - a.cantidad)
+        .slice(0, 10);
+    
+    const tbody = document.querySelector('#topAntecedentesTable tbody');
+    tbody.innerHTML = '';
+    
+    if (top.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay antecedentes registrados</td></tr>';
+    } else {
+        top.forEach(p => {
+            const delitosHtml = p.delitos.slice(0, 3).map(d => `<span class="badge-delito-dark">${d.length > 20 ? d.substring(0, 20) + '...' : d}</span>`).join('');
+            const masDelitos = p.delitos.length > 3 ? `<span class="badge-delito-dark">+${p.delitos.length - 3} más</span>` : '';
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td>${p.cedula}</td>
+                    <td><strong>${p.nombre}</strong></td>
+                    <td><span style="background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 2px 10px; border-radius: 12px; font-weight: 600;">${p.cantidad}</span></td>
+                    <td>${delitosHtml} ${masDelitos}</td>
+                </tr>
+            `;
+        });
+    }
+}
+
+function cargarEstadisticasBasicas() {
+    fetch('/api/estadisticas')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('totalPersonas').innerText = data.personas || 0;
+            document.getElementById('totalOrdenes').innerText = data.total_ordenes || 0;
+            document.getElementById('deudaTotal').innerText = formatMoney(data.deuda_total);
+            let promedio = data.total_ordenes > 0 ? data.deuda_total / data.total_ordenes : 0;
+            document.getElementById('promedioDeuda').innerText = formatMoney(promedio);
+        });
+}
+
+function cargarGraficoEstados() {
+    fetch('/api/ordenes')
+        .then(response => response.json())
+        .then(data => {
+            const activas = data.filter(o => o.estado === 'ACTIVA').length;
+            const vencidas = data.filter(o => o.estado === 'VENCIDA').length;
+            const cumplidas = data.filter(o => o.estado === 'CUMPLIDA').length;
+            
+            const ctx = document.getElementById('ordenesEstadoChart').getContext('2d');
+            if (ordenesEstadoChart) ordenesEstadoChart.destroy();
+            
+            ordenesEstadoChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Activas', 'Vencidas', 'Cumplidas'],
+                    datasets: [{
+                        data: [activas, vencidas, cumplidas],
+                        backgroundColor: ['#34d399', '#f87171', '#60a5fa'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { color: '#9ca3af' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = activas + vencidas + cumplidas;
+                                    const porcentaje = total > 0 ? ((context.raw / total) * 100).toFixed(1) : 0;
+                                    return `${context.label}: ${context.raw} (${porcentaje}%)`;
+                                }
                             }
                         }
                     }
-                });
+                }
             });
+        });
+}
+
+function cargarEvolucionMensual(meses = 6) {
+    fetch('/api/estadisticas/evolucion?meses=' + meses)
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('evolucionMensualChart').getContext('2d');
+            if (evolucionMensualChart) evolucionMensualChart.destroy();
+            
+            evolucionMensualChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.meses,
+                    datasets: [
+                        {
+                            label: 'Órdenes Creadas',
+                            data: data.ordenes_creadas,
+                            borderColor: '#60a5fa',
+                            backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#60a5fa',
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Órdenes Vencidas',
+                            data: data.ordenes_vencidas,
+                            borderColor: '#f87171',
+                            backgroundColor: 'rgba(248, 113, 113, 0.05)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#f87171',
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw}` } },
+                        legend: { labels: { color: '#9ca3af' } }
+                    },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'Cantidad', color: '#9ca3af' },
+                            ticks: { color: '#9ca3af' }
+                        },
+                        x: { ticks: { color: '#9ca3af' } }
+                    }
+                }
+            });
+        });
+}
+
+function cargarTopDeudores() {
+    fetch('/api/ordenes')
+        .then(response => response.json())
+        .then(data => {
+            const deudores = {};
+            data.forEach(o => {
+                if (!deudores[o.persona_nombre]) {
+                    deudores[o.persona_nombre] = 0;
+                }
+                deudores[o.persona_nombre] += o.monto_deuda;
+            });
+            
+            const top5 = Object.entries(deudores)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            const ctx = document.getElementById('topDeudoresChart').getContext('2d');
+            if (topDeudoresChart) topDeudoresChart.destroy();
+            
+            topDeudoresChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top5.map(d => d[0].length > 20 ? d[0].substring(0, 20) + '...' : d[0]),
+                    datasets: [{
+                        label: 'Deuda Total (₡)',
+                        data: top5.map(d => d[1]),
+                        backgroundColor: '#fbbf24',
+                        borderRadius: 8,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    indexAxis: 'y',
+                    plugins: {
+                        tooltip: { callbacks: { label: (ctx) => formatMoney(ctx.raw) } },
+                        legend: { labels: { color: '#9ca3af' } }
+                    },
+                    scales: { 
+                        x: { 
+                            ticks: { callback: (v) => formatMoney(v), color: '#9ca3af' }
+                        },
+                        y: { ticks: { color: '#9ca3af' } }
+                    }
+                }
+            });
+        });
+}
+
+function cargarJuzgados() {
+    fetch('/api/ordenes')
+        .then(response => response.json())
+        .then(data => {
+            const juzgados = {};
+            data.forEach(o => {
+                if (!juzgados[o.juzgado]) {
+                    juzgados[o.juzgado] = 0;
+                }
+                juzgados[o.juzgado]++;
+            });
+            
+            const topJuzgados = Object.entries(juzgados)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            const ctx = document.getElementById('juzgadosChart').getContext('2d');
+            if (juzgadosChart) juzgadosChart.destroy();
+            
+            juzgadosChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: topJuzgados.map(j => j[0].length > 25 ? j[0].substring(0, 22) + '...' : j[0]),
+                    datasets: [{
+                        data: topJuzgados.map(j => j[1]),
+                        backgroundColor: ['#60a5fa', '#f87171', '#34d399', '#fbbf24', '#a78bfa'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom',
+                            labels: { color: '#9ca3af' }
+                        }
+                    }
+                }
+            });
+        });
+}
+
+function cargarTendenciaDeuda() {
+    fetch('/api/estadisticas/tendencia')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('tendenciaDeudaChart').getContext('2d');
+            if (tendenciaDeudaChart) tendenciaDeudaChart.destroy();
+            
+            tendenciaDeudaChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.meses,
+                    datasets: [{
+                        label: 'Deuda Total (₡)',
+                        data: data.deuda_por_mes,
+                        borderColor: '#34d399',
+                        backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#34d399',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: { callbacks: { label: (ctx) => formatMoney(ctx.raw) } },
+                        legend: { labels: { color: '#9ca3af' } }
+                    },
+                    scales: { 
+                        y: { 
+                            ticks: { callback: (v) => formatMoney(v), color: '#9ca3af' }
+                        },
+                        x: { ticks: { color: '#9ca3af' } }
+                    }
+                }
+            });
+        });
+}
+
+function recargarTodo() {
+    console.log('🔄 Recargando estadísticas...');
+    inicializar();
+}
+
+// Función principal de inicialización
+async function inicializar() {
+    console.log('🚀 Inicializando estadísticas...');
+    
+    await cargarPersonas();
+    await cargarOrdenes();
+    await cargarAntecedentes();
+    await cargarAccionesOperativas();
+    
+    cargarEstadisticasBasicas();
+    cargarGraficoEstados();
+    cargarEvolucionMensual(6);
+    cargarTopDeudores();
+    cargarJuzgados();
+    cargarTendenciaDeuda();
+    
+    cargarEstadisticasAntecedentes();
+    cargarTopDelitos();
+    cargarAntecedentesEstado();
+    cargarTendenciaAntecedentes();
+    cargarTablaTopAntecedentes();
+    
+    cargarEstadisticasAcciones();
+    cargarTopUnidades();
+    cargarAccionesPorMes();
+    cargarDrogasChart();
+    cargarArmasChart();
+    cargarResultadosOperativosChart();
+    cargarTablaUltimasAcciones();
+    
+    cargarMapaIncidentes();
+    
+    console.log('✅ Estadísticas inicializadas correctamente');
+}
+
+// Eventos para selector de período
+document.querySelectorAll('.period-btn-dark').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.period-btn-dark').forEach(function(b) {
+            b.classList.remove('active');
+        });
+        this.classList.add('active');
+        currentPeriod = parseInt(this.dataset.period);
+        cargarEvolucionMensual(currentPeriod);
     });
+});
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    inicializar();
+});
 </script>
 {% endblock %}

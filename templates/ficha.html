@@ -2,169 +2,523 @@
 
 {% block content %}
 <style>
-    /* Estilos para la vista normal */
+    /* ============================================================
+       ESTILOS DARK MODE PARA FICHA
+       ============================================================ */
+    .btn-whatsapp-orden-dark {
+        background: #22c55e;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 11px;
+        transition: all 0.3s;
+        margin-left: 5px;
+    }
+    .btn-whatsapp-orden-dark:hover {
+        background: #16a34a;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        color: white;
+    }
+    
+    .orden-row-dark {
+        transition: background 0.2s;
+    }
+    .orden-row-dark:hover td {
+        background: rgba(255,255,255,0.03);
+    }
+    
+    .modal-orden-judicial-dark {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 1000;
+        overflow-y: auto;
+    }
+    .modal-orden-judicial-content-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        width: 90%;
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .modal-orden-judicial-content-dark h3 {
+        color: #e5e7eb;
+    }
+    .modal-orden-judicial-content-dark h3 i {
+        color: #a78bfa;
+    }
+    
+    .section-card-dark {
+        background: #1a2236;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 1px solid #1f2937;
+    }
+    .section-card-dark h5 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #e5e7eb;
+        border-bottom: 1px solid #1f2937;
+        padding-bottom: 8px;
+    }
+    .section-card-dark h5 i {
+        color: #a78bfa;
+    }
+    
+    .card-dark-ficha {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    
+    .card-header-dark-ficha {
+        background: #1a2236;
+        padding: 12px 20px;
+        border-bottom: 1px solid #1f2937;
+        font-weight: 600;
+        color: #e5e7eb;
+    }
+    
+    .card-header-dark-ficha i {
+        color: #a78bfa;
+        margin-right: 8px;
+    }
+    
+    .card-body-dark-ficha {
+        padding: 20px;
+        color: #e5e7eb;
+    }
+    
+    .card-body-dark-ficha h4 {
+        color: #e5e7eb;
+    }
+    
+    .card-body-dark-ficha .text-muted-dark {
+        color: #9ca3af;
+    }
+    
+    .badge-dark-ficha {
+        padding: 3px 12px;
+        border-radius: 15px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .badge-dark-ficha.activa {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .badge-dark-ficha.inactiva {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .badge-dark-ficha.registrado {
+        background: rgba(96, 165, 250, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+    
+    .badge-dark-ficha.vencida {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .btn-icon-dark-ficha {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 5px;
+        color: #60a5fa;
+        transition: all 0.2s ease;
+    }
+    .btn-icon-dark-ficha:hover {
+        background: rgba(255,255,255,0.05);
+        color: #fbbf24;
+    }
+    .btn-icon-dark-ficha i {
+        font-size: 16px;
+    }
+    
+    .empty-dark-ficha {
+        text-align: center;
+        padding: 40px;
+        color: #6b7280;
+    }
+    
+    .table-dark-ficha {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        color: #e5e7eb;
+    }
+    .table-dark-ficha thead th {
+        background: #1a2236;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #1f2937;
+    }
+    .table-dark-ficha tbody td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        color: #e5e7eb;
+        vertical-align: middle;
+    }
+    .table-dark-ficha tbody tr:hover td {
+        background: rgba(255,255,255,0.03);
+    }
+    
+    .form-control-dark-ficha {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        font-size: 14px;
+        background: #1a2236;
+        color: #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    .form-control-dark-ficha:focus {
+        border-color: #a78bfa;
+        box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+        outline: none;
+        background: #1f2937;
+    }
+    .form-control-dark-ficha::placeholder {
+        color: #6b7280;
+    }
+    
+    .form-check-dark-ficha input {
+        accent-color: #a78bfa;
+    }
+    
+    .form-check-dark-ficha label {
+        color: #9ca3af;
+    }
+    
+    .btn-primary-dark-ficha {
+        background: #a78bfa;
+        color: #111827;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .btn-primary-dark-ficha:hover {
+        background: #8b5cf6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
+        color: #111827;
+    }
+    
+    .btn-secondary-dark-ficha {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+        padding: 8px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+    .btn-secondary-dark-ficha:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+    
+    .btn-danger-dark-ficha {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 4px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .btn-danger-dark-ficha:hover {
+        background: #dc2626;
+        color: white;
+    }
+    
+    .btn-warning-dark-ficha {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.2);
+        padding: 4px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .btn-warning-dark-ficha:hover {
+        background: #fbbf24;
+        color: #111827;
+    }
+    
+    .btn-sm-dark-ficha {
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-sm-dark-ficha.primary {
+        background: #a78bfa;
+        color: #111827;
+    }
+    .btn-sm-dark-ficha.primary:hover {
+        background: #8b5cf6;
+        transform: translateY(-1px);
+    }
+    
+    .modal-dark-ficha {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 1000;
+        overflow-y: auto;
+    }
+    
+    .modal-content-dark-ficha {
+        background: #111827;
+        border: 1px solid #1f2937;
+        width: 90%;
+        max-width: 500px;
+        margin: 60px auto;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    
+    .modal-content-dark-ficha h3 {
+        color: #e5e7eb;
+    }
+    
+    .modal-content-dark-ficha h3 i {
+        color: #a78bfa;
+    }
+    
+    .modal-content-dark-ficha label {
+        color: #9ca3af;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    .foto-perfil-dark {
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        border: none;
+        cursor: pointer;
+        border-radius: 50%;
+        border: 3px solid #a78bfa;
+        transition: all 0.3s ease;
+    }
+    .foto-perfil-dark:hover {
+        border-color: #fbbf24;
+        transform: scale(1.02);
+    }
+    
+    .foto-placeholder-dark {
+        width: 180px;
+        height: 180px;
+        background: #1a2236;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        border-radius: 50%;
+        border: 3px solid #a78bfa;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .foto-placeholder-dark:hover {
+        border-color: #fbbf24;
+        transform: scale(1.02);
+    }
+    .foto-placeholder-dark i {
+        font-size: 5rem;
+        color: #6b7280;
+    }
+    
+    .text-muted-dark {
+        color: #9ca3af !important;
+    }
+    
+    .text-center-dark {
+        text-align: center;
+    }
+    
     .no-print {
         display: inline-block;
     }
     
-    /* Estilos solo para impresión */
+    .info-row-dark {
+        display: flex;
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .info-label-dark {
+        font-weight: 600;
+        color: #9ca3af;
+        width: 140px;
+        flex-shrink: 0;
+    }
+    .info-value-dark {
+        color: #e5e7eb;
+        flex: 1;
+    }
+    
+    h1 {
+        color: #e5e7eb;
+    }
+    .subtitle-dark {
+        color: #9ca3af;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .mt-3 { margin-top: 15px; }
+    .mt-2 { margin-top: 10px; }
+    .mb-2 { margin-bottom: 10px; }
+    .mb-3 { margin-bottom: 15px; }
+    .ms-2 { margin-left: 10px; }
+    .float-end { float: right; }
+    .col-md-4, .col-md-6, .col-md-8, .col-md-12 { position: relative; }
+    
+    @media (max-width: 768px) {
+        .foto-perfil-dark {
+            width: 120px;
+            height: 120px;
+        }
+        .foto-placeholder-dark {
+            width: 120px;
+            height: 120px;
+        }
+        .foto-placeholder-dark i {
+            font-size: 3rem;
+        }
+        .modal-content-dark-ficha {
+            width: 95%;
+            margin: 30px auto;
+            padding: 15px;
+        }
+        .modal-orden-judicial-content-dark {
+            width: 95%;
+            margin: 15px auto;
+            padding: 15px;
+        }
+        .table-dark-ficha {
+            font-size: 12px;
+        }
+        .table-dark-ficha thead th,
+        .table-dark-ficha tbody td {
+            padding: 6px 8px;
+        }
+        .info-label-dark {
+            width: 100%;
+        }
+        .info-row-dark {
+            flex-wrap: wrap;
+        }
+        .float-end {
+            float: none !important;
+            display: inline-block;
+        }
+    }
+    
     @media print {
-        .sidebar, 
-        .navbar, 
-        .btn, 
-        .btn-primary, 
-        .btn-secondary, 
-        .btn-danger, 
-        button, 
-        .card-header button, 
-        .float-end, 
-        .no-print,
-        .btn-search,
-        .search-box,
-        .btn-icon,
-        .user-info,
-        .logo,
-        .header,
-        .sidebar a,
-        .user-area,
-        .btn-home,
-        .btn-logout {
-            display: none !important;
-        }
-        
-        body {
-            margin: 0 !important;
-            padding: 0 !important;
-            background: white !important;
-        }
-        
-        .main {
-            margin: 0 !important;
-            padding: 10px !important;
-            width: 100% !important;
-        }
-        
-        .container-fluid {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        
-        .card {
-            border: 1px solid #ddd !important;
-            break-inside: avoid;
-            page-break-inside: avoid;
-            box-shadow: none !important;
-            margin-bottom: 15px !important;
-        }
-        
-        .card-header {
-            background: #f0f0f0 !important;
-            color: black !important;
-            border-bottom: 1px solid #ddd !important;
-        }
-        
-        .card-body {
-            padding: 10px !important;
-        }
-        
-        .badge-activa {
-            background: #ddd !important;
-            color: black !important;
-            border: 1px solid #999;
-        }
-        
-        h1 { 
-            font-size: 18pt !important; 
-            margin-bottom: 10px !important;
-            color: black !important;
-        }
-        h4 { 
-            font-size: 14pt !important; 
-        }
-        .card-header { 
-            font-size: 12pt !important; 
-        }
-        table { 
-            font-size: 10pt !important; 
-        }
-        p, td, th {
-            font-size: 10pt !important;
-        }
-        
-        /* Mostrar la foto centrada en impresión */
-        .card-body div {
-            text-align: center !important;
-        }
-        
-        .card-body img, 
-        .card-body div[style*="display: inline-flex"] {
-            display: block !important;
-            margin: 0 auto !important;
-        }
-        
-        img {
-            border: none !important;
-        }
-        
-        a[href]::after {
-            content: none !important;
-        }
-        
-        table {
-            border-collapse: collapse !important;
-            width: 100% !important;
-        }
-        
-        th, td {
-            border: 1px solid #ddd !important;
-            padding: 5px !important;
-        }
-        
-        th {
-            background: #f0f0f0 !important;
-        }
-        
-        .row {
-            display: block !important;
-        }
-        
-        .col-md-4, .col-md-8 {
-            width: 100% !important;
-            display: block !important;
-        }
+        .no-print { display: none !important; }
+        .card-dark-ficha { background: white !important; border: 1px solid #ddd !important; }
+        .card-header-dark-ficha { background: #f8f9fa !important; color: #2c3e50 !important; border-bottom: 1px solid #ddd !important; }
+        .card-body-dark-ficha { color: #333 !important; }
+        .badge-dark-ficha.activa { background: #d4edda !important; color: #155724 !important; }
+        .badge-dark-ficha.inactiva { background: #f8d7da !important; color: #721c24 !important; }
+        .badge-dark-ficha.registrado { background: #cce5ff !important; color: #004085 !important; }
+        .table-dark-ficha thead th { background: #f8f9fa !important; color: #555 !important; border-bottom: 2px solid #dee2e6 !important; }
+        .table-dark-ficha tbody td { color: #333 !important; border-bottom: 1px solid #eee !important; }
+        .text-muted-dark { color: #6c757d !important; }
+        h1 { color: #2c3e50 !important; }
+        .subtitle-dark { color: #6c757d !important; }
     }
 </style>
 
 <h1>Ficha de Persona</h1>
-<p class="subtitle">Información detallada del ciudadano</p>
+<p class="subtitle-dark">Información detallada del ciudadano</p>
 
 <div class="row">
     <!-- Columna izquierda - Foto -->
     <div class="col-md-4">
-        <div class="card text-center">
-            <div class="card-body">
+        <div class="card-dark-ficha text-center-dark">
+            <div class="card-body-dark-ficha">
                 <div style="text-align: center;">
                     {% if persona.foto %}
-                        <img src="{{ persona.foto }}" class="img-fluid mb-3" style="width: 180px; height: 180px; object-fit: cover; border: none;">
+                        <img src="{{ persona.foto }}" class="foto-perfil-dark mb-3" onclick="verFotoGrande('{{ persona.foto }}')">
                     {% else %}
-                        <div style="width: 180px; height: 180px; background: #e8f0fe; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px; border: none;">
-                            <i class="fas fa-user fa-5x" style="color: #3498db;"></i>
+                        <div class="foto-placeholder-dark" onclick="verFotoGrande(null)">
+                            <i class="fas fa-user"></i>
                         </div>
                     {% endif %}
                 </div>
                 <h4>{{ persona.nombre }}</h4>
-                <p class="text-muted"><i class="fas fa-id-card"></i> {{ persona.cedula }}</p>
-                <span class="badge badge-activa">{{ persona.estado }}</span>
+                <p class="text-muted-dark"><i class="fas fa-id-card"></i> {{ persona.cedula }}</p>
+                <span class="badge-dark-ficha activa">{{ persona.estado }}</span>
+                <p class="small text-muted-dark mt-2">Registrado: {{ persona.fecha_registro or 'No registrada' }}</p>
             </div>
         </div>
         
         <!-- Contacto -->
-        <div class="card mt-3">
-            <div class="card-header"><i class="fas fa-address-card"></i> Contacto</div>
-            <div class="card-body">
-                <p><i class="fas fa-phone"></i> <strong>Teléfono:</strong> {{ persona.telefono or 'No registrado' }}</p>
-                <p><i class="fas fa-envelope"></i> <strong>Email:</strong> {{ persona.email or 'No registrado' }}</p>
-                <p><i class="fas fa-map-marker-alt"></i> <strong>Dirección:</strong> {{ persona.direccion or 'No registrada' }}</p>
+        <div class="card-dark-ficha mt-3">
+            <div class="card-header-dark-ficha"><i class="fas fa-address-card"></i> Contacto</div>
+            <div class="card-body-dark-ficha">
+                <div class="info-row-dark">
+                    <span class="info-label-dark"><i class="fas fa-phone"></i> Teléfono:</span>
+                    <span class="info-value-dark">{{ persona.telefono or 'No registrado' }}</span>
+                </div>
+                <div class="info-row-dark">
+                    <span class="info-label-dark"><i class="fas fa-envelope"></i> Email:</span>
+                    <span class="info-value-dark">{{ persona.email or 'No registrado' }}</span>
+                </div>
+                <div class="info-row-dark">
+                    <span class="info-label-dark"><i class="fas fa-map-marker-alt"></i> Dirección:</span>
+                    <span class="info-value-dark">{{ persona.direccion or 'No registrada' }}</span>
+                </div>
             </div>
         </div>
     </div>
@@ -172,34 +526,48 @@
     <!-- Columna derecha - Datos -->
     <div class="col-md-8">
         <!-- Datos personales -->
-        <div class="card">
-            <div class="card-header"><i class="fas fa-user"></i> Datos Personales</div>
-            <div class="card-body">
+        <div class="card-dark-ficha">
+            <div class="card-header-dark-ficha"><i class="fas fa-user"></i> Datos Personales</div>
+            <div class="card-body-dark-ficha">
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Cédula:</strong> {{ persona.cedula }}</p>
-                        <p><strong>Nombre:</strong> {{ persona.nombre }}</p>
-                        <p><strong>Género:</strong> {{ persona.genero or 'No especificado' }}</p>
+                        <div class="info-row-dark">
+                            <span class="info-label-dark">Cédula:</span>
+                            <span class="info-value-dark">{{ persona.cedula }}</span>
+                        </div>
+                        <div class="info-row-dark">
+                            <span class="info-label-dark">Nombre:</span>
+                            <span class="info-value-dark">{{ persona.nombre }}</span>
+                        </div>
+                        <div class="info-row-dark">
+                            <span class="info-label-dark">Género:</span>
+                            <span class="info-value-dark">{{ persona.genero or 'No especificado' }}</span>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Fecha Nacimiento:</strong> {{ persona.fecha_nacimiento or 'No registrada' }}</p>
-                        <p><strong>Estado:</strong> <span class="badge badge-activa">{{ persona.estado }}</span></p>
-                        <p><strong>Registro:</strong> {{ persona.fecha_registro or 'No registrada' }}</p>
+                        <div class="info-row-dark">
+                            <span class="info-label-dark">Fecha Nacimiento:</span>
+                            <span class="info-value-dark">{{ persona.fecha_nacimiento or 'No registrada' }}</span>
+                        </div>
+                        <div class="info-row-dark">
+                            <span class="info-label-dark">Estado:</span>
+                            <span class="info-value-dark"><span class="badge-dark-ficha activa">{{ persona.estado }}</span></span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Antecedentes -->
-        <div class="card mt-3">
-            <div class="card-header">
+        <div class="card-dark-ficha mt-3">
+            <div class="card-header-dark-ficha">
                 <i class="fas fa-history"></i> Antecedentes
-                <button class="btn btn-sm btn-primary float-end no-print" onclick="abrirModalAntecedente()">+ Agregar Antecedente</button>
+                <button class="btn-primary-dark-ficha float-end no-print" onclick="abrirModalAntecedente()" style="padding: 4px 16px; font-size: 12px;">+ Agregar Antecedente</button>
             </div>
-            <div class="card-body">
-                {% if antecedentes %}
+            <div class="card-body-dark-ficha">
+                {% if antecedentes and antecedentes|length > 0 %}
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table-dark-ficha">
                             <thead>
                                 <tr>
                                     <th>Delito</th>
@@ -217,138 +585,397 @@
                                     <td>{{ a.fecha_delito or '-' }}</td>
                                     <td>{{ a.lugar or '-' }}</td>
                                     <td>{{ a.juzgado or '-' }}</td>
-                                    <td><span class="badge badge-activa">{{ a.estado or 'REGISTRADO' }}</span></td>
-                                    <td class="no-print"><button class="btn btn-sm btn-danger" onclick="eliminarAntecedente({{ a.id }})"><i class="fas fa-trash"></i></button></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </tr>
-                    </div>
-                {% else %}
-                    <p>No tiene antecedentes registrados</p>
-                {% endif %}
-            </div>
-        </div>
-        
-        <!-- Órdenes de Captura -->
-        <div class="card mt-3">
-            <div class="card-header">
-                <i class="fas fa-file-alt"></i> Órdenes de Captura
-                <button class="btn btn-sm btn-primary float-end no-print" onclick="abrirModalOrden()">+ Agregar Orden</button>
-            </div>
-            <div class="card-body">
-                {% if ordenes %}
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>N° Orden</th>
-                                    <th>Monto</th>
-                                    <th>Juzgado</th>
-                                    <th>Expediente</th>
-                                    <th>Vence</th>
-                                    <th>Estado</th>
-                                    <th class="no-print">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for o in ordenes %}
-                                <tr>
-                                    <td><strong>{{ o.numero_orden }}</strong></td>
-                                    <td>₡{{ "{:,.2f}".format(o.monto_deuda) }}</td>
-                                    <td>{{ o.juzgado }}</td>
-                                    <td>{{ o.expediente }}</td>
-                                    <td>{{ o.fecha_vencimiento or '-' }}</td>
-                                    <td><span class="badge badge-activa">{{ o.estado }}</span></td>
-                                    <td class="no-print"><button class="btn btn-sm btn-danger" onclick="eliminarOrden({{ o.id }})"><i class="fas fa-trash"></i></button></td>
+                                    <td><span class="badge-dark-ficha registrado">{{ a.estado or 'REGISTRADO' }}</span></td>
+                                    <td class="no-print"><button class="btn-danger-dark-ficha" onclick="eliminarAntecedente({{ a.id }})"><i class="fas fa-trash"></i></button></td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 {% else %}
-                    <p>No tiene órdenes de captura</p>
+                    <p class="empty-dark-ficha">No tiene antecedentes registrados</p>
                 {% endif %}
             </div>
         </div>
         
-        <!-- Botones (ahora al final, después de todas las tablas) -->
+        <!-- Órdenes de Captura con botón WhatsApp -->
+        <div class="card-dark-ficha mt-3">
+            <div class="card-header-dark-ficha">
+                <i class="fas fa-file-alt"></i> Órdenes de Captura
+                <button class="btn-primary-dark-ficha float-end no-print" onclick="abrirModalOrden()" style="padding: 4px 16px; font-size: 12px;">+ Agregar Orden</button>
+            </div>
+            <div class="card-body-dark-ficha">
+                {% if ordenes and ordenes|length > 0 %}
+                    <div class="table-responsive">
+                        <table class="table-dark-ficha">
+                            <thead>
+                                <tr>
+                                    <th>N° Orden</th>
+                                    <th>Monto</th>
+                                    <th>Juzgado</th>
+                                    <th>Expediente</th>
+                                    <th>Emisión</th>
+                                    <th>Vencimiento</th>
+                                    <th>Estado</th>
+                                    <th class="no-print">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for o in ordenes %}
+                                <tr class="orden-row-dark">
+                                    <td>
+                                        <strong>{{ o.numero_orden }}</strong>
+                                        <button class="btn-whatsapp-orden-dark" onclick="compartirOrdenWhatsApp({{ o.id }})" title="Compartir por WhatsApp">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </button>
+                                    </td>
+                                    <td>₡{{ "{:,.2f}".format(o.monto_deuda) }}</td>
+                                    <td>{{ o.juzgado }}</td>
+                                    <td>{{ o.expediente }}</td>
+                                    <td>{{ o.fecha_emision or '-' }}</td>
+                                    <td>{{ o.fecha_vencimiento or '-' }}</td>
+                                    <td><span class="badge-dark-ficha activa">{{ o.estado }}</span></td>
+                                    <td class="no-print">
+                                        <button class="btn-warning-dark-ficha" onclick="editarOrden({{ o.id }})"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-danger-dark-ficha" onclick="eliminarOrden({{ o.id }})"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="empty-dark-ficha">No tiene órdenes de captura registradas</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Órdenes Judiciales -->
+        <div class="card-dark-ficha mt-3">
+            <div class="card-header-dark-ficha">
+                <i class="fas fa-gavel"></i> Órdenes Judiciales
+                <button class="btn-primary-dark-ficha float-end no-print" onclick="abrirModalOrdenJudicial()" style="padding: 4px 16px; font-size: 12px;">+ Agregar Orden Judicial</button>
+            </div>
+            <div class="card-body-dark-ficha">
+                <div id="ordenesJudicialesContainer">
+                    <div class="table-responsive">
+                        <table class="table-dark-ficha" id="tablaOrdenesJudiciales">
+                            <thead>
+                                <tr>
+                                    <th>N° Único</th>
+                                    <th>Despacho</th>
+                                    <th>Fecha Emisión</th>
+                                    <th>Delitos</th>
+                                    <th>Tipo Solicitud</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaOrdenesJudicialesBody">
+                                <tr><td colspan="7" class="text-center-dark" style="color: #6b7280; padding: 20px;">Cargando órdenes judiciales...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botones (no se imprimen) -->
         <div class="mt-3 no-print">
-            <a href="/personas" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver</a>
-            <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Imprimir Ficha</button>
+            <a href="/personas" class="btn-secondary-dark-ficha"><i class="fas fa-arrow-left"></i> Volver</a>
+            <button class="btn-primary-dark-ficha" onclick="window.print()"><i class="fas fa-print"></i> Imprimir Ficha</button>
         </div>
     </div>
 </div>
 
+<!-- Modal para ver foto en grande -->
+<div id="modalFoto" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; cursor:pointer;" onclick="cerrarModalFoto()">
+    <div style="display:flex; align-items:center; justify-content:center; height:100%;">
+        <img id="fotoGrande" src="" style="max-width:90%; max-height:90%; object-fit:contain; border-radius:10px; box-shadow:0 0 30px rgba(0,0,0,0.5);">
+    </div>
+    <div style="position:absolute; top:20px; right:30px; color:white; font-size:30px; cursor:pointer;" onclick="cerrarModalFoto()">&times;</div>
+</div>
+
 <!-- Modal para agregar antecedente -->
-<div id="modalAntecedente" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
-    <div style="background:white; width:500px; margin:100px auto; padding:20px; border-radius:10px;">
-        <h3>Agregar Antecedente</h3>
+<div id="modalAntecedente" class="modal-dark-ficha">
+    <div class="modal-content-dark-ficha">
+        <h3><i class="fas fa-history"></i> Agregar Antecedente</h3>
         <form id="formAntecedente">
             <div class="mb-2">
                 <label>Delito *</label>
-                <input type="text" id="delito" class="form-control" required>
+                <input type="text" id="delito" class="form-control-dark-ficha" required>
             </div>
             <div class="mb-2">
                 <label>Fecha del Delito</label>
-                <input type="date" id="fecha_delito" class="form-control">
+                <input type="date" id="fecha_delito" class="form-control-dark-ficha">
             </div>
             <div class="mb-2">
                 <label>Lugar</label>
-                <input type="text" id="lugar" class="form-control">
+                <input type="text" id="lugar" class="form-control-dark-ficha">
             </div>
             <div class="mb-2">
                 <label>Juzgado</label>
-                <input type="text" id="juzgado_ant" class="form-control">
+                <input type="text" id="juzgado_ant" class="form-control-dark-ficha">
             </div>
             <div class="mt-3">
-                <button type="button" class="btn btn-primary" onclick="guardarAntecedente()">Guardar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarModalAntecedente()">Cancelar</button>
+                <button type="button" class="btn-primary-dark-ficha" onclick="guardarAntecedente()">Guardar</button>
+                <button type="button" class="btn-secondary-dark-ficha" onclick="cerrarModalAntecedente()">Cancelar</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Modal para agregar orden -->
-<div id="modalOrden" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
-    <div style="background:white; width:500px; margin:100px auto; padding:20px; border-radius:10px;">
-        <h3>Agregar Orden de Captura</h3>
+<!-- Modal para agregar orden de captura -->
+<div id="modalOrden" class="modal-dark-ficha">
+    <div class="modal-content-dark-ficha">
+        <h3><i class="fas fa-file-alt"></i> Agregar Orden de Captura</h3>
         <form id="formOrden">
             <div class="mb-2">
                 <label>Número de Orden *</label>
-                <input type="text" id="numero_orden" class="form-control" required>
+                <input type="text" id="numero_orden" class="form-control-dark-ficha" required>
             </div>
             <div class="mb-2">
                 <label>Monto Deuda (₡) *</label>
-                <input type="number" id="monto_deuda" class="form-control" step="0.01" required>
+                <input type="number" id="monto_deuda" class="form-control-dark-ficha" step="0.01" required>
             </div>
             <div class="mb-2">
                 <label>Juzgado *</label>
-                <input type="text" id="juzgado_orden" class="form-control" required>
+                <input type="text" id="juzgado_orden" class="form-control-dark-ficha" required>
             </div>
             <div class="mb-2">
                 <label>Expediente *</label>
-                <input type="text" id="expediente" class="form-control" required>
+                <input type="text" id="expediente" class="form-control-dark-ficha" required>
             </div>
-            <div class="mb-2">
-                <label>Fecha Emisión</label>
-                <input type="date" id="fecha_emision" class="form-control">
-            </div>
-            <div class="mb-2">
-                <label>Fecha Vencimiento</label>
-                <input type="date" id="fecha_vencimiento_orden" class="form-control">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-2">
+                        <label>Fecha Emisión</label>
+                        <input type="date" id="fecha_emision" class="form-control-dark-ficha">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-2">
+                        <label>Fecha Vencimiento</label>
+                        <input type="date" id="fecha_vencimiento_orden" class="form-control-dark-ficha">
+                    </div>
+                </div>
             </div>
             <div class="mt-3">
-                <button type="button" class="btn btn-primary" onclick="guardarOrden()">Guardar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarModalOrden()">Cancelar</button>
+                <button type="button" class="btn-primary-dark-ficha" onclick="guardarOrden()">Guardar</button>
+                <button type="button" class="btn-secondary-dark-ficha" onclick="cerrarModalOrden()">Cancelar</button>
             </div>
         </form>
     </div>
 </div>
 
+<!-- Modal para agregar/editar orden judicial -->
+<div id="modalOrdenJudicial" class="modal-orden-judicial-dark">
+    <div class="modal-orden-judicial-content-dark">
+        <h3><i class="fas fa-gavel"></i> Registrar Orden Judicial</h3>
+        <form id="formOrdenJudicial">
+            <input type="hidden" id="orden_judicial_id">
+            
+            <!-- Datos del Despacho -->
+            <div class="section-card-dark">
+                <h5><i class="fas fa-building"></i> Datos del Despacho</h5>
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <label>Despacho *</label>
+                        <input type="text" id="despacho" class="form-control-dark-ficha" required>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Fecha Emisión *</label>
+                        <input type="date" id="fecha_emision_judicial" class="form-control-dark-ficha" required>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Número Único *</label>
+                        <input type="text" id="numero_unico" class="form-control-dark-ficha" required placeholder="Ej: 21-002359-0674-VD">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>N° Oficio</label>
+                        <input type="text" id="numero_oficio" class="form-control-dark-ficha">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Correo Despacho</label>
+                        <input type="email" id="correo_despacho" class="form-control-dark-ficha">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Teléfono Despacho</label>
+                        <input type="text" id="telefono_despacho" class="form-control-dark-ficha">
+                    </div>
+                    <div class="col-12 mb-2">
+                        <label>Delito(s)</label>
+                        <input type="text" id="delitos_judicial" class="form-control-dark-ficha" placeholder="Ej: Desobediencia">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Datos del Ofendido -->
+            <div class="section-card-dark">
+                <h5><i class="fas fa-user-injured"></i> Datos del Ofendido</h5>
+                <div class="row">
+                    <div class="col-md-8 mb-2">
+                        <label>Nombre del Ofendido</label>
+                        <input type="text" id="ofendido_nombre" class="form-control-dark-ficha">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>Identificación</label>
+                        <input type="text" id="ofendido_identificacion" class="form-control-dark-ficha">
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check-dark-ficha">
+                            <input type="checkbox" id="hay_mas_ofendidos" class="form-check-input">
+                            <label class="form-check-label">Hay más ofendidos</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Datos del Imputado -->
+            <div class="section-card-dark">
+                <h5><i class="fas fa-user-graduate"></i> Datos del Imputado</h5>
+                <div class="row">
+                    <div class="col-md-8 mb-2">
+                        <label>Nombre del Imputado *</label>
+                        <input type="text" id="imputado_nombre" class="form-control-dark-ficha" required>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>Identificación *</label>
+                        <input type="text" id="imputado_identificacion" class="form-control-dark-ficha" required>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>Nacionalidad</label>
+                        <input type="text" id="nacionalidad" class="form-control-dark-ficha" placeholder="COSTA RICA">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>Estado Civil</label>
+                        <select id="estado_civil" class="form-control-dark-ficha">
+                            <option value="">Seleccione</option>
+                            <option>Soltero(a)</option>
+                            <option>Casado(a)</option>
+                            <option>Divorciado(a)</option>
+                            <option>Viudo(a)</option>
+                            <option>Unión Libre</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>Género</label>
+                        <select id="genero_judicial" class="form-control-dark-ficha">
+                            <option value="">Seleccione</option>
+                            <option>Masculino</option>
+                            <option>Femenino</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Nombre del Padre</label>
+                        <input type="text" id="nombre_padre" class="form-control-dark-ficha">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Nombre de la Madre</label>
+                        <input type="text" id="nombre_madre" class="form-control-dark-ficha">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Datos de la Orden -->
+            <div class="section-card-dark">
+                <h5><i class="fas fa-file-signature"></i> Datos de la Orden</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label>Tipo de Solicitud</label>
+                        <select id="tipo_solicitud" class="form-control-dark-ficha">
+                            <option value="">Seleccione</option>
+                            <option>Localización</option>
+                            <option>Citación</option>
+                            <option>Presentación</option>
+                            <option>Captura</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Condición del Requerido</label>
+                        <select id="condicion_requerido" class="form-control-dark-ficha">
+                            <option value="">Seleccione</option>
+                            <option>Testigo</option>
+                            <option>Ofendido(a)</option>
+                            <option>Imputado(a)</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Tipo de Captura</label>
+                        <select id="tipo_captura" class="form-control-dark-ficha">
+                            <option value="">Seleccione</option>
+                            <option>Rebeldía</option>
+                            <option>Sentencia</option>
+                            <option>Ejecución</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Remisión a</label>
+                        <input type="text" id="remision_a" class="form-control-dark-ficha" placeholder="Cárcel más cercana">
+                    </div>
+                    <div class="col-12 mb-2">
+                        <label>Lugar de Captura / Ubicación</label>
+                        <textarea id="lugar_captura" class="form-control-dark-ficha" rows="2" placeholder="Dirección completa"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Observaciones -->
+            <div class="mb-2">
+                <label>Observaciones</label>
+                <textarea id="observaciones_judicial" class="form-control-dark-ficha" rows="3"></textarea>
+            </div>
+            
+            <div class="mt-3">
+                <button type="button" class="btn-primary-dark-ficha" onclick="guardarOrdenJudicial()">Guardar Orden Judicial</button>
+                <button type="button" class="btn-secondary-dark-ficha" onclick="cerrarModalOrdenJudicial()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 // Variables
 var personaId = {{ persona.id }};
+var personaNombre = "{{ persona.nombre }}";
+var personaCedula = "{{ persona.cedula }}";
+
+// ==================== VER FOTO GRANDE ====================
+function verFotoGrande(fotoUrl) {
+    var modal = document.getElementById('modalFoto');
+    var imgGrande = document.getElementById('fotoGrande');
+    
+    if (fotoUrl) {
+        imgGrande.src = fotoUrl;
+    } else {
+        imgGrande.src = '';
+        imgGrande.alt = 'No hay foto disponible';
+        imgGrande.style.display = 'none';
+        var modalDiv = modal.querySelector('div');
+        if (!document.getElementById('sinFotoMsg')) {
+            var msgDiv = document.createElement('div');
+            msgDiv.id = 'sinFotoMsg';
+            msgDiv.style.textAlign = 'center';
+            msgDiv.style.color = 'white';
+            msgDiv.innerHTML = '<i class="fas fa-user-circle" style="font-size:100px;"></i><p style="margin-top:20px;">No hay foto disponible para esta persona</p>';
+            modalDiv.appendChild(msgDiv);
+        }
+    }
+    
+    modal.style.display = 'block';
+    imgGrande.onclick = function(e) { e.stopPropagation(); };
+}
+
+function cerrarModalFoto() {
+    document.getElementById('modalFoto').style.display = 'none';
+    var msgDiv = document.getElementById('sinFotoMsg');
+    if (msgDiv) msgDiv.remove();
+    var imgGrande = document.getElementById('fotoGrande');
+    imgGrande.style.display = 'block';
+    imgGrande.src = '';
+}
 
 // ==================== ANTECEDENTES ====================
 function abrirModalAntecedente() {
@@ -401,7 +1028,7 @@ function eliminarAntecedente(id) {
     }
 }
 
-// ==================== ÓRDENES ====================
+// ==================== ÓRDENES DE CAPTURA ====================
 function abrirModalOrden() {
     document.getElementById('modalOrden').style.display = 'block';
     var hoy = new Date().toISOString().split('T')[0];
@@ -434,7 +1061,8 @@ function guardarOrden() {
         fecha_vencimiento: document.getElementById('fecha_vencimiento_orden').value
     };
     
-    fetch('/api/ordenes', {
+    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
+    fetch('/api/ordenes_captura', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
@@ -447,7 +1075,7 @@ function guardarOrden() {
             cerrarModalOrden();
             location.reload();
         } else {
-            alert('❌ Error al guardar');
+            alert('❌ Error al guardar: ' + (result.error || 'Error desconocido'));
         }
     })
     .catch(error => {
@@ -455,11 +1083,295 @@ function guardarOrden() {
     });
 }
 
+function editarOrden(id) {
+    window.location.href = '/ordenes';
+}
+
 function eliminarOrden(id) {
     if (confirm('¿Eliminar esta orden?')) {
-        fetch(`/api/ordenes/${id}`, { method: 'DELETE', credentials: 'same-origin' })
-            .then(() => location.reload());
+        // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
+        fetch(`/api/ordenes_captura/${id}`, { method: 'DELETE', credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('✅ Orden eliminada');
+                    location.reload();
+                } else {
+                    alert('❌ Error al eliminar: ' + (result.error || 'Error desconocido'));
+                }
+            })
+            .catch(error => {
+                alert('❌ Error de conexión: ' + error);
+            });
     }
+}
+
+function compartirOrdenWhatsApp(ordenId) {
+    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
+    fetch('/api/ordenes_captura')
+        .then(response => response.json())
+        .then(ordenes => {
+            const orden = ordenes.find(o => o.id === ordenId);
+            if (orden) {
+                const mensaje = generarMensajeOrdenWhatsApp(orden);
+                const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+                window.open(urlWhatsApp, '_blank', 'width=800,height=600');
+            } else {
+                alert('❌ No se encontró la orden');
+            }
+        })
+        .catch(error => {
+            alert('❌ Error al obtener datos: ' + error);
+        });
+}
+
+function generarMensajeOrdenWhatsApp(orden) {
+    const fechaActual = new Date().toLocaleString('es-CR');
+    const fechaVencimiento = orden.fecha_vencimiento || 'No especificada';
+    const estado = orden.estado === 'ACTIVA' ? 'ACTIVA' : 'VENCIDA';
+    
+    let mensaje = `*=== FUERZA PUBLICA - ORDEN DE CAPTURA ===*\n`;
+    mensaje += `----------------------------------------\n\n`;
+    mensaje += `*DATOS DEL DEUDOR:*\n`;
+    mensaje += `• Nombre: ${personaNombre}\n`;
+    mensaje += `• Cédula: ${personaCedula}\n\n`;
+    mensaje += `*DATOS DE LA ORDEN:*\n`;
+    mensaje += `• N° Orden: ${orden.numero_orden}\n`;
+    mensaje += `• Monto Deuda: ₡${orden.monto_deuda.toLocaleString()}\n`;
+    mensaje += `• Juzgado: ${orden.juzgado}\n`;
+    mensaje += `• Expediente: ${orden.expediente}\n`;
+    mensaje += `• Fecha Emisión: ${orden.fecha_emision || 'No especificada'}\n`;
+    mensaje += `• Fecha Vencimiento: ${fechaVencimiento}\n`;
+    mensaje += `• Estado: ${estado}\n\n`;
+    
+    if (orden.observaciones) {
+        mensaje += `*OBSERVACIONES:*\n${orden.observaciones}\n\n`;
+    }
+    
+    if (orden.latitud && orden.longitud) {
+        mensaje += `*UBICACIÓN:*\n`;
+        mensaje += `https://www.google.com/maps?q=${orden.latitud},${orden.longitud}\n`;
+        if (orden.direccion_ubicacion) {
+            mensaje += `${orden.direccion_ubicacion}\n`;
+        }
+        mensaje += `\n`;
+    }
+    
+    mensaje += `----------------------------------------\n`;
+    mensaje += `*Sistema de Consultas - Fuerza Publica*\n`;
+    mensaje += `Reporte generado el ${fechaActual}`;
+    
+    return mensaje;
+}
+
+// ==================== ÓRDENES JUDICIALES ====================
+function cargarOrdenesJudiciales() {
+    console.log('🔍 Cargando órdenes judiciales para persona ID:', personaId);
+    
+    fetch(`/api/ordenes_judiciales/persona/${personaId}`)
+        .then(response => {
+            console.log('📡 Respuesta recibida, status:', response.status);
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('📋 Datos recibidos:', data);
+            const tbody = document.getElementById('tablaOrdenesJudicialesBody');
+            tbody.innerHTML = '';
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-dark-ficha">No hay órdenes judiciales registradas</td></tr>';
+                return;
+            }
+            
+            data.forEach(o => {
+                let estadoClass = 'badge-dark-ficha activa';
+                let estadoText = 'Activa';
+                if (o.estado === 'INACTIVA' || o.estado === 'CANCELADA') {
+                    estadoClass = 'badge-dark-ficha inactiva';
+                    estadoText = 'Inactiva';
+                }
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${escapeHtml(o.numero_unico)}</strong></td>
+                        <td>${escapeHtml(o.despacho) || '-'}</td>
+                        <td>${o.fecha_emision || '-'}</td>
+                        <td>${escapeHtml(o.delitos) || '-'}</td>
+                        <td>${escapeHtml(o.tipo_solicitud) || '-'}</td>
+                        <td><span class="${estadoClass}">${estadoText}</span></td>
+                        <td>
+                            <button class="btn-icon-dark-ficha" onclick="editarOrdenJudicial(${o.id})" title="Editar"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon-dark-ficha" onclick="eliminarOrdenJudicial(${o.id})" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                            <button class="btn-icon-dark-ficha" onclick="verOrdenJudicial(${o.id})" title="Ver Detalle"><i class="fas fa-eye"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error('❌ Error cargando órdenes judiciales:', error);
+            const tbody = document.getElementById('tablaOrdenesJudicialesBody');
+            tbody.innerHTML = `<tr><td colspan="7" class="empty-dark-ficha">Error al cargar: ${error.message}</td></tr>`;
+        });
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return String(text).replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+function abrirModalOrdenJudicial() {
+    document.getElementById('formOrdenJudicial').reset();
+    document.getElementById('orden_judicial_id').value = '';
+    document.getElementById('fecha_emision_judicial').value = new Date().toISOString().split('T')[0];
+    document.getElementById('modalOrdenJudicial').style.display = 'block';
+}
+
+function cerrarModalOrdenJudicial() {
+    document.getElementById('modalOrdenJudicial').style.display = 'none';
+}
+
+function guardarOrdenJudicial() {
+    const id = document.getElementById('orden_judicial_id').value;
+    const data = {
+        persona_id: personaId,
+        despacho: document.getElementById('despacho').value,
+        fecha_emision: document.getElementById('fecha_emision_judicial').value,
+        numero_unico: document.getElementById('numero_unico').value,
+        numero_oficio: document.getElementById('numero_oficio').value,
+        correo_despacho: document.getElementById('correo_despacho').value,
+        telefono_despacho: document.getElementById('telefono_despacho').value,
+        delitos: document.getElementById('delitos_judicial').value,
+        ofendido_nombre: document.getElementById('ofendido_nombre').value,
+        ofendido_identificacion: document.getElementById('ofendido_identificacion').value,
+        hay_mas_ofendidos: document.getElementById('hay_mas_ofendidos').checked,
+        imputado_nombre: document.getElementById('imputado_nombre').value,
+        imputado_identificacion: document.getElementById('imputado_identificacion').value,
+        nacionalidad: document.getElementById('nacionalidad').value,
+        estado_civil: document.getElementById('estado_civil').value,
+        genero: document.getElementById('genero_judicial').value,
+        nombre_padre: document.getElementById('nombre_padre').value,
+        nombre_madre: document.getElementById('nombre_madre').value,
+        tipo_solicitud: document.getElementById('tipo_solicitud').value,
+        condicion_requerido: document.getElementById('condicion_requerido').value,
+        tipo_captura: document.getElementById('tipo_captura').value,
+        remision_a: document.getElementById('remision_a').value,
+        lugar_captura: document.getElementById('lugar_captura').value,
+        observaciones: document.getElementById('observaciones_judicial').value
+    };
+    
+    if (!data.despacho || !data.numero_unico || !data.imputado_nombre || !data.imputado_identificacion) {
+        alert('Complete todos los campos obligatorios (*)');
+        return;
+    }
+    
+    const url = id ? `/api/ordenes_judiciales/${id}` : '/api/ordenes_judiciales';
+    const method = id ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert(id ? '✅ Orden judicial actualizada' : '✅ Orden judicial registrada');
+            cerrarModalOrdenJudicial();
+            cargarOrdenesJudiciales();
+        } else {
+            alert('❌ Error: ' + (result.error || 'Error desconocido'));
+        }
+    })
+    .catch(error => {
+        alert('❌ Error de conexión: ' + error);
+    });
+}
+
+function editarOrdenJudicial(id) {
+    fetch(`/api/ordenes_judiciales/persona/${personaId}`)
+        .then(response => response.json())
+        .then(data => {
+            const orden = data.find(o => o.id === id);
+            if (orden) {
+                document.getElementById('orden_judicial_id').value = orden.id;
+                document.getElementById('despacho').value = orden.despacho;
+                document.getElementById('fecha_emision_judicial').value = orden.fecha_emision;
+                document.getElementById('numero_unico').value = orden.numero_unico;
+                document.getElementById('numero_oficio').value = orden.numero_oficio || '';
+                document.getElementById('delitos_judicial').value = orden.delitos || '';
+                document.getElementById('ofendido_nombre').value = orden.ofendido_nombre || '';
+                document.getElementById('ofendido_identificacion').value = orden.ofendido_identificacion || '';
+                document.getElementById('imputado_nombre').value = orden.imputado_nombre;
+                document.getElementById('imputado_identificacion').value = orden.imputado_identificacion;
+                document.getElementById('tipo_solicitud').value = orden.tipo_solicitud || '';
+                document.getElementById('tipo_captura').value = orden.tipo_captura || '';
+                document.getElementById('lugar_captura').value = orden.lugar_captura || '';
+                document.getElementById('observaciones_judicial').value = orden.observaciones || '';
+                
+                document.getElementById('modalOrdenJudicial').style.display = 'block';
+            }
+        })
+        .catch(error => {
+            alert('❌ Error al cargar la orden judicial: ' + error);
+        });
+}
+
+function eliminarOrdenJudicial(id) {
+    if (confirm('¿Eliminar esta orden judicial?')) {
+        fetch(`/api/ordenes_judiciales/${id}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('✅ Orden judicial eliminada');
+                    cargarOrdenesJudiciales();
+                } else {
+                    alert('❌ Error al eliminar: ' + (result.error || 'Error desconocido'));
+                }
+            })
+            .catch(error => {
+                alert('❌ Error de conexión: ' + error);
+            });
+    }
+}
+
+function verOrdenJudicial(id) {
+    window.open(`/orden_judicial/${id}`, '_blank');
+}
+
+// Inicializar al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Inicializando ficha, persona ID:', personaId);
+    cargarOrdenesJudiciales();
+});
+
+// Cerrar modal con tecla ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarModalFoto();
+        cerrarModalOrdenJudicial();
+        cerrarModalAntecedente();
+        cerrarModalOrden();
+    }
+});
+
+// Cerrar modales al hacer clic fuera
+window.onclick = function(event) {
+    var modalAntecedente = document.getElementById('modalAntecedente');
+    if (event.target === modalAntecedente) cerrarModalAntecedente();
+    
+    var modalOrden = document.getElementById('modalOrden');
+    if (event.target === modalOrden) cerrarModalOrden();
+    
+    var modalOrdenJudicial = document.getElementById('modalOrdenJudicial');
+    if (event.target === modalOrdenJudicial) cerrarModalOrdenJudicial();
 }
 </script>
 {% endblock %}

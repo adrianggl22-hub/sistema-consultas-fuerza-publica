@@ -1,0 +1,515 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .incidente-card {
+        background: white;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .incidente-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #ddd;
+        background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+    }
+    .incidente-header h4 {
+        margin: 0;
+    }
+    .btn-incidente {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+    }
+    .btn-incidente:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+    }
+    .btn-cancelar {
+        background: #6c757d;
+    }
+    .btn-cancelar:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        overflow-y: auto;
+    }
+    .modal-content {
+        background: white;
+        width: 90%;
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 25px;
+        border-radius: 15px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+        color: #2c3e50;
+    }
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    select.form-control {
+        cursor: pointer;
+    }
+    textarea.form-control {
+        resize: vertical;
+    }
+    .row-tres {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    .row-dos {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .checkbox-group input {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+    .checkbox-group label {
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+    .badge-estado {
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 11px;
+    }
+    .badge-activo { background: #d4edda; color: #155724; }
+    .badge-inactivo { background: #f8d7da; color: #721c24; }
+    .btn-icon {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 5px;
+        color: #3498db;
+    }
+    .btn-icon:hover {
+        background: #e8f0fe;
+    }
+    .empty {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table th, .table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    .table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #555;
+        font-size: 12px;
+    }
+    .table td {
+        font-size: 13px;
+        vertical-align: middle;
+    }
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    @media (max-width: 768px) {
+        .row-tres, .row-dos {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<h1><i class="fas fa-exclamation-triangle"></i> Incidentes Relevantes</h1>
+<p class="subtitle">Registro y seguimiento de incidentes policiales</p>
+
+<!-- Tarjeta para registrar nuevo incidente -->
+<div class="incidente-card">
+    <div class="incidente-header">
+        <h4><i class="fas fa-plus-circle"></i> Registrar Nuevo Incidente</h4>
+    </div>
+    <div style="padding: 20px;">
+        <button class="btn-incidente" onclick="abrirModalIncidente()">
+            <i class="fas fa-file-alt"></i> + Nuevo Incidente
+        </button>
+    </div>
+</div>
+
+<!-- Tarjeta de lista de incidentes -->
+<div class="incidente-card">
+    <div class="incidente-header">
+        <h4><i class="fas fa-list"></i> Lista de Incidentes</h4>
+    </div>
+    <div style="padding: 20px;">
+        <div class="table-responsive">
+            <table class="table" id="tablaIncidentes">
+                <thead>
+                    <tr>
+                        <th>N° Incidente</th>
+                        <th>Fecha</th>
+                        <th>Lugar</th>
+                        <th>Tipo</th>
+                        <th>Oficial Actuante</th>
+                        <th>Aprehendidos</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="8" class="empty">Cargando incidentes...</td><td style="display:none;"></td><td style="display:none;"></td><td style="display:none;"></td><td style="display:none;"></td><td style="display:none;"></td><td style="display:none;"></td><td style="display:none;"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para crear/editar incidente -->
+<div id="modalIncidente" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitulo"><i class="fas fa-file-alt"></i> Registrar Incidente</h3>
+        <form id="formIncidente">
+            <input type="hidden" id="incidente_id">
+            
+            <div class="row-dos">
+                <div class="form-group">
+                    <label>Oficial Actuante *</label>
+                    <input type="text" id="oficial_actuante" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Oficial Asistente</label>
+                    <input type="text" id="oficial_asistente" class="form-control">
+                </div>
+            </div>
+            
+            <div class="row-dos">
+                <div class="form-group">
+                    <label>N° Incidente *</label>
+                    <input type="text" id="numero_incidente" class="form-control" required placeholder="Ej: INC-2025-0001">
+                </div>
+                <div class="form-group">
+                    <label>Fecha del Incidente *</label>
+                    <input type="date" id="fecha_incidente" class="form-control" required>
+                </div>
+            </div>
+            
+            <div class="row-dos">
+                <div class="form-group">
+                    <label>Tipo de Incidente *</label>
+                    <select id="tipo_incidente" class="form-control" required>
+                        <option value="">Seleccione un tipo...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Lugar</label>
+                    <input type="text" id="lugar" class="form-control" placeholder="Lugar del incidente">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Descripción del Incidente *</label>
+                <textarea id="descripcion" class="form-control" rows="3" required placeholder="Describa detalladamente lo ocurrido..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Diligencias Policiales</label>
+                <textarea id="diligencias_policiales" class="form-control" rows="2" placeholder="Acciones realizadas por la policía..."></textarea>
+            </div>
+            
+            <div class="row-tres">
+                <div class="form-group">
+                    <label>Aprehendidos</label>
+                    <input type="number" id="aprehendidos" class="form-control" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Ofendidos</label>
+                    <input type="number" id="ofendidos" class="form-control" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Testigos</label>
+                    <input type="number" id="testigos" class="form-control" value="0" min="0">
+                </div>
+            </div>
+            
+            <div class="row-tres">
+                <div class="form-group">
+                    <label>Personas de Interés</label>
+                    <input type="number" id="personas_interes" class="form-control" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Vehículos Involucrados</label>
+                    <input type="number" id="vehiculos_involucrados" class="form-control" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Decomisos</label>
+                    <input type="text" id="decomisos" class="form-control" placeholder="Ej: 10g marihuana, celular, etc">
+                </div>
+            </div>
+            
+            <div class="row-dos">
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="informe_policial">
+                    <label>Informe Policial</label>
+                </div>
+                <div class="form-group">
+                    <label>Número de Informe</label>
+                    <input type="text" id="numero_informe" class="form-control" placeholder="N° de informe">
+                </div>
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="acta_decomiso">
+                <label>Acta de Decomiso</label>
+            </div>
+            
+            <div class="mt-3" style="margin-top: 20px;">
+                <button type="button" class="btn-incidente" onclick="guardarIncidente()">Guardar Incidente</button>
+                <button type="button" class="btn-incidente btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+// Variables globales
+let incidentesData = [];
+
+// Cargar tipos de incidente al iniciar
+$(document).ready(function() {
+    cargarTiposIncidente();
+    cargarIncidentes();
+    
+    // Configurar fecha por defecto
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha_incidente').value = hoy;
+});
+
+function cargarTiposIncidente() {
+    fetch('/api/tipos_incidente')
+        .then(response => response.json())
+        .then(tipos => {
+            const select = document.getElementById('tipo_incidente');
+            select.innerHTML = '<option value="">Seleccione un tipo...</option>';
+            tipos.forEach(tipo => {
+                const option = document.createElement('option');
+                option.value = tipo;
+                option.textContent = tipo;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error al cargar tipos:', error));
+}
+
+function cargarIncidentes() {
+    fetch('/api/incidentes')
+        .then(response => response.json())
+        .then(data => {
+            incidentesData = data;
+            const tbody = $('#tablaIncidentes tbody');
+            tbody.empty();
+            
+            if (!data || data.length === 0) {
+                tbody.html('<tr><td colspan="8" class="empty">No hay incidentes registrados</td></tr>');
+                return;
+            }
+            
+            data.forEach(i => {
+                const estadoClass = i.estado === 'ACTIVO' ? 'badge-activo' : 'badge-inactivo';
+                const estadoText = i.estado === 'ACTIVO' ? 'Activo' : 'Inactivo';
+                
+                tbody.append(`
+                    <tr>
+                        <td><strong>${escapeHtml(i.numero_incidente)}</strong></td>
+                        <td>${i.fecha_incidente || '-'}</td>
+                        <td>${escapeHtml(i.lugar) || '-'}</td>
+                        <td>${escapeHtml(i.tipo_incidente) || '-'}</td>
+                        <td>${escapeHtml(i.oficial_actuante) || '-'}</td>
+                        <td>${i.aprehendidos || 0}</td>
+                        <td><span class="badge-estado ${estadoClass}">${estadoText}</span></td>
+                        <td>
+                            <button class="btn-icon" onclick="editarIncidente(${i.id})" title="Editar"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon" onclick="eliminarIncidente(${i.id})" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                            <button class="btn-icon" onclick="verDetalle(${i.id})" title="Ver Detalle"><i class="fas fa-eye"></i></button>
+                        </td>
+                    </tr>
+                `);
+            });
+        })
+        .catch(error => console.error('Error al cargar incidentes:', error));
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+function abrirModalIncidente() {
+    document.getElementById('modalTitulo').innerText = 'Registrar Incidente';
+    document.getElementById('formIncidente').reset();
+    document.getElementById('incidente_id').value = '';
+    document.getElementById('fecha_incidente').value = new Date().toISOString().split('T')[0];
+    document.getElementById('aprehendidos').value = 0;
+    document.getElementById('ofendidos').value = 0;
+    document.getElementById('testigos').value = 0;
+    document.getElementById('personas_interes').value = 0;
+    document.getElementById('vehiculos_involucrados').value = 0;
+    document.getElementById('informe_policial').checked = false;
+    document.getElementById('acta_decomiso').checked = false;
+    document.getElementById('modalIncidente').style.display = 'block';
+}
+
+function editarIncidente(id) {
+    const incidente = incidentesData.find(i => i.id === id);
+    if (incidente) {
+        document.getElementById('modalTitulo').innerText = 'Editar Incidente';
+        document.getElementById('incidente_id').value = incidente.id;
+        document.getElementById('oficial_actuante').value = incidente.oficial_actuante;
+        document.getElementById('oficial_asistente').value = incidente.oficial_asistente || '';
+        document.getElementById('numero_incidente').value = incidente.numero_incidente;
+        document.getElementById('tipo_incidente').value = incidente.tipo_incidente;
+        document.getElementById('descripcion').value = incidente.descripcion;
+        document.getElementById('diligencias_policiales').value = incidente.diligencias_policiales || '';
+        document.getElementById('aprehendidos').value = incidente.aprehendidos || 0;
+        document.getElementById('ofendidos').value = incidente.ofendidos || 0;
+        document.getElementById('testigos').value = incidente.testigos || 0;
+        document.getElementById('personas_interes').value = incidente.personas_interes || 0;
+        document.getElementById('vehiculos_involucrados').value = incidente.vehiculos_involucrados || 0;
+        document.getElementById('decomisos').value = incidente.decomisos || '';
+        document.getElementById('informe_policial').checked = incidente.informe_policial || false;
+        document.getElementById('numero_informe').value = incidente.numero_informe || '';
+        document.getElementById('acta_decomiso').checked = incidente.acta_decomiso || false;
+        document.getElementById('fecha_incidente').value = incidente.fecha_incidente || '';
+        document.getElementById('lugar').value = incidente.lugar || '';
+        document.getElementById('modalIncidente').style.display = 'block';
+    }
+}
+
+function guardarIncidente() {
+    const id = document.getElementById('incidente_id').value;
+    const data = {
+        oficial_actuante: document.getElementById('oficial_actuante').value,
+        oficial_asistente: document.getElementById('oficial_asistente').value,
+        numero_incidente: document.getElementById('numero_incidente').value,
+        tipo_incidente: document.getElementById('tipo_incidente').value,
+        descripcion: document.getElementById('descripcion').value,
+        diligencias_policiales: document.getElementById('diligencias_policiales').value,
+        aprehendidos: parseInt(document.getElementById('aprehendidos').value) || 0,
+        ofendidos: parseInt(document.getElementById('ofendidos').value) || 0,
+        testigos: parseInt(document.getElementById('testigos').value) || 0,
+        personas_interes: parseInt(document.getElementById('personas_interes').value) || 0,
+        vehiculos_involucrados: parseInt(document.getElementById('vehiculos_involucrados').value) || 0,
+        decomisos: document.getElementById('decomisos').value,
+        informe_policial: document.getElementById('informe_policial').checked,
+        numero_informe: document.getElementById('numero_informe').value,
+        acta_decomiso: document.getElementById('acta_decomiso').checked,
+        fecha_incidente: document.getElementById('fecha_incidente').value,
+        lugar: document.getElementById('lugar').value
+    };
+    
+    // Validar campos obligatorios
+    if (!data.oficial_actuante || !data.numero_incidente || !data.tipo_incidente || !data.descripcion || !data.fecha_incidente) {
+        alert('⚠️ Complete todos los campos obligatorios (*)');
+        return;
+    }
+    
+    const url = id ? `/api/incidentes/${id}` : '/api/incidentes';
+    const method = id ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert(id ? '✅ Incidente actualizado correctamente' : '✅ Incidente registrado correctamente');
+            cerrarModal();
+            cargarIncidentes();
+        } else {
+            alert('❌ Error: ' + result.error);
+        }
+    })
+    .catch(error => {
+        alert('❌ Error de conexión: ' + error);
+    });
+}
+
+function eliminarIncidente(id) {
+    if (confirm('¿Está seguro de eliminar este incidente? Esta acción no se puede deshacer.')) {
+        fetch(`/api/incidentes/${id}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('✅ Incidente eliminado correctamente');
+                    cargarIncidentes();
+                } else {
+                    alert('❌ Error al eliminar: ' + result.error);
+                }
+            })
+            .catch(error => {
+                alert('❌ Error de conexión: ' + error);
+            });
+    }
+}
+
+function verDetalle(id) {
+    window.open(`/incidente/${id}`, '_blank');
+}
+
+function cerrarModal() {
+    document.getElementById('modalIncidente').style.display = 'none';
+}
+
+// Cerrar modal al hacer clic fuera de él
+window.onclick = function(event) {
+    const modal = document.getElementById('modalIncidente');
+    if (event.target === modal) {
+        cerrarModal();
+    }
+}
+</script>
+{% endblock %}

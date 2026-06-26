@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .detail-card {
+        background: white;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .detail-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        color: white;
+        padding: 20px;
+    }
+    .detail-header h1 {
+        color: white;
+        margin: 0;
+        font-size: 24px;
+    }
+    .detail-header p {
+        margin: 5px 0 0;
+        opacity: 0.9;
+    }
+    .detail-body {
+        padding: 20px;
+    }
+    .info-row {
+        display: flex;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .info-label {
+        width: 200px;
+        font-weight: 600;
+        color: #555;
+    }
+    .info-value {
+        flex: 1;
+        color: #333;
+    }
+    .badge-activo {
+        background: #d4edda;
+        color: #155724;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+    }
+    .btn-volver {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-right: 10px;
+    }
+    .btn-imprimir {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .btn-volver:hover, .btn-imprimir:hover {
+        transform: translateY(-2px);
+    }
+    .stats-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+    .stats-item {
+        text-align: center;
+    }
+    .stats-number {
+        font-size: 24px;
+        font-weight: 700;
+        color: #3498db;
+    }
+    .stats-label {
+        font-size: 12px;
+        color: #666;
+    }
+    @media print {
+        .btn-volver, .btn-imprimir {
+            display: none;
+        }
+    }
+    @media (max-width: 768px) {
+        .info-row {
+            flex-direction: column;
+        }
+        .info-label {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+    }
+</style>
+
+<div class="detail-card">
+    <div class="detail-header">
+        <h1><i class="fas fa-exclamation-triangle"></i> Detalle del Incidente</h1>
+        <p>N° {{ incidente.numero_incidente }}</p>
+    </div>
+    <div class="detail-body">
+        <!-- Información General -->
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-user-shield"></i> Oficial Actuante:</div>
+            <div class="info-value">{{ incidente.oficial_actuante }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-user"></i> Oficial Asistente:</div>
+            <div class="info-value">{{ incidente.oficial_asistente or 'No registrado' }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-calendar-alt"></i> Fecha del Incidente:</div>
+            <div class="info-value">{{ incidente.fecha_incidente }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-map-marker-alt"></i> Lugar:</div>
+            <div class="info-value">{{ incidente.lugar or 'No registrado' }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-tag"></i> Tipo de Incidente:</div>
+            <div class="info-value"><strong>{{ incidente.tipo_incidente }}</strong></div>
+        </div>
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-align-left"></i> Descripción:</div>
+            <div class="info-value">{{ incidente.descripcion }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-clipboard-list"></i> Diligencias Policiales:</div>
+            <div class="info-value">{{ incidente.diligencias_policiales or 'No registradas' }}</div>
+        </div>
+        
+        <!-- Estadísticas del Incidente -->
+        <div class="stats-box">
+            <h4 style="margin: 0 0 10px 0; color: #2c3e50;"><i class="fas fa-chart-simple"></i> Estadísticas del Incidente</h4>
+            <div class="stats-grid">
+                <div class="stats-item">
+                    <div class="stats-number">{{ incidente.aprehendidos or 0 }}</div>
+                    <div class="stats-label">Aprehendidos</div>
+                </div>
+                <div class="stats-item">
+                    <div class="stats-number">{{ incidente.ofendidos or 0 }}</div>
+                    <div class="stats-label">Ofendidos</div>
+                </div>
+                <div class="stats-item">
+                    <div class="stats-number">{{ incidente.testigos or 0 }}</div>
+                    <div class="stats-label">Testigos</div>
+                </div>
+                <div class="stats-item">
+                    <div class="stats-number">{{ incidente.personas_interes or 0 }}</div>
+                    <div class="stats-label">Personas de Interés</div>
+                </div>
+                <div class="stats-item">
+                    <div class="stats-number">{{ incidente.vehiculos_involucrados or 0 }}</div>
+                    <div class="stats-label">Vehículos Involucrados</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Decomisos e Informes -->
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-box-open"></i> Decomisos:</div>
+            <div class="info-value">{{ incidente.decomisos or 'No registrados' }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-file-alt"></i> Informe Policial:</div>
+            <div class="info-value">{{ 'Sí' if incidente.informe_policial else 'No' }} {% if incidente.numero_informe %}(N° {{ incidente.numero_informe }}){% endif %}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-file-signature"></i> Acta de Decomiso:</div>
+            <div class="info-value">{{ 'Sí' if incidente.acta_decomiso else 'No' }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-circle"></i> Estado:</div>
+            <div class="info-value"><span class="badge-activo">{{ incidente.estado }}</span></div>
+        </div>
+        <div class="info-row">
+            <div class="info-label"><i class="fas fa-user-check"></i> Registrado por:</div>
+            <div class="info-value">{{ incidente.creado_por }} - {{ incidente.fecha_registro }}</div>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div style="margin-top: 30px; text-align: right;">
+            <button class="btn-volver" onclick="window.location.href='/incidentes'"><i class="fas fa-arrow-left"></i> Volver</button>
+            <button class="btn-imprimir" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

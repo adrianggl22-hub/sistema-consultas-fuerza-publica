@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Remoto - Sistema de Consultas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a2236 50%, #2a1a3a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .card-dark {
+            background: #111827;
+            border-radius: 20px;
+            padding: 35px;
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+            animation: fadeInUp 0.5s ease-out;
+            border: 1px solid #1f2937;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo-dark {
+            margin-bottom: 20px;
+        }
+        
+        .logo-dark .logo-circle {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            font-size: 32px;
+            color: #111827;
+            font-weight: 800;
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.2);
+        }
+        
+        .card-dark h1 {
+            color: #e5e7eb;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .card-dark .subtitle-dark {
+            color: #9ca3af;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+        
+        .ip-container-dark {
+            background: linear-gradient(135deg, #1a2236 0%, #2a1a3a 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #1f2937;
+        }
+        
+        .ip-label-dark {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+        
+        .ip-address-dark {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fbbf24;
+            word-break: break-all;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+        
+        .qr-container-dark {
+            margin: 20px 0;
+            padding: 15px;
+            background: #1a2236;
+            border-radius: 15px;
+            border: 1px solid #1f2937;
+        }
+        
+        .qr-container-dark p {
+            color: #e5e7eb;
+            font-weight: 600;
+        }
+        
+        .qr-container-dark p small {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        
+        .qr-code-dark {
+            width: 180px;
+            height: 180px;
+            margin: 10px auto 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+        }
+        
+        .qr-code-dark canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        .credential-box-dark {
+            background: #1a2236;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+            border: 1px solid #1f2937;
+        }
+        
+        .credential-box-dark p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+        
+        .credential-box-dark p strong {
+            color: #e5e7eb;
+        }
+        
+        .credential-box-dark .highlight {
+            color: #fbbf24;
+        }
+        
+        .btn-dark {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+            border: none;
+        }
+        
+        .btn-primary-dark {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary-dark:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-success-dark {
+            background: #22c55e;
+            color: white;
+        }
+        
+        .btn-success-dark:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-secondary-dark {
+            background: #1f2937;
+            color: #9ca3af;
+            border: 1px solid #1f2937;
+        }
+        
+        .btn-secondary-dark:hover {
+            background: #2d3a4a;
+            color: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        
+        .warning-dark {
+            background: rgba(251, 191, 36, 0.05);
+            border-left: 4px solid #fbbf24;
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            text-align: left;
+            border-radius: 8px;
+            border: 1px solid rgba(251, 191, 36, 0.1);
+        }
+        
+        .warning-dark strong {
+            color: #fbbf24;
+        }
+        
+        .warning-dark ol {
+            margin-left: 20px;
+            margin-top: 5px;
+            color: #9ca3af;
+        }
+        
+        .warning-dark ol li {
+            margin-bottom: 3px;
+        }
+        
+        .status-dark {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .status-online-dark {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+        
+        .status-offline-dark {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .status-loading-dark {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+        
+        .loading-dark {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-top: 2px solid #fbbf24;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .btn-group-dark {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .text-muted-dark {
+            color: #9ca3af !important;
+        }
+        
+        @media (max-width: 480px) {
+            .card-dark {
+                padding: 20px;
+            }
+            .card-dark h1 {
+                font-size: 1.4rem;
+            }
+            .ip-address-dark {
+                font-size: 0.9rem;
+            }
+            .btn-group-dark {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-dark {
+                width: 100%;
+                text-align: center;
+            }
+            .qr-code-dark {
+                width: 140px;
+                height: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card-dark">
+        <div class="logo-dark">
+            <div class="logo-circle">FP</div>
+        </div>
+        
+        <h1>🔗 Acceso Remoto</h1>
+        <p class="subtitle-dark">Sistema de Consultas - Fuerza Pública</p>
+        
+        <div id="statusContainer">
+            <div class="status-dark status-loading-dark" id="statusBadge">
+                <span class="loading-dark"></span> Conectando...
+            </div>
+        </div>
+        
+        <div class="ip-container-dark">
+            <div class="ip-label-dark">🌐 URL de acceso remoto</div>
+            <div class="ip-address-dark" id="ipDisplay">
+                <span class="loading-dark"></span> Obteniendo IP...
+            </div>
+        </div>
+        
+        <div class="credential-box-dark">
+            <p><strong>🔐 Credenciales de acceso:</strong></p>
+            <p>📌 Usuario: <strong class="highlight">admin</strong></p>
+            <p>🔑 Contraseña: <strong class="highlight">admin123</strong></p>
+        </div>
+        
+        <div class="qr-container-dark" id="qrContainer" style="display: none;">
+            <p><strong>📱 Escanea con tu celular</strong></p>
+            <div class="qr-code-dark" id="qrCode"></div>
+            <p style="font-size: 0.7rem; margin-top: 10px; color: #9ca3af;">Usa la cámara de tu celular para abrir el enlace</p>
+        </div>
+        
+        <div class="btn-group-dark">
+            <button class="btn-dark btn-primary-dark" id="btnAbrir" onclick="abrirSistema()">
+                🌐 Abrir Sistema
+            </button>
+            <button class="btn-dark btn-success-dark" id="btnCopiar" onclick="copiarURL()">
+                📋 Copiar URL
+            </button>
+        </div>
+        
+        <div class="warning-dark">
+            <strong>⚠️ Requisitos para acceder desde otro dispositivo:</strong><br>
+            <ol>
+                <li>Instalar <strong>Tailscale</strong> en el dispositivo (descargar desde tailscale.com)</li>
+                <li>Iniciar sesión con la <strong>misma cuenta</strong> que en este equipo</li>
+                <li>Este servidor debe <strong>permanecer encendido</strong></li>
+                <li>La aplicación debe estar <strong>corriendo</strong> (python app.py)</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    
+    <script>
+        let tailscaleIP = '';
+        let qr = null;
+        
+        function cargarIP() {
+            $('#statusBadge').html('<span class="loading-dark"></span> Conectando...');
+            $('#statusBadge').removeClass('status-online-dark status-offline-dark status-loading-dark').addClass('status-loading-dark');
+            
+            $.get('/api/tailscale_ip')
+                .done(function(data) {
+                    if (data.success) {
+                        tailscaleIP = data.ip;
+                        const url = `https://${tailscaleIP}:3000`;
+                        $('#ipDisplay').html(url);
+                        $('#statusBadge').html('✅ Servidor Online - Tailscale conectado');
+                        $('#statusBadge').removeClass('status-loading-dark').addClass('status-online-dark');
+                        $('#qrContainer').show();
+                        
+                        // Generar QR
+                        if (qr) {
+                            qr.clear();
+                            qr.makeCode(url);
+                        } else {
+                            qr = new QRCode(document.getElementById('qrCode'), {
+                                text: url,
+                                width: 150,
+                                height: 150,
+                                colorDark: '#000000',
+                                colorLight: '#ffffff',
+                                correctLevel: QRCode.CorrectLevel.H
+                            });
+                        }
+                    } else {
+                        tailscaleIP = 'localhost';
+                        $('#ipDisplay').html('http://localhost:3000');
+                        $('#statusBadge').html('⚠️ Tailscale no detectado - Solo acceso local');
+                        $('#statusBadge').removeClass('status-loading-dark').addClass('status-offline-dark');
+                        $('#qrContainer').hide();
+                    }
+                })
+                .fail(function() {
+                    tailscaleIP = 'localhost';
+                    $('#ipDisplay').html('http://localhost:3000');
+                    $('#statusBadge').html('❌ Error de conexión');
+                    $('#statusBadge').removeClass('status-loading-dark').addClass('status-offline-dark');
+                    $('#qrContainer').hide();
+                });
+        }
+        
+        function abrirSistema() {
+            if (tailscaleIP && tailscaleIP !== 'localhost') {
+                window.open(`https://${tailscaleIP}:3000`, '_blank');
+            } else {
+                window.open('http://localhost:3000', '_blank');
+            }
+        }
+        
+        function copiarURL() {
+            let url = '';
+            if (tailscaleIP && tailscaleIP !== 'localhost') {
+                url = `https://${tailscaleIP}:3000`;
+            } else {
+                url = 'http://localhost:3000';
+            }
+            
+            navigator.clipboard.writeText(url).then(() => {
+                alert('✅ URL copiada al portapapeles:\n' + url);
+            }).catch(() => {
+                alert('❌ No se pudo copiar la URL');
+            });
+        }
+        
+        // Cargar IP al iniciar
+        $(document).ready(function() {
+            cargarIP();
+            // Actualizar cada 30 segundos
+            setInterval(cargarIP, 30000);
+        });
+    </script>
+</body>
+</html>

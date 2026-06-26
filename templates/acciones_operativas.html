@@ -2,28 +2,216 @@
 
 {% block content %}
 <style>
-    .badge-activa { background: #28a745; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; }
-    .btn-crear { background: #28a745; color: white; }
-    .btn-crear:hover { background: #218838; }
-    .btn-icon { background: none; border: none; cursor: pointer; padding: 5px 8px; border-radius: 5px; color: #3498db; }
-    .btn-icon:hover { background: #e8f0fe; }
+    /* ============================================================
+       ESTILOS DARK MODE PARA ACCIONES OPERATIVAS
+       ============================================================ */
+    .badge-activa-dark {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        padding: 3px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .btn-crear-dark {
+        background: #fbbf24;
+        color: #111827;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-crear-dark:hover {
+        background: #f59e0b;
+        color: #111827;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+    
+    .btn-icon-dark {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 5px;
+        color: #60a5fa;
+        transition: all 0.2s ease;
+    }
+    .btn-icon-dark:hover {
+        background: rgba(255,255,255,0.05);
+        color: #fbbf24;
+    }
+    
+    .btn-icon-dark i {
+        font-size: 16px;
+    }
+
+    .card-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+        margin-bottom: 20px;
+    }
+
+    .card-header-dark {
+        background: #1a2236;
+        color: #e5e7eb;
+        padding: 16px 20px;
+        border-bottom: 1px solid #1f2937;
+        border-radius: 12px 12px 0 0;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .card-header-dark i {
+        color: #fbbf24;
+        margin-right: 8px;
+    }
+
+    .card-body-dark {
+        padding: 20px;
+        overflow-x: auto;
+    }
+
+    .table-dark-custom {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        color: #e5e7eb;
+    }
+
+    .table-dark-custom thead th {
+        background: #1a2236;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 12px 12px;
+        border-bottom: 1px solid #1f2937;
+    }
+
+    .table-dark-custom tbody td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        color: #e5e7eb;
+        vertical-align: middle;
+    }
+
+    .table-dark-custom tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table-dark-custom tbody tr:hover td {
+        background: rgba(255,255,255,0.03);
+    }
+
+    .table-dark-custom .empty {
+        text-align: center;
+        padding: 30px;
+        color: #6b7280;
+    }
+
+    .float-end {
+        float: right;
+    }
+
+    h1 {
+        color: #e5e7eb;
+    }
+
+    h1 i {
+        color: #fbbf24;
+    }
+
+    .subtitle-dark {
+        color: #9ca3af;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .btn-icon-dark-edit {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 5px;
+        color: #fbbf24;
+        transition: all 0.2s ease;
+    }
+    .btn-icon-dark-edit:hover {
+        background: rgba(251, 191, 36, 0.1);
+        color: #f59e0b;
+    }
+
+    .btn-icon-dark-delete {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 5px;
+        color: #f87171;
+        transition: all 0.2s ease;
+    }
+    .btn-icon-dark-delete:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .btn-icon-dark-view {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 5px;
+        color: #60a5fa;
+        transition: all 0.2s ease;
+    }
+    .btn-icon-dark-view:hover {
+        background: rgba(96, 165, 250, 0.1);
+        color: #3b82f6;
+    }
+
+    @media (max-width: 768px) {
+        .card-header-dark {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .float-end {
+            float: none;
+        }
+        .table-dark-custom {
+            font-size: 12px;
+        }
+        .table-dark-custom thead th,
+        .table-dark-custom tbody td {
+            padding: 6px 8px;
+        }
+    }
 </style>
 
-<h1>Acciones Operativas</h1>
-<p class="subtitle">Balance de acciones operativas de la Fuerza Pública</p>
+<h1><i class="fas fa-clipboard-list"></i> Acciones Operativas</h1>
+<p class="subtitle-dark">Balance de acciones operativas de la Fuerza Pública</p>
 
-<div class="card">
-    <div class="card-header">
-        <i class="fas fa-clipboard-list"></i> Listado de Acciones
+<div class="card-dark">
+    <div class="card-header-dark">
+        <span><i class="fas fa-clipboard-list"></i> Listado de Acciones</span>
         {% if tiene_permiso(current_user, 'crear_acciones') %}
-        <a href="/accion_operativa/nueva" class="btn btn-sm btn-crear float-end">
+        <a href="/accion_operativa/nueva" class="btn btn-crear-dark">
             <i class="fas fa-plus"></i> Nueva Acción
         </a>
         {% endif %}
     </div>
-    <div class="card-body">
+    <div class="card-body-dark">
         <div class="table-responsive">
-            <table class="table" id="tablaAcciones">
+            <table class="table-dark-custom" id="tablaAcciones">
                 <thead>
                     <tr>
                         <th>Fecha</th>
@@ -31,11 +219,11 @@
                         <th>Lugar</th>
                         <th>Mando</th>
                         <th>Personas</th>
-                        <th>Acciones</th>
+                        <th style="text-align: center; min-width: 120px;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tbodyAcciones">
-                    <tr><td colspan="6" class="empty">Cargando...<\/td><\/tr>
+                    <tr><td colspan="6" class="empty"><i class="fas fa-spinner fa-spin" style="color: #fbbf24;"></i> Cargando...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -68,14 +256,14 @@ function cargarAcciones() {
                     var a = data[i];
                     
                     // Construir botones de acciones
-                    var botones = '<a href="/accion_operativa/' + a.id + '" class="btn-icon" title="Ver"><i class="fas fa-eye"></i></a>';
+                    var botones = '<a href="/accion_operativa/' + a.id + '" class="btn-icon-dark-view" title="Ver"><i class="fas fa-eye"></i></a>';
                     
                     {% if tiene_permiso(current_user, 'editar_acciones') %}
-                    botones = '<a href="/accion_operativa/editar/' + a.id + '" class="btn-icon" title="Editar"><i class="fas fa-edit"></i></a> ' + botones;
+                    botones = '<a href="/accion_operativa/editar/' + a.id + '" class="btn-icon-dark-edit" title="Editar"><i class="fas fa-edit"></i></a> ' + botones;
                     {% endif %}
                     
                     {% if tiene_permiso(current_user, 'eliminar_acciones') %}
-                    botones += ' <button class="btn-icon" onclick="eliminarAccion(' + a.id + ')" title="Eliminar"><i class="fas fa-trash"></i></button>';
+                    botones += ' <button class="btn-icon-dark-delete" onclick="eliminarAccion(' + a.id + ')" title="Eliminar"><i class="fas fa-trash"></i></button>';
                     {% endif %}
                     
                     var row = '<tr>' +
@@ -84,7 +272,7 @@ function cargarAcciones() {
                         '<td>' + a.lugar + '</td>' +
                         '<td>' + a.mando + '</td>' +
                         '<td>' + a.personas_abordadas + '</td>' +
-                        '<td>' + botones + '</td>' +
+                        '<td style="text-align: center; white-space: nowrap;">' + botones + '</td>' +
                         '</tr>';
                     
                     tbody.append(row);

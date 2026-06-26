@@ -1,0 +1,677 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA GENERAR MACHOTE
+       ============================================================ */
+    .generar-container-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    
+    .generar-container-dark h3 {
+        color: #e5e7eb;
+    }
+    
+    .generar-container-dark h3 i {
+        color: #fbbf24;
+    }
+    
+    .generar-container-dark .text-muted {
+        color: #9ca3af !important;
+    }
+    
+    .header-info-dark {
+        background: #1a2236;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        border-left: 4px solid #fbbf24;
+    }
+    
+    .header-info-dark h4 {
+        margin: 0;
+        color: #e5e7eb;
+    }
+    
+    .header-info-dark h4 i {
+        color: #fbbf24;
+    }
+    
+    .header-info-dark p {
+        margin: 5px 0 0 0;
+        color: #9ca3af;
+    }
+    
+    .badge-info-dark {
+        background: #1f2937;
+        color: #9ca3af;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    
+    .form-group-dark {
+        margin-bottom: 20px;
+        background: #1a2236;
+        padding: 15px 18px;
+        border-radius: 10px;
+        border: 1px solid #1f2937;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .form-group-dark:hover {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.1);
+    }
+    
+    .form-group-dark .order-number {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #1f2937;
+        color: #9ca3af;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 10px;
+        border-radius: 10px;
+        border: 1px solid #374151;
+    }
+    
+    .form-group-dark label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+        color: #e5e7eb;
+        padding-right: 60px;
+    }
+    
+    .form-group-dark label .required {
+        color: #f87171;
+        margin-left: 3px;
+    }
+    
+    .form-group-dark .form-control {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: #0f172a;
+        color: #e5e7eb;
+    }
+    
+    .form-group-dark .form-control:focus {
+        border-color: #fbbf24;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        background: #1a2236;
+    }
+    
+    .form-group-dark .form-control::placeholder {
+        color: #6b7280;
+    }
+    
+    .form-group-dark .form-control.textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .form-group-dark .form-control option {
+        background: #0f172a;
+        color: #e5e7eb;
+    }
+    
+    .form-group-dark .text-muted {
+        color: #6b7280 !important;
+        font-size: 12px;
+        display: block;
+        margin-top: 4px;
+    }
+    
+    .form-group-dark .text-muted code {
+        background: #0f172a;
+        color: #fbbf24;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+    }
+    
+    .btn-acciones-dark {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+    
+    .btn-action-dark {
+        padding: 10px 25px;
+        border-radius: 25px;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+    
+    .btn-action-dark:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    .btn-primary-dark { background: #3b82f6; color: white; }
+    .btn-primary-dark:hover { background: #2563eb; color: white; }
+    
+    .btn-success-dark { background: #22c55e; color: white; }
+    .btn-success-dark:hover { background: #16a34a; color: white; }
+    
+    .btn-danger-dark { background: #ef4444; color: white; }
+    .btn-danger-dark:hover { background: #dc2626; color: white; }
+    
+    .btn-secondary-dark { background: #1f2937; color: #9ca3af; border: 1px solid #1f2937; }
+    .btn-secondary-dark:hover { background: #2d3a4a; color: #e5e7eb; }
+    
+    .btn-warning-dark { background: #fbbf24; color: #111827; }
+    .btn-warning-dark:hover { background: #f59e0b; color: #111827; }
+    
+    .btn-info-dark { background: #8b5cf6; color: white; }
+    .btn-info-dark:hover { background: #7c3aed; color: white; }
+    
+    .btn-outline-dark {
+        background: transparent;
+        border: 2px solid #1f2937;
+        color: #9ca3af;
+    }
+    .btn-outline-dark:hover {
+        background: #1f2937;
+        color: #e5e7eb;
+    }
+    
+    .btn-whatsapp-dark {
+        background: #25D366;
+        color: white;
+    }
+    .btn-whatsapp-dark:hover {
+        background: #1da851;
+        color: white;
+    }
+    
+    .btn-pdf-dark {
+        background: #dc2626;
+        color: white;
+    }
+    .btn-pdf-dark:hover {
+        background: #b91c1c;
+        color: white;
+    }
+    
+    .resultado-container-dark {
+        display: none;
+        margin-top: 30px;
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .resultado-header-dark {
+        background: #0f172a;
+        padding: 12px 20px;
+        border-bottom: 1px solid #1f2937;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .resultado-header-dark h5 {
+        margin: 0;
+        color: #e5e7eb;
+    }
+    
+    .resultado-header-dark h5 i {
+        color: #fbbf24;
+    }
+    
+    .resultado-content-dark {
+        padding: 20px;
+        white-space: pre-wrap;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        color: #d1d5db;
+        max-height: 500px;
+        overflow-y: auto;
+        background: #0f172a;
+        line-height: 1.8;
+    }
+    
+    .feedback-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        z-index: 9999;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease;
+        max-width: 450px;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .feedback-toast.success { background: #065f46; color: #4ade80; border-left: 4px solid #4ade80; }
+    .feedback-toast.error { background: #7f1d1d; color: #f87171; border-left: 4px solid #f87171; }
+    .feedback-toast.warning { background: #78350f; color: #fbbf24; border-left: 4px solid #fbbf24; }
+    .feedback-toast.info { background: #1e3a5f; color: #60a5fa; border-left: 4px solid #60a5fa; }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideOut {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(30px); }
+    }
+    
+    .variables-detectadas {
+        background: #0f172a;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #1f2937;
+    }
+    
+    .variables-detectadas small {
+        color: #9ca3af;
+    }
+    
+    .variables-detectadas .var-tag {
+        display: inline-block;
+        background: #1a2236;
+        color: #fbbf24;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        margin: 2px 4px 2px 0;
+        border: 1px solid #1f2937;
+        font-family: monospace;
+    }
+    
+    hr {
+        border-color: #1f2937;
+    }
+    
+    @media (max-width: 768px) {
+        .generar-container-dark {
+            padding: 15px;
+        }
+        .form-group-dark {
+            padding: 12px 14px;
+        }
+        .form-group-dark .order-number {
+            top: 4px;
+            right: 4px;
+            font-size: 9px;
+            padding: 1px 6px;
+        }
+        .btn-acciones-dark {
+            flex-direction: column;
+        }
+        .btn-action-dark {
+            justify-content: center;
+        }
+        .resultado-content-dark {
+            font-size: 12px;
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="generar-container-dark">
+    <h3><i class="fas fa-file-export"></i> Generar Documento desde Machote</h3>
+    <p class="text-muted">Complete los valores para las variables del machote. Las variables se identifican con <code style="color: #fbbf24;">{{ variable }}</code>.</p>
+    <hr>
+
+    <div class="header-info-dark">
+        <h4><i class="fas fa-file-alt"></i> {{ machote.nombre }}</h4>
+        <p>{{ machote.descripcion or 'Sin descripción' }}</p>
+        <small style="color: #9ca3af;">
+            Tipo: <span class="badge-info-dark">{{ machote.tipo_documento.upper() }}</span>
+            Categoría: <span class="badge-info-dark">{{ machote.categoria.upper() if machote.categoria else 'Sin categoría' }}</span>
+        </small>
+    </div>
+
+    <!-- Variables detectadas -->
+    <div class="variables-detectadas">
+        <small><i class="fas fa-code" style="color: #fbbf24;"></i> Variables disponibles:</small>
+        <div style="margin-top: 5px;">
+            {% if preguntas %}
+                {% for p in preguntas %}
+                    <span class="var-tag">{{ p.variable }}</span>
+                {% endfor %}
+            {% else %}
+                <span class="text-muted" style="color: #6b7280;">No hay variables definidas</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <form id="formGenerar">
+        <input type="hidden" id="machote_id" value="{{ machote.id }}">
+        
+        <div id="preguntasContainer">
+            {% if preguntas %}
+                {% for p in preguntas %}
+                <div class="form-group-dark" data-index="{{ loop.index0 }}" data-variable="{{ p.variable }}">
+                    <span class="order-number">#{{ loop.index }}</span>
+                    <label for="variable_{{ p.variable }}">
+                        <i class="fas fa-question-circle" style="color: #a78bfa; margin-right: 4px;"></i>
+                        {{ p.titulo }}
+                        {% if p.requerido %}
+                            <span class="required">*</span>
+                        {% endif %}
+                    </label>
+                    {% if p.tipo == 'textarea' %}
+                        <textarea class="form-control textarea" id="variable_{{ p.variable }}" 
+                                  name="{{ p.variable }}" placeholder="Ingrese {{ p.titulo|lower }}..."></textarea>
+                    {% elif p.tipo == 'select' %}
+                        <select class="form-control" id="variable_{{ p.variable }}" name="{{ p.variable }}">
+                            <option value="">Seleccione una opción...</option>
+                            {% if p.opciones %}
+                                {% for opcion in p.opciones|from_json %}
+                                    <option value="{{ opcion }}">{{ opcion }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    {% elif p.tipo == 'fecha' %}
+                        <input type="date" class="form-control" id="variable_{{ p.variable }}" 
+                               name="{{ p.variable }}" placeholder="Ingrese {{ p.titulo|lower }}...">
+                    {% elif p.tipo == 'hora' %}
+                        <input type="time" class="form-control" id="variable_{{ p.variable }}" 
+                               name="{{ p.variable }}" placeholder="Ingrese {{ p.titulo|lower }}...">
+                    {% else %}
+                        <input type="text" class="form-control" id="variable_{{ p.variable }}" 
+                               name="{{ p.variable }}" placeholder="Ingrese {{ p.titulo|lower }}...">
+                    {% endif %}
+                    <span class="text-muted">Variable: <code>{{ p.variable }}</code></span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="background: #1a2236; padding: 20px; border-radius: 10px; text-align: center; color: #6b7280; border: 1px solid #1f2937;">
+                    <i class="fas fa-info-circle" style="color: #60a5fa; font-size: 24px;"></i>
+                    <p class="mt-2">Este machote no tiene preguntas definidas.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="btn-acciones-dark">
+            <button type="button" class="btn-action-dark btn-success-dark" onclick="generarDocumento()">
+                <i class="fas fa-file-export"></i> Generar Documento
+            </button>
+            <button type="button" class="btn-action-dark btn-info-dark" onclick="copiarContenido()">
+                <i class="fas fa-copy"></i> Copiar
+            </button>
+            <button type="button" class="btn-action-dark btn-pdf-dark" onclick="exportarPDF()">
+                <i class="fas fa-file-pdf"></i> Exportar PDF
+            </button>
+            <button type="button" class="btn-action-dark btn-whatsapp-dark" onclick="enviarWhatsApp()">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </button>
+            <a href="/machotes" class="btn-action-dark btn-secondary-dark">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <a href="/machote/editar/{{ machote.id }}" class="btn-action-dark btn-outline-dark">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+        </div>
+    </form>
+
+    <div id="resultadoContainer" class="resultado-container-dark">
+        <div class="resultado-header-dark">
+            <h5><i class="fas fa-file-alt"></i> Documento Generado</h5>
+            <div>
+                <button class="btn-action-dark btn-info-dark" style="padding: 4px 12px; font-size: 12px;" onclick="copiarContenido()">
+                    <i class="fas fa-copy"></i>
+                </button>
+                <button class="btn-action-dark btn-pdf-dark" style="padding: 4px 12px; font-size: 12px;" onclick="exportarPDF()">
+                    <i class="fas fa-file-pdf"></i>
+                </button>
+            </div>
+        </div>
+        <div id="resultadoContent" class="resultado-content-dark"></div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+// ==================== VARIABLES ====================
+var machoteId = document.getElementById('machote_id').value;
+var resultadoGenerado = '';
+
+// ==================== FUNCIÓN PARA MOSTRAR TOAST ====================
+function mostrarToast(mensaje, tipo) {
+    tipo = tipo || 'success';
+    var oldFeedback = document.querySelector('.feedback-toast');
+    if (oldFeedback) {
+        oldFeedback.remove();
+    }
+    
+    var toast = document.createElement('div');
+    toast.className = 'feedback-toast ' + tipo;
+    
+    var iconos = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+    };
+    
+    toast.innerHTML = '<strong>' + (iconos[tipo] || 'ℹ️') + '</strong> ' + mensaje;
+    document.body.appendChild(toast);
+    
+    setTimeout(function() {
+        if (toast.parentNode) {
+            toast.style.animation = 'slideOut 0.3s ease forwards';
+            setTimeout(function() {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 300);
+        }
+    }, 4000);
+}
+
+// ==================== FUNCIONES ====================
+function generarDocumento() {
+    var form = document.getElementById('formGenerar');
+    var inputs = form.querySelectorAll('input, select, textarea');
+    var valores = {};
+    
+    inputs.forEach(function(input) {
+        if (input.id && input.id.startsWith('variable_')) {
+            var nombre = input.id.replace('variable_', '');
+            valores[nombre] = input.value;
+        }
+    });
+    
+    // Agregar fecha y hora automática si no están
+    var now = new Date();
+    var fecha = now.toISOString().split('T')[0];
+    var hora = now.toTimeString().slice(0, 5);
+    
+    if (!valores.fecha) valores.fecha = fecha;
+    if (!valores.hora) valores.hora = hora;
+    
+    // Verificar campos requeridos
+    var camposVacios = [];
+    var items = document.querySelectorAll('.form-group-dark');
+    items.forEach(function(item) {
+        var label = item.querySelector('label');
+        var input = item.querySelector('input, select, textarea');
+        if (label && label.innerHTML.indexOf('*') !== -1 && input && !input.value.trim()) {
+            camposVacios.push(label.textContent.replace('*', '').trim());
+        }
+    });
+    
+    if (camposVacios.length > 0) {
+        mostrarToast('⚠️ Complete los campos requeridos: ' + camposVacios.join(', '), 'warning');
+        return;
+    }
+    
+    var datos = {
+        machote_id: parseInt(machoteId),
+        datos: valores
+    };
+    
+    fetch('/api/generar_documento', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error('Error HTTP: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        if (data.success) {
+            resultadoGenerado = data.contenido;
+            var contentDiv = document.getElementById('resultadoContent');
+            contentDiv.textContent = resultadoGenerado;
+            document.getElementById('resultadoContainer').style.display = 'block';
+            document.getElementById('resultadoContainer').scrollIntoView({ behavior: 'smooth' });
+            mostrarToast('✅ Documento generado correctamente', 'success');
+        } else {
+            mostrarToast('❌ Error: ' + (data.error || 'Error desconocido'), 'error');
+        }
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        mostrarToast('❌ Error al generar el documento: ' + error.message, 'error');
+    });
+}
+
+function copiarContenido() {
+    if (!resultadoGenerado) {
+        mostrarToast('⚠️ Primero genera el documento', 'warning');
+        return;
+    }
+    
+    navigator.clipboard.writeText(resultadoGenerado).then(function() {
+        mostrarToast('✅ Contenido copiado al portapapeles', 'success');
+    }).catch(function() {
+        // Fallback
+        var textarea = document.createElement('textarea');
+        textarea.value = resultadoGenerado;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        mostrarToast('✅ Contenido copiado al portapapeles', 'success');
+    });
+}
+
+function exportarPDF() {
+    if (!resultadoGenerado) {
+        mostrarToast('⚠️ Primero genera el documento', 'warning');
+        return;
+    }
+    
+    var titulo = document.querySelector('.header-info-dark h4') ? 
+                 document.querySelector('.header-info-dark h4').textContent : 'Documento';
+    
+    // Crear contenido HTML para el PDF
+    var contenidoHTML = `
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>${titulo}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 40px; line-height: 1.6; }
+                h1 { color: #1f2937; border-bottom: 2px solid #fbbf24; padding-bottom: 10px; }
+                .fecha { color: #6b7280; font-size: 12px; text-align: right; margin-bottom: 20px; }
+                .contenido { white-space: pre-wrap; }
+            </style>
+        </head>
+        <body>
+            <h1>${titulo}</h1>
+            <div class="fecha">Generado: ${new Date().toLocaleString('es-CR')}</div>
+            <div class="contenido">${resultadoGenerado}</div>
+            <hr style="margin-top: 40px; border-color: #e5e7eb;">
+            <p style="color: #6b7280; font-size: 12px; text-align: center;">
+                Sistema de Consultas - Fuerza Pública
+            </p>
+        </body>
+        </html>
+    `;
+    
+    // Usar window.print() con un iframe para generar PDF
+    var printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (printWindow) {
+        printWindow.document.write(contenidoHTML);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+    } else {
+        mostrarToast('❌ Error: El navegador bloqueó la ventana emergente', 'error');
+    }
+}
+
+function enviarWhatsApp() {
+    if (!resultadoGenerado) {
+        mostrarToast('⚠️ Primero genera el documento', 'warning');
+        return;
+    }
+    
+    var nombre = "{{ machote.nombre }}";
+    
+    // Construir mensaje
+    var mensajeCompleto = '📋 *' + nombre.toUpperCase() + '*\n';
+    mensajeCompleto += '═══════════════════════════════════════\n\n';
+    mensajeCompleto += resultadoGenerado + '\n\n';
+    mensajeCompleto += '═══════════════════════════════════════\n';
+    mensajeCompleto += '📅 ' + new Date().toLocaleString('es-CR') + '\n';
+    mensajeCompleto += '🏛️ Sistema de Consultas - Fuerza Pública';
+    
+    var url = 'https://wa.me/?text=' + encodeURIComponent(mensajeCompleto);
+    window.open(url, '_blank');
+    mostrarToast('✅ Abriendo WhatsApp...', 'success');
+}
+
+// Inicializar con valores por defecto
+document.addEventListener('DOMContentLoaded', function() {
+    // Establecer fecha actual en campos de fecha
+    var fechaInputs = document.querySelectorAll('input[type="date"]');
+    var hoy = new Date().toISOString().split('T')[0];
+    fechaInputs.forEach(function(input) {
+        if (!input.value) {
+            input.value = hoy;
+        }
+    });
+    
+    // Establecer hora actual en campos de hora
+    var horaInputs = document.querySelectorAll('input[type="time"]');
+    var ahora = new Date().toTimeString().slice(0, 5);
+    horaInputs.forEach(function(input) {
+        if (!input.value) {
+            input.value = ahora;
+        }
+    });
+});
+</script>
+{% endblock %}

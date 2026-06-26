@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Acceso al Sistema</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 { color: #2c3e50; margin-bottom: 10px; }
+        .ip-box {
+            background: #f0f2f5;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .credential {
+            background: #e8f0fe;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: left;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 12px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔗 Acceso al Sistema</h1>
+        <p>Sistema de Consultas - Fuerza Pública</p>
+        
+        <div class="ip-box" id="ipDisplay">
+            Obteniendo IP...
+        </div>
+        
+        <div class="credential">
+            <strong>🔐 Credenciales:</strong><br>
+            Usuario: <strong>admin</strong><br>
+            Contraseña: <strong>admin123</strong>
+        </div>
+        
+        <button class="btn" onclick="abrirSistema()">
+            🌐 Abrir Sistema
+        </button>
+        
+        <button class="btn" onclick="copiarIP()" style="background: #28a745;">
+            📋 Copiar URL
+        </button>
+        
+        <div class="warning">
+            <strong>⚠️ Requisitos para acceder:</strong><br>
+            1. Tailscale instalado en el dispositivo<br>
+            2. Iniciar sesión con la misma cuenta<br>
+            3. El servidor debe estar encendido
+        </div>
+    </div>
+
+    <script>
+        let tailscaleIP = '';
+        
+        // Función para obtener la IP de Tailscale desde el backend
+        fetch('/tailscale_ip')
+            .then(response => response.json())
+            .then(data => {
+                tailscaleIP = data.ip;
+                document.getElementById('ipDisplay').innerHTML = `
+                    <strong>🌐 URL de acceso:</strong><br>
+                    https://${tailscaleIP}:3000
+                `;
+            })
+            .catch(() => {
+                // Si no puede obtener IP, mostrar mensaje
+                document.getElementById('ipDisplay').innerHTML = `
+                    <strong>⚠️ Asegúrate de que el servidor está corriendo</strong><br>
+                    Ejecuta: python app.py
+                `;
+            });
+        
+        function abrirSistema() {
+            if (tailscaleIP) {
+                window.open(`https://${tailscaleIP}:3000`, '_blank');
+            } else {
+                alert('Esperando IP del servidor...');
+            }
+        }
+        
+        function copiarIP() {
+            if (tailscaleIP) {
+                const url = `https://${tailscaleIP}:3000`;
+                navigator.clipboard.writeText(url);
+                alert('✅ URL copiada al portapapeles: ' + url);
+            } else {
+                alert('Esperando IP del servidor...');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,245 +1,1335 @@
 {% extends "base.html" %}
 
-{% block content %}
-<h1>Gestión de Personas</h1>
-<p class="subtitle">Administre los registros de personas</p>
+{% block title %}Personas{% endblock %}
 
-<div class="card">
-    <div class="card-header"><i class="fas fa-search"></i> Buscar Personas</div>
-    <div class="card-body">
-        <div class="search-box">
-            <input type="text" id="buscar" placeholder="Buscar por cédula o nombre...">
-            <button class="btn-search" onclick="cargarPersonas()"><i class="fas fa-search"></i> Buscar</button>
-            <button class="btn-search" style="background:#28a745;" onclick="abrirModal()"><i class="fas fa-plus"></i> Nueva Persona</button>
+{% block content %}
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA PERSONAS
+       ============================================================ */
+    
+    /* ===== ENCABEZADO ===== */
+    .page-header-dark {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    
+    .page-header-dark h2 {
+        color: #e5e7eb;
+        font-size: 24px;
+        font-weight: 600;
+    }
+    
+    .page-header-dark h2 i {
+        color: #fbbf24;
+        margin-right: 10px;
+    }
+    
+    .page-header-dark .subtitle-dark {
+        color: #9ca3af;
+        font-size: 14px;
+        margin-top: 4px;
+    }
+    
+    .header-actions-dark {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-dark-primary {
+        background: #fbbf24;
+        color: #111827;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 13px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-dark-primary:hover {
+        background: #f59e0b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        color: #111827;
+    }
+    
+    .btn-dark-success {
+        background: #059669;
+        color: #fff;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 13px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-dark-success:hover {
+        background: #047857;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        color: #fff;
+    }
+    
+    /* ===== BARRA DE BÚSQUEDA ===== */
+    .search-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    
+    .search-dark .input-group {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .search-dark .input-group-text {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        border-right: none;
+        color: #6b7280;
+    }
+    
+    .search-dark .form-control {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        border-left: none;
+        color: #e5e7eb;
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    .search-dark .form-control:focus {
+        border-color: #fbbf24;
+        box-shadow: none;
+        background: #1a2236;
+        color: #e5e7eb;
+    }
+    
+    .search-dark .form-control::placeholder {
+        color: #6b7280;
+    }
+    
+    .search-dark .btn-dark-search {
+        background: #fbbf24;
+        color: #111827;
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .search-dark .btn-dark-search:hover {
+        background: #f59e0b;
+    }
+    
+    .search-dark .btn-dark-clear {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        color: #6b7280;
+        transition: all 0.2s;
+    }
+    
+    .search-dark .btn-dark-clear:hover {
+        background: #2a3346;
+        color: #e5e7eb;
+    }
+    
+    .registros-count-dark {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+    
+    .registros-count-dark .badge-count {
+        background: #fbbf24;
+        color: #111827;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 16px;
+        font-weight: 700;
+    }
+    
+    .registros-count-dark .text-count {
+        color: #9ca3af;
+        font-size: 14px;
+    }
+    
+    .btn-dark-reload {
+        background: transparent;
+        border: 1px solid #1f2937;
+        color: #6b7280;
+        padding: 6px 12px;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    
+    .btn-dark-reload:hover {
+        background: #1a2236;
+        color: #e5e7eb;
+        border-color: #fbbf24;
+    }
+    
+    /* ===== TARJETA DE TABLA ===== */
+    .card-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    
+    .card-header-dark {
+        background: #1a2236;
+        padding: 12px 20px;
+        border-bottom: 1px solid #1f2937;
+        font-weight: 600;
+        color: #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .card-header-dark i {
+        margin-right: 8px;
+        color: #fbbf24;
+    }
+    
+    .card-header-dark .text-muted-dark {
+        color: #9ca3af;
+        font-size: 13px;
+        font-weight: 400;
+    }
+    
+    .card-body-dark {
+        padding: 0;
+    }
+    
+    /* ===== TABLA ===== */
+    .table-dark-custom {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        color: #e5e7eb;
+        margin: 0;
+    }
+    
+    .table-dark-custom thead th {
+        background: #1a2236;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 12px 15px;
+        border-bottom: 1px solid #1f2937;
+        white-space: nowrap;
+    }
+    
+    .table-dark-custom tbody td {
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        color: #e5e7eb;
+        vertical-align: middle;
+    }
+    
+    .table-dark-custom tbody tr:hover td {
+        background: rgba(255,255,255,0.03);
+        cursor: pointer;
+    }
+    
+    .table-dark-custom tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    /* ===== FOTO DE PERFIL ===== */
+    .foto-perfil-dark {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #1f2937;
+        background: #1a2236;
+    }
+    
+    .foto-perfil-placeholder-dark {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #1a2236;
+        color: #4b5563;
+        font-size: 20px;
+        border: 2px solid #1f2937;
+    }
+    
+    /* ===== CÉDULA Y NOMBRE ===== */
+    .cedula-text-dark {
+        font-weight: 600;
+        color: #e5e7eb;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 0.5px;
+    }
+    
+    .nombre-text-dark {
+        font-weight: 500;
+        color: #e5e7eb;
+    }
+    
+    /* ===== BADGE DE ESTADO ===== */
+    .badge-dark {
+        padding: 3px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    .badge-dark.activo {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .badge-dark.inactivo {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .badge-dark.suspendido {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+    
+    /* ===== BOTONES DE ACCIÓN ===== */
+    .acciones-btn-dark {
+        white-space: nowrap;
+        display: flex;
+        gap: 4px;
+    }
+    
+    .acciones-btn-dark .btn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        border: none;
+        transition: all 0.2s;
+        font-size: 14px;
+    }
+    
+    .btn-ver-dark {
+        background: rgba(96, 165, 250, 0.15);
+        color: #60a5fa;
+    }
+    .btn-ver-dark:hover {
+        background: #60a5fa;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+    }
+    
+    .btn-editar-dark {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+    }
+    .btn-editar-dark:hover {
+        background: #fbbf24;
+        color: #111827;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+    
+    .btn-eliminar-dark {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+    }
+    .btn-eliminar-dark:hover {
+        background: #ef4444;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    /* ===== EMPTY STATE ===== */
+    .empty-dark {
+        text-align: center;
+        padding: 30px;
+        color: #6b7280;
+    }
+    
+    .empty-dark i {
+        display: block;
+        font-size: 32px;
+        margin-bottom: 10px;
+        color: #4b5563;
+    }
+    
+    /* ===== MODALES DARK ===== */
+    .modal-content-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        color: #e5e7eb;
+    }
+    
+    .modal-content-dark .modal-header {
+        background: #1a2236;
+        border-bottom: 1px solid #1f2937;
+        color: #e5e7eb;
+    }
+    
+    .modal-content-dark .modal-header .btn-close {
+        filter: invert(1);
+    }
+    
+    .modal-content-dark .modal-footer {
+        border-top: 1px solid #1f2937;
+    }
+    
+    .modal-content-dark .form-control,
+    .modal-content-dark .form-select {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        color: #e5e7eb;
+    }
+    
+    .modal-content-dark .form-control:focus,
+    .modal-content-dark .form-select:focus {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        background: #1a2236;
+        color: #e5e7eb;
+    }
+    
+    .modal-content-dark .form-control::placeholder {
+        color: #6b7280;
+    }
+    
+    .modal-content-dark .form-label {
+        color: #e5e7eb;
+        font-weight: 500;
+    }
+    
+    .modal-content-dark .text-muted {
+        color: #6b7280 !important;
+    }
+    
+    .modal-content-dark .alert-warning {
+        background: rgba(251, 191, 36, 0.1);
+        border: 1px solid rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+    }
+    
+    /* ===== FOTO EN MODAL ===== */
+    .foto-perfil-preview-dark {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #1f2937;
+        background: #1a2236;
+        margin: 0 auto 15px;
+        display: block;
+    }
+    
+    .foto-perfil-preview-placeholder-dark {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 4px dashed #1f2937;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        background: #1a2236;
+        color: #4b5563;
+        font-size: 14px;
+        flex-direction: column;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .foto-perfil-preview-placeholder-dark:hover {
+        border-color: #fbbf24;
+        background: #1f2937;
+    }
+    
+    .foto-perfil-preview-placeholder-dark i {
+        font-size: 48px;
+        margin-bottom: 10px;
+        color: #4b5563;
+    }
+    
+    .upload-btn-wrapper-dark {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .upload-btn-wrapper-dark input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    
+    .btn-upload-dark {
+        width: 100%;
+        border-radius: 25px;
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        color: #e5e7eb;
+        padding: 8px 20px;
+        transition: all 0.2s;
+    }
+    
+    .btn-upload-dark:hover {
+        background: #1f2937;
+        border-color: #fbbf24;
+        color: #fbbf24;
+    }
+    
+    /* ===== ALERTA FLOTANTE ===== */
+    .alert-floating-dark {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 450px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        border-radius: 8px;
+        border: 1px solid #1f2937;
+        padding: 15px 20px;
+        background: #111827;
+        color: #e5e7eb;
+    }
+    
+    .alert-floating-dark.success {
+        border-left: 4px solid #4ade80;
+    }
+    .alert-floating-dark.danger {
+        border-left: 4px solid #f87171;
+    }
+    .alert-floating-dark.warning {
+        border-left: 4px solid #fbbf24;
+    }
+    .alert-floating-dark.info {
+        border-left: 4px solid #60a5fa;
+    }
+    
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .page-header-dark {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .header-actions-dark {
+            width: 100%;
+        }
+        
+        .header-actions-dark .btn {
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .search-dark .row {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .registros-count-dark {
+            justify-content: flex-start;
+        }
+        
+        .table-dark-custom thead th {
+            font-size: 10px;
+            padding: 8px 10px;
+        }
+        
+        .table-dark-custom tbody td {
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+        
+        .acciones-btn-dark .btn {
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
+        }
+        
+        .foto-perfil-dark {
+            width: 35px;
+            height: 35px;
+        }
+        
+        .foto-perfil-placeholder-dark {
+            width: 35px;
+            height: 35px;
+            font-size: 16px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .table-responsive {
+            font-size: 12px;
+        }
+        
+        .cedula-text-dark {
+            font-size: 12px;
+        }
+        
+        .badge-dark {
+            font-size: 10px;
+            padding: 2px 8px;
+        }
+    }
+</style>
+
+<!-- ===== ENCABEZADO ===== -->
+<div class="page-header-dark">
+    <div>
+        <h2><i class="fas fa-users"></i>Gestión de Personas</h2>
+        <p class="subtitle-dark"><i class="fas fa-info-circle me-1"></i> Administrar los registros de personas en el sistema</p>
+    </div>
+    <div class="header-actions-dark">
+        <a href="{{ url_for('ocr_cedula_page') }}" class="btn-dark-success">
+            <i class="fas fa-camera me-1"></i> Escanear Cédula
+        </a>
+        <button class="btn-dark-primary" onclick="abrirModalNuevaPersona()">
+            <i class="fas fa-plus me-1"></i> Nueva Persona
+        </button>
+    </div>
+</div>
+
+<!-- ===== BARRA DE BÚSQUEDA ===== -->
+<div class="search-dark">
+    <div class="row g-3 align-items-center">
+        <div class="col-md-8">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control" id="busquedaPersona" 
+                       placeholder="Buscar por cédula o nombre..." 
+                       onkeyup="if(event.key === 'Enter') buscarPersonas(this.value)">
+                <button class="btn-dark-search" onclick="buscarPersonas(document.getElementById('busquedaPersona').value)">
+                    <i class="fas fa-search me-1"></i> Buscar
+                </button>
+                <button class="btn-dark-clear" onclick="limpiarBusqueda()" title="Limpiar búsqueda">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         </div>
+        <div class="col-md-4">
+            <div class="registros-count-dark">
+                <span class="badge-count" id="totalPersonas">0</span>
+                <span class="text-count">registros</span>
+                <button class="btn-dark-reload" onclick="cargarPersonas()" title="Recargar lista">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TABLA DE PERSONAS ===== -->
+<div class="card-dark">
+    <div class="card-header-dark">
+        <span><i class="fas fa-list"></i> Listado de Personas</span>
+        <span class="text-muted-dark">
+            <i class="fas fa-chevron-right me-1"></i>
+            <span id="totalPersonasTexto">0</span> registros
+        </span>
+    </div>
+    <div class="card-body-dark">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table-dark-custom" id="tablaPersonas">
                 <thead>
                     <tr>
-                        <th>Foto</th>
+                        <th style="width: 50px;">#</th>
+                        <th style="width: 60px;">Foto</th>
                         <th>Cédula</th>
                         <th>Nombre</th>
-                        <th>Teléfono</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
+                        <th style="width: 110px;">Fecha Nac.</th>
+                        <th style="width: 100px;">Género</th>
+                        <th style="width: 110px;">Teléfono</th>
+                        <th style="width: 90px;">Estado</th>
+                        <th style="width: 120px;">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="tablaPersonas">
+                <tbody id="tbodyPersonas">
+                    <tr>
+                        <td colspan="9" class="empty-dark">
+                            <i class="fas fa-spinner fa-spin" style="color: #fbbf24;"></i>
+                            Cargando personas...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- Modal para agregar/editar persona (versión compacta) -->
-<div id="modalPersona" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y: auto;">
-    <div style="background:white; width:500px; margin:30px auto; padding:20px; border-radius:10px; max-height:90vh; overflow-y:auto;">
-        <h3 id="modalTitulo" style="margin-top:0;">Nueva Persona</h3>
-        <form id="formPersona">
-            <input type="hidden" id="persona_id" value="">
-            <div class="mb-2">
-                <label>Cédula *</label>
-                <input type="text" id="cedula" class="form-control" required style="width:100%; padding:6px;">
+<!-- ==================== MODAL CREAR/EDITAR PERSONA ==================== -->
+<div class="modal fade" id="modalPersona" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPersonaTitle">
+                    <i class="fas fa-user-plus me-2" style="color: #fbbf24;"></i> Nueva Persona
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="mb-2">
-                <label>Nombre *</label>
-                <input type="text" id="nombre" class="form-control" required style="width:100%; padding:6px;">
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-2">
-                        <label>Fecha Nacimiento</label>
-                        <input type="date" id="fecha_nacimiento" class="form-control" style="width:100%; padding:6px;">
+            <form id="formPersona" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" id="personaId" value="">
+                    
+                    <!-- Foto de perfil -->
+                    <div class="text-center mb-4">
+                        <div id="fotoPreviewContainer">
+                            <div class="foto-perfil-preview-placeholder-dark" id="fotoPlaceholder" onclick="document.getElementById('fotoInput').click()">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Haz clic para agregar foto</span>
+                            </div>
+                            <img id="fotoPreview" class="foto-perfil-preview-dark" style="display:none;" alt="Foto de perfil">
+                        </div>
+                        <div class="upload-btn-wrapper-dark">
+                            <button class="btn-upload-dark" type="button">
+                                <i class="fas fa-camera me-1"></i> Seleccionar Foto
+                            </button>
+                            <input type="file" id="fotoInput" accept="image/*" onchange="previewFoto(event)">
+                        </div>
+                        <small class="text-muted d-block mt-1">
+                            <i class="fas fa-info-circle me-1"></i> Formatos: JPG, PNG, GIF (máx. 5MB)
+                        </small>
+                        <button type="button" class="btn btn-link btn-sm text-danger mt-1" onclick="resetearFoto()" style="display:none;" id="btnQuitarFoto">
+                            <i class="fas fa-times me-1"></i> Quitar foto
+                        </button>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="cedula" class="form-label">Cédula <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="cedula" placeholder="Ej: 1-0583-0776" required>
+                            <small class="text-muted">Formato: 1-1111-1111 o 111111111</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nombre" placeholder="Nombre completo" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="fecha_nacimiento" class="form-label">Fecha Nacimiento</label>
+                            <input type="date" class="form-control" id="fecha_nacimiento">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="genero" class="form-label">Género</label>
+                            <select class="form-select" id="genero">
+                                <option value="">Seleccionar</option>
+                                <option value="MASCULINO">Masculino</option>
+                                <option value="FEMENINO">Femenino</option>
+                                <option value="OTRO">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select class="form-select" id="estado">
+                                <option value="ACTIVO">Activo</option>
+                                <option value="INACTIVO">Inactivo</option>
+                                <option value="SUSPENDIDO">Suspendido</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="telefono" placeholder="Ej: 8888-8888">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="correo@ejemplo.com">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <textarea class="form-control" id="direccion" rows="2" placeholder="Dirección completa"></textarea>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="mb-2">
-                        <label>Género</label>
-                        <select id="genero" class="form-control" style="width:100%; padding:6px;">
-                            <option value="">Seleccionar</option>
-                            <option value="MASCULINO">Masculino</option>
-                            <option value="FEMENINO">Femenino</option>
-                        </select>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-dark-primary" id="btnGuardarPersona">
+                        <i class="fas fa-save me-1"></i> Guardar
+                    </button>
                 </div>
-            </div>
-            <div class="mb-2">
-                <label>Teléfono</label>
-                <input type="text" id="telefono" class="form-control" style="width:100%; padding:6px;">
-            </div>
-            <div class="mb-2">
-                <label>Dirección</label>
-                <textarea id="direccion" class="form-control" rows="2" style="width:100%;"></textarea>
-            </div>
-            <div class="mb-2">
-                <label>Email</label>
-                <input type="email" id="email" class="form-control" style="width:100%; padding:6px;">
-            </div>
-            <div class="mb-2">
-                <label>Foto</label>
-                <input type="file" id="foto" class="form-control" accept="image/*" style="padding:3px;">
-                <div id="foto_actual" style="display:none; margin-top:5px;">
-                    <img id="foto_preview" style="width:50px; height:50px; border-radius:50%;">
-                </div>
-            </div>
-            <div class="mb-2">
-                <label>Estado</label>
-                <select id="estado" class="form-control" style="width:100%; padding:6px;">
-                    <option value="ACTIVO">ACTIVO</option>
-                    <option value="INACTIVO">INACTIVO</option>
-                </select>
-            </div>
-            <div class="mt-3" style="text-align:right;">
-                <button type="button" class="btn btn-secondary" onclick="cerrarModal()" style="margin-right:10px;">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="guardarPersona()">Guardar</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 
+<!-- ==================== MODAL ELIMINAR ==================== -->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header" style="border-bottom-color: #ef4444;">
+                <h5 class="modal-title" style="color: #f87171;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-user-slash" style="font-size: 48px; color: #f87171;"></i>
+                </div>
+                <p class="text-center">
+                    ¿Está seguro que desea eliminar a <strong id="eliminarNombre" style="color: #f87171;"></strong>?
+                </p>
+                <div class="alert alert-warning" style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); color: #fbbf24;">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <small>Esta acción no se puede deshacer. Se eliminarán también sus antecedentes y órdenes de captura asociadas.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">
+                    <i class="fas fa-trash me-1"></i> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL VER DETALLE ==================== -->
+<div class="modal fade" id="modalDetalle" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-id-card me-2" style="color: #60a5fa;"></i>Detalle de Persona
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detalleBody">
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #fbbf24; display: block; margin-bottom: 10px;"></i>
+                    Cargando información...
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Cerrar
+                </button>
+                <a href="#" class="btn btn-dark-primary" id="btnVerFichaCompleta">
+                    <i class="fas fa-eye me-1"></i> Ver Ficha Completa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SCRIPTS ==================== -->
 <script>
-function cargarPersonas() {
-    var busqueda = document.getElementById('buscar').value;
-    fetch('/api/personas?busqueda=' + busqueda)
-        .then(response => response.json())
-        .then(data => {
-            var tbody = document.getElementById('tablaPersonas');
-            tbody.innerHTML = '';
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty">No hay personas registradas<\/td><\/tr>';
-            } else {
-                for (var i = 0; i < data.length; i++) {
-                    var p = data[i];
-                    var fotoHtml = p.foto ? '<img src="' + p.foto + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">' : '<i class="fas fa-user-circle fa-2x"></i>';
-                    var estadoClass = p.estado === 'ACTIVO' ? 'badge-activa' : 'badge';
-                    var row = '<tr>' +
-                        '<td>' + fotoHtml + '<\/td>' +
-                        '<td><strong>' + p.cedula + '<\/strong><\/td>' +
-                        '<td>' + p.nombre + '<\/td>' +
-                        '<td>' + (p.telefono || '-') + '<\/td>' +
-                        '<td><span class="badge ' + estadoClass + '">' + p.estado + '<\/span><\/td>' +
-                        '<td>' +
-                            '<button class="btn-icon" onclick="editarPersona(' + p.id + ')" title="Editar"><i class="fas fa-edit"><\/i><\/button>' +
-                            '<button class="btn-icon" onclick="eliminarPersona(' + p.id + ')" title="Eliminar"><i class="fas fa-trash"><\/i><\/button>' +
-                            '<button class="btn-icon" onclick="window.open(\'/ficha/' + p.id + '\')" title="Ver Ficha"><i class="fas fa-eye"><\/i><\/button>' +
-                        '<\/td>' +
-                        '<\/tr>';
-                    tbody.innerHTML += row;
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('tablaPersonas').innerHTML = '<tr><td colspan="6" class="empty">Error al cargar datos<\/td><\/tr>';
-        });
-}
+// ==================== VARIABLES GLOBALES ====================
+let personaIdEliminar = null;
+let fotoBase64 = null;
 
-function abrirModal() {
-    document.getElementById('modalTitulo').innerText = 'Nueva Persona';
-    document.getElementById('persona_id').value = '';
-    document.getElementById('formPersona').reset();
-    document.getElementById('modalPersona').style.display = 'block';
-}
-
-function cerrarModal() {
-    document.getElementById('modalPersona').style.display = 'none';
-}
-
-function editarPersona(id) {
-    fetch('/api/personas?busqueda=' + id)
-        .then(response => response.json())
-        .then(data => {
-            var persona = data.find(p => p.id === id);
-            if (persona) {
-                document.getElementById('modalTitulo').innerText = 'Editar Persona';
-                document.getElementById('persona_id').value = persona.id;
-                document.getElementById('cedula').value = persona.cedula;
-                document.getElementById('nombre').value = persona.nombre;
-                document.getElementById('fecha_nacimiento').value = persona.fecha_nacimiento || '';
-                document.getElementById('genero').value = persona.genero || '';
-                document.getElementById('telefono').value = persona.telefono || '';
-                document.getElementById('direccion').value = persona.direccion || '';
-                document.getElementById('email').value = persona.email || '';
-                document.getElementById('estado').value = persona.estado || 'ACTIVO';
-                if (persona.foto) {
-                    document.getElementById('foto_actual').style.display = 'block';
-                    document.getElementById('foto_preview').src = persona.foto;
-                }
-                document.getElementById('modalPersona').style.display = 'block';
-            }
-        });
-}
-
-function eliminarPersona(id) {
-    if (confirm('¿Eliminar esta persona? Esta acción eliminará también sus antecedentes y órdenes.')) {
-        fetch('/api/personas/' + id, { method: 'DELETE', credentials: 'same-origin' })
-            .then(() => {
-                alert('Persona eliminada correctamente');
-                cargarPersonas();
-            })
-            .catch(error => alert('Error al eliminar: ' + error));
+// ==================== PREVISUALIZAR FOTO ====================
+function previewFoto(event) {
+    const file = event.target.files[0];
+    if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+            mostrarAlerta('La imagen no puede superar los 5MB', 'danger');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            fotoBase64 = e.target.result;
+            document.getElementById('fotoPlaceholder').style.display = 'none';
+            const preview = document.getElementById('fotoPreview');
+            preview.src = fotoBase64;
+            preview.style.display = 'block';
+            document.getElementById('btnQuitarFoto').style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
     }
 }
 
-async function guardarPersona() {
-    var id = document.getElementById('persona_id').value;
-    var data = {
-        cedula: document.getElementById('cedula').value,
-        nombre: document.getElementById('nombre').value.toUpperCase(),
-        fecha_nacimiento: document.getElementById('fecha_nacimiento').value,
-        genero: document.getElementById('genero').value,
-        telefono: document.getElementById('telefono').value,
-        direccion: document.getElementById('direccion').value,
-        email: document.getElementById('email').value,
-        estado: document.getElementById('estado').value
+function resetearFoto() {
+    fotoBase64 = null;
+    document.getElementById('fotoPreview').style.display = 'none';
+    document.getElementById('fotoPreview').src = '';
+    document.getElementById('fotoPlaceholder').style.display = 'flex';
+    document.getElementById('fotoInput').value = '';
+    document.getElementById('btnQuitarFoto').style.display = 'none';
+}
+
+// ==================== CARGAR PERSONAS ====================
+function cargarPersonas(busqueda = '') {
+    const tbody = document.getElementById('tbodyPersonas');
+    const url = busqueda ? `/api/personas?busqueda=${encodeURIComponent(busqueda)}` : '/api/personas';
+    
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            document.getElementById('totalPersonas').textContent = data.length;
+            document.getElementById('totalPersonasTexto').textContent = data.length;
+            
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="empty-dark">
+                            <i class="fas fa-info-circle"></i>
+                            No hay personas registradas
+                            <div style="margin-top: 10px;">
+                                <button class="btn-dark-primary" onclick="abrirModalNuevaPersona()" style="padding: 6px 16px; font-size: 13px;">
+                                    <i class="fas fa-plus me-1"></i> Agregar primera persona
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            data.forEach((persona, index) => {
+                const estadoClass = persona.estado ? persona.estado.toLowerCase() : 'activo';
+                const estadoText = persona.estado || 'ACTIVO';
+                
+                const fotoHtml = persona.foto 
+                    ? `<img src="${persona.foto}" class="foto-perfil-dark" alt="Foto" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                       <div class="foto-perfil-placeholder-dark" style="display:none;"><i class="fas fa-user"></i></div>`
+                    : `<div class="foto-perfil-placeholder-dark"><i class="fas fa-user"></i></div>`;
+                
+                html += `
+                    <tr onclick="verPersona(${persona.id})" style="cursor: pointer;">
+                        <td>${index + 1}</td>
+                        <td>${fotoHtml}</td>
+                        <td><span class="cedula-text-dark">${persona.cedula}</span></td>
+                        <td><span class="nombre-text-dark">${persona.nombre}</span></td>
+                        <td>${persona.fecha_nacimiento || '-'}</td>
+                        <td>${persona.genero || '-'}</td>
+                        <td>${persona.telefono || '-'}</td>
+                        <td><span class="badge-dark ${estadoClass}">${estadoText}</span></td>
+                        <td>
+                            <div class="acciones-btn-dark" onclick="event.stopPropagation();">
+                                <button class="btn btn-ver-dark" onclick="verPersona(${persona.id})" title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-editar-dark" onclick="editarPersona(${persona.id})" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-eliminar-dark" onclick="confirmarEliminar(${persona.id}, '${persona.nombre}')" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error cargando personas:', error);
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="empty-dark" style="color: #f87171;">
+                        <i class="fas fa-exclamation-circle" style="color: #f87171;"></i>
+                        Error al cargar personas: ${error.message}
+                        <div style="margin-top: 10px;">
+                            <button class="btn-dark-primary" onclick="cargarPersonas()" style="padding: 6px 16px; font-size: 13px;">
+                                <i class="fas fa-sync me-1"></i> Reintentar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+// ==================== BUSCAR PERSONAS ====================
+function buscarPersonas(valor) {
+    cargarPersonas(valor.trim());
+}
+
+function limpiarBusqueda() {
+    document.getElementById('busquedaPersona').value = '';
+    cargarPersonas('');
+}
+
+// ==================== ABRIR MODAL NUEVA PERSONA ====================
+function abrirModalNuevaPersona() {
+    document.getElementById('modalPersonaTitle').innerHTML = '<i class="fas fa-user-plus me-2" style="color: #fbbf24;"></i> Nueva Persona';
+    document.getElementById('personaId').value = '';
+    document.getElementById('formPersona').reset();
+    document.getElementById('estado').value = 'ACTIVO';
+    resetearFoto();
+    const modal = new bootstrap.Modal(document.getElementById('modalPersona'));
+    modal.show();
+}
+
+// ==================== EDITAR PERSONA ====================
+function editarPersona(id) {
+    console.log('📝 Editando persona ID:', id);
+    
+    fetch(`/api/personas/${id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(persona => {
+            if (persona.error) {
+                throw new Error(persona.error);
+            }
+            
+            document.getElementById('modalPersonaTitle').innerHTML = '<i class="fas fa-user-edit me-2" style="color: #fbbf24;"></i> Editar Persona';
+            document.getElementById('personaId').value = persona.id;
+            document.getElementById('cedula').value = persona.cedula || '';
+            document.getElementById('nombre').value = persona.nombre || '';
+            document.getElementById('fecha_nacimiento').value = persona.fecha_nacimiento || '';
+            document.getElementById('genero').value = persona.genero || '';
+            document.getElementById('estado').value = persona.estado || 'ACTIVO';
+            document.getElementById('telefono').value = persona.telefono || '';
+            document.getElementById('email').value = persona.email || '';
+            document.getElementById('direccion').value = persona.direccion || '';
+            
+            if (persona.foto) {
+                fotoBase64 = persona.foto;
+                document.getElementById('fotoPlaceholder').style.display = 'none';
+                const preview = document.getElementById('fotoPreview');
+                preview.src = persona.foto;
+                preview.style.display = 'block';
+                document.getElementById('btnQuitarFoto').style.display = 'inline-block';
+            } else {
+                resetearFoto();
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('modalPersona'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('❌ Error cargando persona para editar:', error);
+            mostrarAlerta('Error al cargar los datos de la persona: ' + error.message, 'danger');
+        });
+}
+
+// ==================== VER PERSONA ====================
+function verPersona(id) {
+    const modal = new bootstrap.Modal(document.getElementById('modalDetalle'));
+    document.getElementById('detalleBody').innerHTML = `
+        <div class="text-center text-muted py-4">
+            <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #fbbf24; display: block; margin-bottom: 10px;"></i>
+            Cargando información...
+        </div>
+    `;
+    modal.show();
+    
+    fetch(`/api/personas/${id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(persona => {
+            if (persona.error) {
+                throw new Error(persona.error);
+            }
+            
+            const fotoHtml = persona.foto 
+                ? `<img src="${persona.foto}" class="foto-perfil-preview-dark" alt="Foto" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                   <div class="foto-perfil-preview-placeholder-dark" style="display:none;">
+                       <i class="fas fa-user-circle" style="font-size: 64px;"></i>
+                       <span>Sin foto</span>
+                   </div>`
+                : `<div class="foto-perfil-preview-placeholder-dark">
+                    <i class="fas fa-user-circle" style="font-size: 64px;"></i>
+                    <span>Sin foto</span>
+                   </div>`;
+            
+            const estadoClass = persona.estado ? persona.estado.toLowerCase() : 'activo';
+            const estadoText = persona.estado || 'ACTIVO';
+            
+            const html = `
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        ${fotoHtml}
+                        <h5 class="mt-2" style="color: #e5e7eb;">${persona.nombre}</h5>
+                        <span class="badge-dark ${estadoClass}">${estadoText}</span>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p style="color: #9ca3af; margin-bottom: 2px;"><i class="fas fa-id-card me-1" style="color: #60a5fa;"></i> <strong style="color: #e5e7eb;">Cédula:</strong></p>
+                                <p class="cedula-text-dark">${persona.cedula}</p>
+                                <hr style="border-color: #1f2937;">
+                                <p style="color: #9ca3af; margin-bottom: 2px;"><i class="fas fa-calendar me-1" style="color: #60a5fa;"></i> <strong style="color: #e5e7eb;">Fecha Nacimiento:</strong></p>
+                                <p>${persona.fecha_nacimiento || 'No registrada'}</p>
+                                <hr style="border-color: #1f2937;">
+                                <p style="color: #9ca3af; margin-bottom: 2px;"><i class="fas fa-venus-mars me-1" style="color: #60a5fa;"></i> <strong style="color: #e5e7eb;">Género:</strong></p>
+                                <p>${persona.genero || 'No registrado'}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p style="color: #9ca3af; margin-bottom: 2px;"><i class="fas fa-phone me-1" style="color: #60a5fa;"></i> <strong style="color: #e5e7eb;">Teléfono:</strong></p>
+                                <p>${persona.telefono || 'No registrado'}</p>
+                                <hr style="border-color: #1f2937;">
+                                <p style="color: #9ca3af; margin-bottom: 2px;"><i class="fas fa-envelope me-1" style="color: #60a5fa;"></i> <strong style="color: #e5e7eb;">Email:</strong></p>
+                                <p>${persona.email || 'No registrado'}</p>
+                                <hr style="border-color: #1f2937;">
+                                <p style="color: #9ca3af; margin-bottom: 2px;"><i class="fas fa-home me-1" style="color: #60a5fa;"></i> <strong style="color: #e5e7eb;">Dirección:</strong></p>
+                                <p>${persona.direccion || 'No registrada'}</p>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <hr style="border-color: #1f2937;">
+                                <p style="color: #6b7280; font-size: 13px;">
+                                    <i class="fas fa-clock me-1" style="color: #6b7280;"></i>
+                                    <strong style="color: #9ca3af;">Registrado:</strong> ${persona.fecha_registro || 'No disponible'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('detalleBody').innerHTML = html;
+            document.getElementById('btnVerFichaCompleta').href = `/ficha/${persona.id}`;
+        })
+        .catch(error => {
+            console.error('Error cargando detalles:', error);
+            document.getElementById('detalleBody').innerHTML = `
+                <div class="text-center empty-dark" style="color: #f87171;">
+                    <i class="fas fa-exclamation-circle" style="color: #f87171; font-size: 32px; display: block; margin-bottom: 10px;"></i>
+                    Error al cargar los datos: ${error.message}
+                </div>
+            `;
+        });
+}
+
+// ==================== CONFIRMAR ELIMINAR ====================
+function confirmarEliminar(id, nombre) {
+    personaIdEliminar = id;
+    document.getElementById('eliminarNombre').textContent = nombre;
+    const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+    modal.show();
+}
+
+// ==================== ELIMINAR PERSONA ====================
+document.getElementById('btnConfirmarEliminar').addEventListener('click', function() {
+    if (!personaIdEliminar) return;
+    
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Eliminando...';
+    
+    fetch(`/api/personas/${personaIdEliminar}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminar'));
+        modal.hide();
+        
+        cargarPersonas();
+        mostrarAlerta(data.message || 'Persona eliminada correctamente', 'success');
+    })
+    .catch(error => {
+        console.error('Error eliminando persona:', error);
+        mostrarAlerta('Error al eliminar la persona: ' + error.message, 'danger');
+    })
+    .finally(() => {
+        this.disabled = false;
+        this.innerHTML = '<i class="fas fa-trash me-1"></i> Eliminar';
+        personaIdEliminar = null;
+    });
+});
+
+// ==================== GUARDAR PERSONA ====================
+document.getElementById('formPersona').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const id = document.getElementById('personaId').value;
+    const isEdit = id !== '';
+    const url = isEdit ? `/api/personas/${id}` : '/api/personas';
+    const method = isEdit ? 'PUT' : 'POST';
+    
+    const btn = document.getElementById('btnGuardarPersona');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Guardando...';
+    
+    let cedula = document.getElementById('cedula').value.trim();
+    if (cedula.includes('-')) {
+        const partes = cedula.split('-');
+        if (partes.length === 3) {
+            cedula = partes.join('-');
+        } else {
+            cedula = cedula.replace(/-/g, '');
+        }
+    }
+    
+    const data = {
+        cedula: cedula,
+        nombre: document.getElementById('nombre').value.trim().toUpperCase(),
+        fecha_nacimiento: document.getElementById('fecha_nacimiento').value || '',
+        genero: document.getElementById('genero').value || '',
+        estado: document.getElementById('estado').value || 'ACTIVO',
+        telefono: document.getElementById('telefono').value.trim() || '',
+        email: document.getElementById('email').value.trim() || '',
+        direccion: document.getElementById('direccion').value.trim().toUpperCase() || ''
     };
     
+    if (fotoBase64) {
+        data.foto = fotoBase64;
+    }
+    
     if (!data.cedula || !data.nombre) {
-        alert('Cédula y nombre son obligatorios');
+        mostrarAlerta('Cédula y nombre son campos obligatorios', 'danger');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save me-1"></i> Guardar';
         return;
     }
     
-    // Subir foto si hay
-    var fotoFile = document.getElementById('foto').files[0];
-    if (fotoFile) {
-        var formData = new FormData();
-        formData.append('foto', fotoFile);
-        try {
-            var uploadRes = await fetch('/api/upload_foto', { method: 'POST', body: formData });
-            var uploadResult = await uploadRes.json();
-            if (uploadResult.filename) {
-                data.foto = uploadResult.filename;
-            }
-        } catch(e) {
-            console.error('Error subiendo foto:', e);
-        }
-    }
-    
-    var url = id ? '/api/personas/' + id : '/api/personas';
-    var method = id ? 'PUT' : 'POST';
-    
     fetch(url, {
         method: method,
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            alert(id ? 'Persona actualizada correctamente' : 'Persona guardada correctamente');
-            cerrarModal();
-            cargarPersonas();
-        } else {
-            alert('Error al guardar: ' + JSON.stringify(result));
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || `Error HTTP: ${response.status}`); });
         }
+        return response.json();
+    })
+    .then(result => {
+        if (result.error) {
+            throw new Error(result.error);
+        }
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalPersona'));
+        modal.hide();
+        
+        cargarPersonas();
+        resetearFoto();
+        
+        mostrarAlerta(
+            result.message || (isEdit ? 'Persona actualizada correctamente' : 'Persona creada correctamente'),
+            'success'
+        );
     })
     .catch(error => {
-        alert('Error de conexión: ' + error);
+        console.error('Error guardando persona:', error);
+        mostrarAlerta('Error al guardar la persona: ' + error.message, 'danger');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save me-1"></i> Guardar';
     });
+});
+
+// ==================== MOSTRAR ALERTA ====================
+function mostrarAlerta(mensaje, tipo = 'success') {
+    const iconos = {
+        success: 'fa-check-circle',
+        danger: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+    
+    let alerta = document.querySelector('.alert-floating-dark');
+    if (!alerta) {
+        alerta = document.createElement('div');
+        alerta.className = 'alert-floating-dark';
+        document.body.appendChild(alerta);
+    }
+    
+    alerta.className = `alert-floating-dark ${tipo}`;
+    alerta.innerHTML = `
+        <i class="fas ${iconos[tipo] || 'fa-info-circle'} me-2"></i>
+        ${mensaje}
+        <button type="button" style="float: right; background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer;" onclick="this.parentElement.style.display='none'">×</button>
+    `;
+    alerta.style.display = 'block';
+    
+    clearTimeout(alerta._timeout);
+    alerta._timeout = setTimeout(() => {
+        alerta.style.display = 'none';
+    }, 5000);
 }
 
-document.getElementById('buscar').addEventListener('keyup', cargarPersonas);
-document.addEventListener('DOMContentLoaded', cargarPersonas);
+// ==================== INICIALIZAR ====================
+document.addEventListener('DOMContentLoaded', function() {
+    cargarPersonas();
+    
+    document.getElementById('busquedaPersona').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            buscarPersonas(this.value);
+        }
+    });
+    
+    document.getElementById('modalPersona').addEventListener('hidden.bs.modal', function() {
+        resetearFoto();
+    });
+});
 </script>
 {% endblock %}

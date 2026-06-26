@@ -1,0 +1,781 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA MACHOTES - VISTA TABLA
+       ============================================================ */
+    .table-container {
+        background: #111827;
+        border-radius: 12px;
+        border: 1px solid #1f2937;
+        overflow: hidden;
+        padding: 0;
+    }
+    
+    .table-machotes {
+        margin: 0;
+        color: #e5e7eb;
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .table-machotes thead {
+        background: #1a2236;
+    }
+    
+    .table-machotes thead th {
+        padding: 14px 16px;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #9ca3af;
+        border-bottom: 1px solid #1f2937;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: #1a2236;
+        white-space: nowrap;
+    }
+    
+    .table-machotes tbody tr {
+        border-bottom: 1px solid #1f2937;
+        transition: background 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .table-machotes tbody tr:hover {
+        background: #1f2937;
+    }
+    
+    .table-machotes tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    .table-machotes tbody td {
+        padding: 12px 16px;
+        vertical-align: middle;
+        font-size: 14px;
+        color: #d1d5db;
+    }
+    
+    .table-machotes .col-nombre {
+        font-weight: 500;
+        color: #e5e7eb;
+    }
+    
+    .table-machotes .col-nombre i {
+        color: #fbbf24;
+        margin-right: 8px;
+        width: 18px;
+        text-align: center;
+    }
+    
+    /* Badges de tipo */
+    .badge-tipo {
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+    }
+    .badge-oficio { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }
+    .badge-informe { background: rgba(96, 165, 250, 0.15); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
+    .badge-acta { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); }
+    .badge-citacion { background: rgba(167, 139, 250, 0.15); color: #a78bfa; border: 1px solid rgba(167, 139, 250, 0.2); }
+    .badge-otro { background: rgba(107, 114, 128, 0.15); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.2); }
+    
+    /* Badges de estado */
+    .badge-estado {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+    }
+    .badge-activo { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }
+    .badge-inactivo { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.2); }
+    
+    .badge-categoria {
+        font-size: 10px;
+        padding: 2px 10px;
+        border-radius: 12px;
+        background: #1f2937;
+        color: #9ca3af;
+        display: inline-block;
+        border: 1px solid #374151;
+    }
+    
+    .badge-preguntas {
+        font-size: 10px;
+        padding: 2px 10px;
+        border-radius: 12px;
+        background: rgba(167, 139, 250, 0.15);
+        color: #a78bfa;
+        border: 1px solid rgba(167, 139, 250, 0.2);
+        display: inline-block;
+    }
+    
+    .badge-variables {
+        font-size: 10px;
+        padding: 2px 10px;
+        border-radius: 12px;
+        background: rgba(251, 191, 36, 0.1);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.2);
+        display: inline-block;
+    }
+    
+    /* Acciones */
+    .acciones-cell {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .acciones-cell .btn-icon {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 6px;
+        transition: all 0.2s;
+        font-size: 14px;
+        color: #6b7280;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .acciones-cell .btn-icon:hover {
+        background: rgba(255,255,255,0.05);
+        color: #e5e7eb;
+        transform: scale(1.1);
+    }
+    
+    .acciones-cell .btn-icon i { font-size: 14px; }
+    .acciones-cell .btn-icon .fa-eye { color: #60a5fa; }
+    .acciones-cell .btn-icon .fa-edit { color: #fbbf24; }
+    .acciones-cell .btn-icon .fa-file-pdf { color: #f87171; }
+    .acciones-cell .btn-icon .fa-trash { color: #f87171; }
+    .acciones-cell .btn-icon .fa-copy { color: #4ade80; }
+    .acciones-cell .btn-icon .fa-whatsapp { color: #25D366; }
+    
+    /* Search */
+    .search-box {
+        border-radius: 25px;
+        border: 1px solid #1f2937;
+        background: #1a2236;
+        color: #e5e7eb;
+        padding: 8px 15px;
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .search-box:focus {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        background: #1f2937;
+        color: #fff;
+    }
+    
+    .search-box::placeholder {
+        color: #6b7280;
+    }
+    
+    .search-icon {
+        border-radius: 25px 0 0 25px;
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        border-right: none;
+        color: #6b7280;
+        padding: 8px 15px;
+    }
+    
+    .btn-nuevo-machote {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #111827;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-nuevo-machote:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4);
+        color: #111827;
+    }
+    
+    .form-select {
+        background-color: #1a2236;
+        border-color: #1f2937;
+        color: #e5e7eb;
+        border-radius: 25px;
+    }
+    
+    .form-select:focus {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+    }
+    
+    .form-select option {
+        background: #1a2236;
+        color: #e5e7eb;
+    }
+    
+    .btn-outline-secondary {
+        color: #9ca3af;
+        border-color: #1f2937;
+        background: transparent;
+        border-radius: 25px;
+    }
+    
+    .btn-outline-secondary:hover {
+        background: #1f2937;
+        color: #e5e7eb;
+        border-color: #374151;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #111827;
+        border-radius: 12px;
+        border: 1px solid #1f2937;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #374151;
+    }
+    
+    .empty-state h3 {
+        margin-top: 20px;
+        color: #e5e7eb;
+    }
+    
+    .empty-state p {
+        color: #9ca3af;
+    }
+    
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+    
+    .toast-custom {
+        background: #1f2937;
+        color: #e5e7eb;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        padding: 16px 24px;
+        margin-bottom: 10px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        min-width: 300px;
+        animation: slideInRight 0.3s ease;
+    }
+    
+    .toast-custom.success { border-left: 4px solid #4ade80; }
+    .toast-custom.error { border-left: 4px solid #f87171; }
+    .toast-custom.warning { border-left: 4px solid #fbbf24; }
+    
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(50px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .text-muted {
+        color: #9ca3af !important;
+    }
+    
+    .text-truncate {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+    }
+    
+    /* Responsive - Scroll horizontal en móviles */
+    @media (max-width: 768px) {
+        .table-responsive-mobile {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-machotes {
+            min-width: 700px;
+        }
+    }
+    
+    /* Scroll en el contenedor de la tabla */
+    .table-scroll {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .table-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .table-scroll::-webkit-scrollbar-track {
+        background: #1a2236;
+    }
+    
+    .table-scroll::-webkit-scrollbar-thumb {
+        background: #374151;
+        border-radius: 3px;
+    }
+    
+    .table-scroll::-webkit-scrollbar-thumb:hover {
+        background: #4b5563;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+    <div>
+        <h1 class="mb-1" style="color: #e5e7eb;">
+            <i class="fas fa-file-alt" style="color: #fbbf24;"></i> Machotes de Documentos
+        </h1>
+        <p class="text-muted mb-0">Plantillas de documentos policiales y judiciales</p>
+    </div>
+    <button class="btn btn-nuevo-machote" onclick="window.location.href='/machote/nuevo'">
+        <i class="fas fa-plus-circle"></i> Nuevo Machote
+    </button>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-2 mb-md-0">
+        <div class="input-group">
+            <span class="input-group-text search-icon"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control search-box" id="buscarMachote" placeholder="Buscar machotes...">
+        </div>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="filtroTipo">
+            <option value="">Todos los tipos</option>
+            <option value="oficio">Oficio</option>
+            <option value="informe">Informe</option>
+            <option value="acta">Acta</option>
+            <option value="citacion">Citación</option>
+            <option value="otro">Otro</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="filtroCategoria">
+            <option value="">Todas las categorías</option>
+            <option value="Administrativo">Administrativo</option>
+            <option value="Judicial">Judicial</option>
+            <option value="Policial">Policial</option>
+            <option value="Operativo">Operativo</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-outline-secondary w-100" onclick="cargarMachotes()">
+            <i class="fas fa-redo"></i> Actualizar
+        </button>
+    </div>
+</div>
+
+<div class="table-container">
+    <div class="table-scroll">
+        <table class="table-machotes" id="tablaMachotes">
+            <thead>
+                <tr>
+                    <th style="min-width: 200px;">
+                        <i class="fas fa-tag" style="color: #fbbf24;"></i> Nombre
+                    </th>
+                    <th style="min-width: 120px;">Tipo</th>
+                    <th style="min-width: 120px;">Categoría</th>
+                    <th style="min-width: 80px; text-align: center;">Preguntas</th>
+                    <th style="min-width: 80px; text-align: center;">Variables</th>
+                    <th style="min-width: 100px;">Creado por</th>
+                    <th style="min-width: 120px;">Fecha</th>
+                    <th style="min-width: 200px; text-align: center;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaBody">
+                <!-- Filas cargadas dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Modal para compartir por WhatsApp -->
+<div class="modal fade" id="modalCompartirWhatsApp" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: #111827; border: 1px solid #1f2937; border-radius: 12px;">
+            <div class="modal-header" style="border-bottom: 1px solid #1f2937;">
+                <h5 class="modal-title" style="color: #e5e7eb;">
+                    <i class="fab fa-whatsapp" style="color: #25D366;"></i> Compartir por WhatsApp
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
+            </div>
+            <div class="modal-body" style="color: #e5e7eb;">
+                <div class="mb-3">
+                    <label class="form-label" style="color: #9ca3af;">Mensaje a compartir:</label>
+                    <textarea id="whatsappMensaje" class="form-control" rows="8" style="background: #1a2236; border: 1px solid #1f2937; color: #e5e7eb; border-radius: 8px;"></textarea>
+                </div>
+                <div class="alert alert-info" style="background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2); color: #60a5fa;">
+                    <i class="fas fa-info-circle"></i> El mensaje incluye automáticamente la información del documento generado.
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #1f2937;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: #1f2937; color: #9ca3af; border: none;">Cerrar</button>
+                <button type="button" class="btn btn-success" onclick="enviarWhatsApp()" style="background: #25D366; border: none; color: white;">
+                    <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// ==================== VARIABLES ====================
+let todosLosMachotes = [];
+let whatsappModal = null;
+let documentoGenerado = null;
+
+// ==================== FUNCIÓN PARA MOSTRAR TOAST ====================
+function mostrarToast(mensaje, tipo = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast-custom ${tipo}`;
+    
+    const icono = tipo === 'success' ? '✅' : tipo === 'error' ? '❌' : '⚠️';
+    toast.innerHTML = `<strong>${icono}</strong> ${mensaje}`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(50px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// ==================== FUNCIONES ====================
+function cargarMachotes() {
+    const tbody = document.getElementById('tablaBody');
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="8" class="text-center p-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2 text-muted">Cargando machotes...</p>
+            </td>
+        </tr>
+    `;
+    
+    fetch('/api/machotes')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            todosLosMachotes = data;
+            renderTablaMachotes(data);
+        })
+        .catch(error => {
+            console.error('Error al cargar machotes:', error);
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center p-5">
+                        <i class="fas fa-exclamation-triangle text-danger" style="font-size: 2rem;"></i>
+                        <p class="mt-2 text-muted">Error al cargar los machotes: ${error.message}</p>
+                        <button class="btn btn-primary mt-3" onclick="cargarMachotes()">
+                            <i class="fas fa-redo"></i> Reintentar
+                        </button>
+                    </td>
+                </tr>
+            `;
+            mostrarToast('Error al cargar los machotes: ' + error.message, 'error');
+        });
+}
+
+function renderTablaMachotes(machotes) {
+    const tbody = document.getElementById('tablaBody');
+    
+    if (!machotes || machotes.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center p-5">
+                    <i class="fas fa-file-alt" style="font-size: 3rem; color: #374151;"></i>
+                    <h3 class="mt-3" style="color: #e5e7eb;">No hay machotes registrados</h3>
+                    <p class="text-muted">Crea tu primer machote para comenzar</p>
+                    <button class="btn btn-nuevo-machote mt-3" onclick="window.location.href='/machote/nuevo'">
+                        <i class="fas fa-plus"></i> Crear primer machote
+                    </button>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    let html = '';
+    
+    machotes.forEach(m => {
+        // Clase de badge según tipo
+        let badgeClass = 'badge-tipo ';
+        badgeClass += m.tipo_documento === 'oficio' ? 'badge-oficio' :
+                     m.tipo_documento === 'informe' ? 'badge-informe' :
+                     m.tipo_documento === 'acta' ? 'badge-acta' :
+                     m.tipo_documento === 'citacion' ? 'badge-citacion' : 'badge-otro';
+        
+        // Icono según tipo
+        let icono = m.tipo_documento === 'oficio' ? 'fa-file-signature' :
+                   m.tipo_documento === 'informe' ? 'fa-file-alt' :
+                   m.tipo_documento === 'acta' ? 'fa-file-contract' :
+                   m.tipo_documento === 'citacion' ? 'fa-envelope' : 'fa-file';
+        
+        // Contar variables
+        let variables = [];
+        if (m.contenido) {
+            const matches = m.contenido.match(/\{\{\s*(\w+)\s*\}\}/g);
+            if (matches) {
+                variables = matches.map(v => v.replace(/[{}]/g, '').trim());
+                variables = [...new Set(variables)];
+            }
+        }
+        
+        // Determinar estado (activo/inactivo) - usamos es_activo si existe, sino true por defecto
+        const activo = m.es_activo !== undefined ? m.es_activo : true;
+        const estadoBadge = activo ? 'badge-activo' : 'badge-inactivo';
+        const estadoText = activo ? 'Activo' : 'Inactivo';
+        
+        html += `
+            <tr onclick="verMachote(${m.id})" style="cursor: pointer;">
+                <td class="col-nombre">
+                    <i class="fas ${icono}"></i> 
+                    <span class="text-truncate" style="max-width: 200px;">${m.nombre || 'Sin nombre'}</span>
+                </td>
+                <td><span class="${badgeClass}">${(m.tipo_documento || 'otro').toUpperCase()}</span></td>
+                <td>${m.categoria ? `<span class="badge-categoria">${m.categoria}</span>` : '-'}</td>
+                <td style="text-align: center;">
+                    <span class="badge-preguntas">${m.preguntas_count || 0}</span>
+                </td>
+                <td style="text-align: center;">
+                    <span class="badge-variables">${variables.length}</span>
+                </td>
+                <td><small>${m.creado_por || 'Sistema'}</small></td>
+                <td><small>${m.fecha_registro ? m.fecha_registro.split(' ')[0] : '-'}</small></td>
+                <td style="text-align: center;">
+                    <div class="acciones-cell" onclick="event.stopPropagation();">
+                        <button class="btn-icon" onclick="verMachote(${m.id})" title="Ver machote">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editarMachote(${m.id})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon" onclick="generarDesdeMachote(${m.id})" title="Generar documento">
+                            <i class="fas fa-file-pdf"></i>
+                        </button>
+                        <button class="btn-icon" onclick="compartirMachote(${m.id})" title="Compartir por WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                        <button class="btn-icon" onclick="duplicarMachote(${m.id})" title="Duplicar">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="btn-icon" onclick="eliminarMachote(${m.id})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+    
+    tbody.innerHTML = html;
+}
+
+function filtrarMachotes() {
+    const busqueda = document.getElementById('buscarMachote').value.toLowerCase().trim();
+    const filtroTipo = document.getElementById('filtroTipo').value;
+    const filtroCategoria = document.getElementById('filtroCategoria').value;
+    
+    let filtrados = todosLosMachotes;
+    
+    if (busqueda) {
+        filtrados = filtrados.filter(m => 
+            (m.nombre && m.nombre.toLowerCase().includes(busqueda)) ||
+            (m.descripcion && m.descripcion.toLowerCase().includes(busqueda)) ||
+            (m.tipo_documento && m.tipo_documento.toLowerCase().includes(busqueda)) ||
+            (m.categoria && m.categoria.toLowerCase().includes(busqueda))
+        );
+    }
+    
+    if (filtroTipo) {
+        filtrados = filtrados.filter(m => m.tipo_documento === filtroTipo);
+    }
+    
+    if (filtroCategoria) {
+        filtrados = filtrados.filter(m => m.categoria === filtroCategoria);
+    }
+    
+    renderTablaMachotes(filtrados);
+}
+
+function verMachote(id) {
+    window.location.href = `/machote/ver/${id}`;
+}
+
+function editarMachote(id) {
+    window.location.href = `/machote/editar/${id}`;
+}
+
+function generarDesdeMachote(id) {
+    window.location.href = `/machote/generar/${id}`;
+}
+
+function compartirMachote(id) {
+    fetch(`/api/machotes/${id}`)
+        .then(response => response.json())
+        .then(machote => {
+            if (machote.error) {
+                throw new Error(machote.error);
+            }
+            
+            let mensaje = `*=== FUERZA PUBLICA - DOCUMENTO ===*\n`;
+            mensaje += `*${machote.nombre || 'Documento'}\n`;
+            mensaje += `*Tipo:* ${machote.tipo_documento || 'No especificado'}\n`;
+            mensaje += `${machote.categoria ? `*Categoría:* ${machote.categoria}\n` : ''}`;
+            mensaje += `*${machote.descripcion || ''}\n\n`;
+            mensaje += `*Contenido:*\n${machote.contenido || ''}\n\n`;
+            mensaje += `----------------------------------------\n`;
+            mensaje += `*Sistema de Consultas - Fuerza Publica*\n`;
+            mensaje += `Reporte generado el ${new Date().toLocaleString('es-CR')}`;
+            
+            document.getElementById('whatsappMensaje').value = mensaje;
+            documentoGenerado = mensaje;
+            
+            if (!whatsappModal) {
+                whatsappModal = new bootstrap.Modal(document.getElementById('modalCompartirWhatsApp'));
+            }
+            whatsappModal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarToast('❌ Error al cargar el machote: ' + error.message, 'error');
+        });
+}
+
+function enviarWhatsApp() {
+    const mensaje = document.getElementById('whatsappMensaje').value;
+    if (!mensaje) {
+        mostrarToast('⚠️ No hay mensaje para enviar', 'warning');
+        return;
+    }
+    
+    const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
+    if (whatsappModal) {
+        whatsappModal.hide();
+    }
+}
+
+function duplicarMachote(id) {
+    if (!confirm('¿Deseas duplicar este machote?')) return;
+    
+    fetch(`/api/machotes/${id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(machote => {
+            if (machote.error) {
+                throw new Error(machote.error);
+            }
+            const datos = {
+                nombre: (machote.nombre || 'Machote') + ' (Copia)',
+                descripcion: machote.descripcion || '',
+                tipo_documento: machote.tipo_documento || 'informe',
+                categoria: machote.categoria || '',
+                preguntas: machote.preguntas || []
+            };
+            
+            return fetch('/api/machotes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                mostrarToast('✅ Machote duplicado correctamente', 'success');
+                cargarMachotes();
+            } else {
+                mostrarToast('❌ Error al duplicar: ' + (data.error || 'Error desconocido'), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarToast('❌ Error al duplicar machote: ' + error.message, 'error');
+        });
+}
+
+function eliminarMachote(id) {
+    if (!confirm('¿Estás seguro de eliminar este machote? Esta acción eliminará también todas las preguntas y respuestas asociadas.')) return;
+    
+    fetch(`/api/machotes/${id}`, { 
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        return response.text().then(text => {
+            try {
+                return { status: response.status, data: JSON.parse(text) };
+            } catch {
+                return { status: response.status, data: { success: false, error: 'Error al procesar la respuesta del servidor' } };
+            }
+        });
+    })
+    .then(({ status, data }) => {
+        if (status === 200 && data.success) {
+            mostrarToast('✅ Machote eliminado correctamente', 'success');
+            cargarMachotes();
+        } else {
+            mostrarToast('❌ Error al eliminar: ' + (data.error || 'Error desconocido'), 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarToast('❌ Error al eliminar machote: ' + error.message, 'error');
+    });
+}
+
+// ==================== EVENTOS ====================
+document.addEventListener('DOMContentLoaded', function() {
+    cargarMachotes();
+    
+    document.getElementById('buscarMachote').addEventListener('input', filtrarMachotes);
+    document.getElementById('filtroTipo').addEventListener('change', filtrarMachotes);
+    document.getElementById('filtroCategoria').addEventListener('change', filtrarMachotes);
+});
+</script>
+{% endblock %}

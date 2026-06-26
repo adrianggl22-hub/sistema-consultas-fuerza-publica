@@ -1,44 +1,337 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Alertas</h1>
-<p class="subtitle">Notificaciones de vencimiento</p>
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA ALERTAS
+       ============================================================ */
+    .container-dark {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .card-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    
+    .card-dark h4 {
+        color: #e5e7eb;
+    }
+    
+    .card-dark h4 i {
+        color: #fbbf24;
+    }
+    
+    .card-dark hr {
+        border-color: #1f2937;
+    }
+    
+    .table-dark-custom {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        color: #e5e7eb;
+    }
+    
+    .table-dark-custom thead th {
+        background: #1a2236;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #1f2937;
+    }
+    
+    .table-dark-custom tbody td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        color: #e5e7eb;
+        vertical-align: middle;
+    }
+    
+    .table-dark-custom tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .table-dark-custom tbody tr:hover td {
+        background: rgba(255,255,255,0.03);
+    }
+    
+    .badge-dark {
+        padding: 3px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .badge-dark.danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .badge-dark.warning {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+    
+    .badge-dark.success {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .btn-sm-dark {
+        padding: 3px 12px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-sm-dark.info {
+        background: rgba(96, 165, 250, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+    
+    .btn-sm-dark.info:hover {
+        background: #3b82f6;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-sm-dark.primary {
+        background: #fbbf24;
+        color: #111827;
+        border: 1px solid #fbbf24;
+    }
+    
+    .btn-sm-dark.primary:hover {
+        background: #f59e0b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+    
+    .empty-state-dark {
+        text-align: center;
+        padding: 40px;
+        color: #9ca3af;
+    }
+    
+    .empty-state-dark i {
+        font-size: 48px;
+        color: #374151;
+        margin-bottom: 15px;
+    }
+    
+    .empty-state-dark h4 {
+        color: #e5e7eb;
+    }
+    
+    .header-dark {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .header-dark h1 {
+        color: #e5e7eb;
+        margin: 0;
+    }
+    
+    .header-dark h1 i {
+        color: #fbbf24;
+    }
+    
+    .header-dark .subtitle-dark {
+        color: #9ca3af;
+        font-size: 14px;
+        margin: 4px 0 0 0;
+    }
+    
+    .alert-count-dark {
+        background: #ef4444;
+        color: white;
+        padding: 2px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    .debug-box-dark {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin: 10px 0;
+        font-family: monospace;
+        font-size: 12px;
+        color: #9ca3af;
+    }
+    
+    .debug-box-dark strong {
+        color: #fbbf24;
+    }
+    
+    .spinner-dark {
+        border: 3px solid #1f2937;
+        border-top: 3px solid #fbbf24;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .text-center-dark {
+        text-align: center;
+        padding: 30px;
+        color: #9ca3af;
+    }
+    
+    @media (max-width: 768px) {
+        .header-dark {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .table-dark-custom {
+            font-size: 12px;
+        }
+        .table-dark-custom thead th,
+        .table-dark-custom tbody td {
+            padding: 6px 8px;
+        }
+    }
+</style>
 
-<div class="card">
-    <div class="card-header"><i class="fas fa-bell"></i> Alertas de Vencimiento</div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr><th>N° Orden</th><th>Deudor</th><th>Días</th><th>Acciones</th></tr>
-                </thead>
-                <tbody id="tablaAlertas">
-                </tbody>
-            </table>
+<div class="container-dark">
+    <div class="header-dark">
+        <div>
+            <h1><i class="fas fa-bell"></i> Alertas</h1>
+            <p class="subtitle-dark">Notificaciones de vencimiento de órdenes de captura</p>
+        </div>
+        <span class="alert-count-dark" id="alertCount">0</span>
+    </div>
+
+    <div class="card-dark">
+        <h4><i class="fas fa-clock"></i> Alertas de Vencimiento</h4>
+        <hr>
+        
+        <!-- Caja de depuración -->
+        <div class="debug-box-dark" id="debugBox">
+            <strong>🔍 Depuración:</strong>
+            <div id="debugContent">Esperando datos...</div>
+        </div>
+        
+        <div id="alertasContainer">
+            <div class="text-center-dark py-5">
+                <div class="spinner-dark"></div>
+                <p class="mt-2" style="color: #6b7280;">Cargando alertas...</p>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-fetch('/api/alertas')
-    .then(response => response.json())
-    .then(data => {
-        var tbody = document.getElementById('tablaAlertas');
-        tbody.innerHTML = '';
-        if (!data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="empty">No hay alertas pendientes</td></tr>';
-        } else {
-            for (var i = 0; i < data.length; i++) {
-                var a = data[i];
-                var row = '<tr>' +
-                    '<td><strong>' + a.numero_orden + '</strong></td>' +
-                    '<td>' + a.persona_nombre + '</td>' +
-                    '<td><span class="badge badge-activa">' + a.dias_restantes + ' días</span></td>' +
-                    '<td><button class="btn-icon" onclick="window.open(\'/ficha/' + a.persona_id + '\')"><i class="fas fa-eye"></i></button></td>' +
-                    '</tr>';
-                tbody.innerHTML += row;
-            }
-        }
-    });
+// ============================================================
+// EJECUCIÓN DIRECTA - SIN COMPLICACIONES
+// ============================================================
+(function() {
+    console.log('🚀 Script ejecutándose...');
+    
+    function cargarAlertas() {
+        const container = document.getElementById('alertasContainer');
+        const debug = document.getElementById('debugContent');
+        const badge = document.getElementById('alertCount');
+        
+        if (debug) debug.textContent = '🔄 Solicitando a /api/alertas...';
+        console.log('🔄 Cargando alertas...');
+        
+        fetch('/api/alertas')
+            .then(function(response) {
+                if (debug) debug.textContent = '📡 Status: ' + response.status;
+                console.log('📡 Status:', response.status);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
+            .then(function(data) {
+                if (debug) debug.textContent = '📡 Datos: ' + data.length + ' alertas';
+                console.log('📡 Datos:', data);
+                
+                if (badge) badge.textContent = data.length;
+                
+                if (data && data.length > 0) {
+                    if (container) {
+                        var html = '<div style="overflow-x:auto;"><table class="table-dark-custom"><thead><tr><th>N° Orden</th><th>Deudor</th><th>Cédula</th><th>Días</th><th>Acción</th></tr></thead><tbody>';
+                        for (var i = 0; i < data.length; i++) {
+                            var a = data[i];
+                            var badgeClass = 'badge-dark success';
+                            var labelDias = '🟢 ' + (a.dias_restantes || 0) + ' días';
+                            if (a.dias_restantes <= 2) {
+                                badgeClass = 'badge-dark danger';
+                                labelDias = '🔴 ' + a.dias_restantes + ' días';
+                            } else if (a.dias_restantes <= 5) {
+                                badgeClass = 'badge-dark warning';
+                                labelDias = '🟠 ' + a.dias_restantes + ' días';
+                            }
+                            html += '<tr>';
+                            html += '<td><strong>' + (a.numero_orden || 'N/A') + '</strong></td>';
+                            html += '<td>' + (a.persona_nombre || 'N/A') + '</td>';
+                            html += '<td>' + (a.persona_cedula || 'N/A') + '</td>';
+                            html += '<td><span class="' + badgeClass + '">' + labelDias + '</span></td>';
+                            html += '<td>';
+                            if (a.persona_id) {
+                                html += '<button class="btn-sm-dark info" onclick="window.location.href=\'/ficha/' + a.persona_id + '\'"><i class="fas fa-eye"></i> Ver</button>';
+                            } else {
+                                html += '—';
+                            }
+                            html += '</td>';
+                            html += '</tr>';
+                        }
+                        html += '</tbody></table></div>';
+                        container.innerHTML = html;
+                    }
+                } else {
+                    if (container) {
+                        container.innerHTML = '<div class="empty-state-dark"><i class="fas fa-check-circle" style="color: #4ade80;"></i><h4>No hay alertas pendientes</h4><p>Todas las órdenes de captura están al día.</p></div>';
+                    }
+                }
+            })
+            .catch(function(error) {
+                console.error('❌ Error:', error);
+                if (debug) debug.textContent = '❌ Error: ' + error.message;
+                if (container) {
+                    container.innerHTML = '<div class="empty-state-dark"><i class="fas fa-exclamation-triangle" style="color: #f87171;"></i><h4>Error</h4><p>' + error.message + '</p><button class="btn-sm-dark primary" onclick="location.reload()">Reintentar</button></div>';
+                }
+            });
+    }
+    
+    // Ejecutar cuando la página esté lista
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        cargarAlertas();
+    } else {
+        document.addEventListener('DOMContentLoaded', cargarAlertas);
+    }
+})();
 </script>
 {% endblock %}

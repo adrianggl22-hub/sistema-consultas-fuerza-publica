@@ -1,0 +1,485 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA REPORTES
+       ============================================================ */
+    .report-card-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        transition: transform 0.2s, border-color 0.3s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        overflow: hidden;
+    }
+    .report-card-dark:hover {
+        transform: translateY(-3px);
+        border-color: #fbbf24;
+        box-shadow: 0 5px 15px rgba(251, 191, 36, 0.05);
+    }
+    
+    .report-header-dark {
+        padding: 15px 20px;
+        border-bottom: 1px solid #1f2937;
+    }
+    .report-header-dark.ordenes { background: linear-gradient(135deg, #1a2236, #1e3a5f); }
+    .report-header-dark.acciones { background: linear-gradient(135deg, #1a2236, #1a4a3a); }
+    .report-header-dark.incidentes { background: linear-gradient(135deg, #1a2236, #4a1a1a); }
+    .report-header-dark.judiciales { background: linear-gradient(135deg, #1a2236, #2d1b4a); }
+    
+    .report-header-dark h4 {
+        margin: 0;
+        color: #e5e7eb;
+    }
+    .report-header-dark h4 i {
+        margin-right: 8px;
+    }
+    .report-header-dark.ordenes h4 i { color: #60a5fa; }
+    .report-header-dark.acciones h4 i { color: #34d399; }
+    .report-header-dark.incidentes h4 i { color: #f87171; }
+    .report-header-dark.judiciales h4 i { color: #a78bfa; }
+    
+    .report-body-dark {
+        padding: 20px;
+    }
+    
+    .month-selector-dark {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+    
+    .month-selector-dark select,
+    .month-selector-dark input {
+        padding: 8px 12px;
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        font-size: 14px;
+        background: #1a2236;
+        color: #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    
+    .month-selector-dark select:focus,
+    .month-selector-dark input:focus {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        outline: none;
+    }
+    
+    .month-selector-dark select option {
+        background: #1a2236;
+        color: #e5e7eb;
+    }
+    
+    .btn-generar-dark {
+        background: #fbbf24;
+        color: #111827;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .btn-generar-dark:hover {
+        background: #f59e0b;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 12px rgba(251, 191, 36, 0.3);
+        color: #111827;
+    }
+    
+    .btn-pdf-dark {
+        background: #dc2626;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-left: 10px;
+    }
+    .btn-pdf-dark:hover {
+        background: #b91c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+        color: white;
+    }
+    
+    .loading-dark {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #1f2937;
+        border-radius: 50%;
+        border-top-color: #fbbf24;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .info-stats-dark {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #1f2937;
+    }
+    
+    .info-item-dark {
+        text-align: center;
+    }
+    
+    .info-number-dark {
+        font-size: 24px;
+        font-weight: 700;
+        color: #fbbf24;
+    }
+    
+    .info-label-dark {
+        font-size: 11px;
+        color: #9ca3af;
+    }
+    
+    h1 {
+        color: #e5e7eb;
+    }
+    h1 i {
+        color: #fbbf24;
+    }
+    .subtitle-dark {
+        color: #9ca3af;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .col-md-6 {
+        position: relative;
+        padding: 0 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .month-selector-dark {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .month-selector-dark select,
+        .month-selector-dark input {
+            width: 100%;
+        }
+        .btn-generar-dark,
+        .btn-pdf-dark {
+            width: 100%;
+            margin-left: 0;
+            text-align: center;
+            justify-content: center;
+        }
+        .info-stats-dark {
+            grid-template-columns: 1fr 1fr;
+        }
+        .col-md-6 {
+            padding: 0 5px;
+        }
+    }
+</style>
+
+<h1><i class="fas fa-file-pdf"></i> Reportes Mensuales</h1>
+<p class="subtitle-dark">Genere reportes en PDF de los resultados del mes</p>
+
+<div class="row">
+    <!-- Reporte de Órdenes -->
+    <div class="col-md-6">
+        <div class="report-card-dark">
+            <div class="report-header-dark ordenes">
+                <h4><i class="fas fa-file-alt"></i> Órdenes de Captura</h4>
+            </div>
+            <div class="report-body-dark">
+                <div class="month-selector-dark">
+                    <select id="mes_ordenes">
+                        <option value="01">Enero</option>
+                        <option value="02">Febrero</option>
+                        <option value="03">Marzo</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Mayo</option>
+                        <option value="06">Junio</option>
+                        <option value="07">Julio</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                    <input type="number" id="año_ordenes" value="2026" min="2020" max="2030">
+                    <button class="btn-generar-dark" onclick="generarReporte('ordenes')">
+                        <i class="fas fa-file-pdf"></i> Generar PDF
+                    </button>
+                </div>
+                <div id="info_ordenes" class="info-stats-dark">
+                    <div class="info-item-dark">
+                        <div class="info-number-dark">-</div>
+                        <div class="info-label-dark">Total Órdenes</div>
+                    </div>
+                    <div class="info-item-dark">
+                        <div class="info-number-dark">-</div>
+                        <div class="info-label-dark">Deuda Total</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reporte de Acciones Operativas -->
+    <div class="col-md-6">
+        <div class="report-card-dark">
+            <div class="report-header-dark acciones">
+                <h4><i class="fas fa-clipboard-list"></i> Acciones Operativas</h4>
+            </div>
+            <div class="report-body-dark">
+                <div class="month-selector-dark">
+                    <select id="mes_acciones">
+                        <option value="01">Enero</option>
+                        <option value="02">Febrero</option>
+                        <option value="03">Marzo</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Mayo</option>
+                        <option value="06">Junio</option>
+                        <option value="07">Julio</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                    <input type="number" id="año_acciones" value="2026" min="2020" max="2030">
+                    <button class="btn-generar-dark" onclick="generarReporte('acciones')">
+                        <i class="fas fa-file-pdf"></i> Generar PDF
+                    </button>
+                </div>
+                <div id="info_acciones" class="info-stats-dark">
+                    <div class="info-item-dark">
+                        <div class="info-number-dark">-</div>
+                        <div class="info-label-dark">Total Acciones</div>
+                    </div>
+                    <div class="info-item-dark">
+                        <div class="info-number-dark">-</div>
+                        <div class="info-label-dark">Personas Abordadas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reporte de Incidentes -->
+    <div class="col-md-6">
+        <div class="report-card-dark">
+            <div class="report-header-dark incidentes">
+                <h4><i class="fas fa-exclamation-triangle"></i> Incidentes Relevantes</h4>
+            </div>
+            <div class="report-body-dark">
+                <div class="month-selector-dark">
+                    <select id="mes_incidentes">
+                        <option value="01">Enero</option>
+                        <option value="02">Febrero</option>
+                        <option value="03">Marzo</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Mayo</option>
+                        <option value="06">Junio</option>
+                        <option value="07">Julio</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                    <input type="number" id="año_incidentes" value="2026" min="2020" max="2030">
+                    <button class="btn-generar-dark" onclick="generarReporte('incidentes')">
+                        <i class="fas fa-file-pdf"></i> Generar PDF
+                    </button>
+                </div>
+                <div id="info_incidentes" class="info-stats-dark">
+                    <div class="info-item-dark">
+                        <div class="info-number-dark">-</div>
+                        <div class="info-label-dark">Total Incidentes</div>
+                    </div>
+                    <div class="info-item-dark">
+                        <div class="info-number-dark">-</div>
+                        <div class="info-label-dark">Aprehendidos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reporte de Órdenes Judiciales -->
+    <div class="col-md-6">
+        <div class="report-card-dark">
+            <div class="report-header-dark judiciales">
+                <h4><i class="fas fa-gavel"></i> Órdenes Judiciales</h4>
+            </div>
+            <div class="report-body-dark">
+                <div class="month-selector-dark">
+                    <select id="mes_judiciales">
+                        <option value="01">Enero</option>
+                        <option value="02">Febrero</option>
+                        <option value="03">Marzo</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Mayo</option>
+                        <option value="06">Junio</option>
+                        <option value="07">Julio</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                    <input type="number" id="año_judiciales" value="2026" min="2020" max="2030">
+                    <button class="btn-generar-dark" onclick="generarReporte('judiciales')">
+                        <i class="fas fa-file-pdf"></i> Generar PDF
+                    </button>
+                </div>
+                <div id="info_judiciales" class="info-stats-dark">
+                    <div class="info-item-dark">
+                        <div class="info-number-dark">-</div>
+                        <div class="info-label-dark">Total Órdenes</div>
+                    </div>
+                    <div class="info-item-dark">
+                        <div class="info-number-dark">-</div>
+                        <div class="info-label-dark">Activas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Función para generar reporte
+function generarReporte(tipo) {
+    let mes, año, url;
+    
+    switch(tipo) {
+        case 'ordenes':
+            mes = document.getElementById('mes_ordenes').value;
+            año = document.getElementById('año_ordenes').value;
+            url = `/api/reportes/ordenes?mes=${mes}&año=${año}`;
+            break;
+        case 'acciones':
+            mes = document.getElementById('mes_acciones').value;
+            año = document.getElementById('año_acciones').value;
+            url = `/api/reportes/acciones?mes=${mes}&año=${año}`;
+            break;
+        case 'incidentes':
+            mes = document.getElementById('mes_incidentes').value;
+            año = document.getElementById('año_incidentes').value;
+            url = `/api/reportes/incidentes?mes=${mes}&año=${año}`;
+            break;
+        case 'judiciales':
+            mes = document.getElementById('mes_judiciales').value;
+            año = document.getElementById('año_judiciales').value;
+            url = `/api/reportes/judiciales?mes=${mes}&año=${año}`;
+            break;
+    }
+    
+    // Abrir en nueva ventana para descargar
+    window.open(url, '_blank');
+    
+    // Actualizar estadísticas
+    actualizarEstadisticas(tipo, mes, año);
+}
+
+// Actualizar estadísticas del mes
+function actualizarEstadisticas(tipo, mes, año) {
+    let url;
+    switch(tipo) {
+        case 'ordenes':
+            url = `/api/estadisticas/ordenes?mes=${mes}&año=${año}`;
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('info_ordenes').innerHTML = `
+                        <div class="info-item-dark">
+                            <div class="info-number-dark">${data.total}</div>
+                            <div class="info-label-dark">Total Órdenes</div>
+                        </div>
+                        <div class="info-item-dark">
+                            <div class="info-number-dark">₡${(data.deuda || 0).toLocaleString()}</div>
+                            <div class="info-label-dark">Deuda Total</div>
+                        </div>
+                    `;
+                });
+            break;
+        case 'acciones':
+            url = `/api/estadisticas/acciones?mes=${mes}&año=${año}`;
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('info_acciones').innerHTML = `
+                        <div class="info-item-dark">
+                            <div class="info-number-dark">${data.total}</div>
+                            <div class="info-label-dark">Total Acciones</div>
+                        </div>
+                        <div class="info-item-dark">
+                            <div class="info-number-dark">${data.personas || 0}</div>
+                            <div class="info-label-dark">Personas Abordadas</div>
+                        </div>
+                    `;
+                });
+            break;
+        case 'incidentes':
+            url = `/api/estadisticas/incidentes?mes=${mes}&año=${año}`;
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('info_incidentes').innerHTML = `
+                        <div class="info-item-dark">
+                            <div class="info-number-dark">${data.total}</div>
+                            <div class="info-label-dark">Total Incidentes</div>
+                        </div>
+                        <div class="info-item-dark">
+                            <div class="info-number-dark">${data.aprehendidos || 0}</div>
+                            <div class="info-label-dark">Aprehendidos</div>
+                        </div>
+                    `;
+                });
+            break;
+        case 'judiciales':
+            url = `/api/estadisticas/judiciales?mes=${mes}&año=${año}`;
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('info_judiciales').innerHTML = `
+                        <div class="info-item-dark">
+                            <div class="info-number-dark">${data.total || 0}</div>
+                            <div class="info-label-dark">Total Órdenes</div>
+                        </div>
+                        <div class="info-item-dark">
+                            <div class="info-number-dark">${data.activas || 0}</div>
+                            <div class="info-label-dark">Activas</div>
+                        </div>
+                    `;
+                });
+            break;
+    }
+}
+
+// Cargar estadísticas al iniciar
+$(document).ready(function() {
+    const hoy = new Date();
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const año = hoy.getFullYear();
+    
+    actualizarEstadisticas('ordenes', mes, año);
+    actualizarEstadisticas('acciones', mes, año);
+    actualizarEstadisticas('incidentes', mes, año);
+    actualizarEstadisticas('judiciales', mes, año);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,867 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       ESTILOS DARK MODE PARA EDITOR DE MACHOTES
+       ============================================================ */
+    .editor-container-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    
+    .editor-container-dark h3 {
+        color: #e5e7eb;
+    }
+    
+    .editor-container-dark h3 i {
+        color: #fbbf24;
+    }
+    
+    .editor-container-dark .text-muted {
+        color: #9ca3af !important;
+    }
+    
+    .form-group-editor {
+        margin-bottom: 20px;
+        background: #1a2236;
+        padding: 15px 18px;
+        border-radius: 10px;
+        border: 1px solid #1f2937;
+        transition: all 0.3s ease;
+        position: relative;
+        cursor: default;
+    }
+    
+    .form-group-editor:hover {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.1);
+    }
+    
+    .form-group-editor.dragging {
+        opacity: 0.5;
+        border-color: #fbbf24;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        transform: scale(0.98);
+    }
+    
+    .form-group-editor.drag-over {
+        border-color: #fbbf24;
+        border-width: 2px;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+        transform: scale(1.01);
+    }
+    
+    .form-group-editor .drag-handle {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        color: #6b7280;
+        cursor: grab;
+        font-size: 16px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        background: rgba(255,255,255,0.03);
+        z-index: 10;
+    }
+    
+    .form-group-editor .drag-handle:hover {
+        color: #fbbf24;
+        background: rgba(251, 191, 36, 0.1);
+    }
+    
+    .form-group-editor .drag-handle:active {
+        cursor: grabbing;
+    }
+    
+    .form-group-editor .order-number {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #1f2937;
+        color: #9ca3af;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 10px;
+        border-radius: 10px;
+        border: 1px solid #374151;
+    }
+    
+    .form-group-editor .btn-remove-pregunta {
+        position: absolute;
+        top: 8px;
+        right: 55px;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #f87171;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        z-index: 10;
+    }
+    
+    .form-group-editor .btn-remove-pregunta:hover {
+        background: rgba(239, 68, 68, 0.25);
+        transform: scale(1.1);
+    }
+    
+    .form-group-editor label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 8px;
+        color: #e5e7eb;
+        padding-left: 40px;
+        padding-right: 100px;
+        font-size: 14px;
+    }
+    
+    .form-group-editor label .required {
+        color: #f87171;
+        margin-left: 3px;
+    }
+    
+    .form-group-editor .form-control {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: #0f172a;
+        color: #e5e7eb;
+    }
+    
+    .form-group-editor .form-control:focus {
+        border-color: #fbbf24;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        background: #1a2236;
+    }
+    
+    .form-group-editor .form-control::placeholder {
+        color: #6b7280;
+    }
+    
+    .form-group-editor .form-control option {
+        background: #0f172a;
+        color: #e5e7eb;
+    }
+    
+    .form-group-editor .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 0.5fr;
+        gap: 10px;
+    }
+    
+    .form-group-editor .row .form-group {
+        margin-bottom: 0;
+    }
+    
+    .form-group-editor .row label {
+        font-size: 12px;
+        color: #9ca3af;
+        padding-left: 0;
+        padding-right: 0;
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+    
+    .form-group-editor .row .form-control {
+        font-size: 13px;
+    }
+    
+    .form-group-editor .opciones-container {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #1f2937;
+    }
+    
+    .form-group-editor .opciones-container label {
+        font-size: 12px;
+        color: #9ca3af;
+        padding-left: 0;
+        padding-right: 0;
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+    
+    .form-group-editor .opciones-container .form-control {
+        font-size: 13px;
+    }
+    
+    .form-group-editor .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-top: 22px;
+    }
+    
+    .form-group-editor .checkbox-group input {
+        width: 18px;
+        height: 18px;
+        accent-color: #fbbf24;
+        cursor: pointer;
+    }
+    
+    .form-group-editor .checkbox-group label {
+        font-size: 13px;
+        color: #9ca3af;
+        padding-left: 0;
+        padding-right: 0;
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+    
+    .btn-agregar-pregunta {
+        background: rgba(251, 191, 36, 0.1);
+        color: #fbbf24;
+        border: 2px dashed #1f2937;
+        padding: 15px;
+        border-radius: 10px;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .btn-agregar-pregunta:hover {
+        border-color: #fbbf24;
+        background: rgba(251, 191, 36, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .btn-guardar-editor {
+        background: #22c55e;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-guardar-editor:hover {
+        background: #16a34a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        color: white;
+    }
+    
+    .btn-cancelar-editor {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+        padding: 10px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cancelar-editor:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+    }
+    
+    .btn-acciones-editor {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #1f2937;
+    }
+    
+    .empty-preguntas {
+        text-align: center;
+        padding: 40px;
+        color: #6b7280;
+        border: 2px dashed #1f2937;
+        border-radius: 10px;
+    }
+    
+    .empty-preguntas i {
+        font-size: 3rem;
+        color: #374151;
+        display: block;
+        margin-bottom: 10px;
+    }
+    
+    .feedback-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        z-index: 9999;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease;
+        max-width: 450px;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .feedback-toast.success { background: #065f46; color: #4ade80; border-left: 4px solid #4ade80; }
+    .feedback-toast.error { background: #7f1d1d; color: #f87171; border-left: 4px solid #f87171; }
+    .feedback-toast.warning { background: #78350f; color: #fbbf24; border-left: 4px solid #fbbf24; }
+    .feedback-toast.info { background: #1e3a5f; color: #60a5fa; border-left: 4px solid #60a5fa; }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideOut {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(30px); }
+    }
+    
+    .drag-ghost {
+        background: #1a2236;
+        border: 2px solid #fbbf24;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        opacity: 0.9;
+    }
+    
+    hr {
+        border-color: #1f2937;
+    }
+    
+    @media (max-width: 768px) {
+        .editor-container-dark {
+            padding: 15px;
+        }
+        .form-group-editor {
+            padding: 12px 14px;
+        }
+        .form-group-editor .row {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .form-group-editor .order-number {
+            top: 4px;
+            right: 4px;
+            font-size: 9px;
+            padding: 1px 6px;
+        }
+        .form-group-editor .btn-remove-pregunta {
+            right: 45px;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            top: 4px;
+        }
+        .form-group-editor .drag-handle {
+            top: 4px;
+            left: 4px;
+            font-size: 14px;
+            padding: 2px 6px;
+        }
+        .form-group-editor label {
+            padding-left: 30px;
+            padding-right: 70px;
+            font-size: 13px;
+        }
+        .form-group-editor .checkbox-group {
+            padding-top: 14px;
+        }
+        .btn-acciones-editor {
+            flex-direction: column;
+        }
+        .btn-acciones-editor .btn {
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="editor-container-dark">
+    <h3><i class="fas fa-edit"></i> {% if machote %}Editar{% else %}Nuevo{% endif %} Machote</h3>
+    <p class="text-muted">Crea o modifica plantillas de documentos policiales y judiciales</p>
+    <hr>
+
+    <form id="formMachote">
+        <!-- Datos básicos -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label style="color: #e5e7eb; font-weight: 600;">Nombre del Machote *</label>
+                    <input type="text" class="form-control" id="nombre" value="{{ machote.nombre if machote else '' }}" 
+                           style="background: #0f172a; border: 1px solid #1f2937; color: #e5e7eb; border-radius: 8px; padding: 10px 15px;" 
+                           placeholder="Ej: Roll de Servicio, Oficio de Notificación..." required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label style="color: #e5e7eb; font-weight: 600;">Tipo de Documento *</label>
+                    <select class="form-control" id="tipo_documento" style="background: #0f172a; border: 1px solid #1f2937; color: #e5e7eb; border-radius: 8px; padding: 10px 15px;" required>
+                        <option value="informe" {% if machote and machote.tipo_documento == 'informe' %}selected{% endif %}>Informe</option>
+                        <option value="oficio" {% if machote and machote.tipo_documento == 'oficio' %}selected{% endif %}>Oficio</option>
+                        <option value="acta" {% if machote and machote.tipo_documento == 'acta' %}selected{% endif %}>Acta</option>
+                        <option value="citacion" {% if machote and machote.tipo_documento == 'citacion' %}selected{% endif %}>Citación</option>
+                        <option value="otro" {% if machote and machote.tipo_documento == 'otro' %}selected{% endif %}>Otro</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label style="color: #e5e7eb; font-weight: 600;">Categoría</label>
+                    <input type="text" class="form-control" id="categoria" value="{{ machote.categoria if machote else '' }}" 
+                           style="background: #0f172a; border: 1px solid #1f2937; color: #e5e7eb; border-radius: 8px; padding: 10px 15px;" 
+                           placeholder="Ej: Administrativo, Judicial, Penal...">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label style="color: #e5e7eb; font-weight: 600;">Descripción</label>
+                    <input type="text" class="form-control" id="descripcion" value="{{ machote.descripcion if machote else '' }}" 
+                           style="background: #0f172a; border: 1px solid #1f2937; color: #e5e7eb; border-radius: 8px; padding: 10px 15px;" 
+                           placeholder="Breve descripción del machote">
+                </div>
+            </div>
+        </div>
+
+        <!-- Preguntas -->
+        <div style="margin-top: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h5 style="color: #e5e7eb; margin: 0;">
+                    <i class="fas fa-list" style="color: #fbbf24;"></i> Preguntas del Machote
+                </h5>
+                <button type="button" class="btn-agregar-pregunta" style="width: auto; padding: 8px 20px;" onclick="agregarPregunta()">
+                    <i class="fas fa-plus-circle"></i> Agregar Pregunta
+                </button>
+            </div>
+
+            <div id="preguntasContainer">
+                {% if preguntas %}
+                    {% for p in preguntas %}
+                    <div class="form-group-editor" data-index="{{ loop.index0 }}" data-id="{{ p.id or '' }}">
+                        <span class="drag-handle" title="Arrastrar para reordenar">
+                            <i class="fas fa-grip-vertical"></i>
+                        </span>
+                        <span class="order-number">#{{ loop.index }}</span>
+                        <button type="button" class="btn-remove-pregunta" onclick="eliminarPregunta(this)" title="Eliminar pregunta">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <label>
+                            <i class="fas fa-question-circle" style="color: #a78bfa; margin-right: 4px;"></i>
+                            Pregunta <span class="required">*</span>
+                        </label>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Título</label>
+                                <input type="text" class="form-control pregunta-titulo" value="{{ p.titulo }}" placeholder="Título de la pregunta" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Variable</label>
+                                <input type="text" class="form-control pregunta-variable" value="{{ p.variable }}" placeholder="variable_nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo</label>
+                                <select class="form-control pregunta-tipo" onchange="cambiarTipoPregunta(this)">
+                                    <option value="texto" {% if p.tipo == 'texto' %}selected{% endif %}>Texto corto</option>
+                                    <option value="textarea" {% if p.tipo == 'textarea' %}selected{% endif %}>Texto largo</option>
+                                    <option value="select" {% if p.tipo == 'select' %}selected{% endif %}>Selección</option>
+                                    <option value="fecha" {% if p.tipo == 'fecha' %}selected{% endif %}>Fecha</option>
+                                    <option value="hora" {% if p.tipo == 'hora' %}selected{% endif %}>Hora</option>
+                                </select>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" class="pregunta-requerido" {% if p.requerido %}checked{% endif %}>
+                                <label>Requerido</label>
+                            </div>
+                        </div>
+                        <div class="opciones-container" style="{% if p.tipo != 'select' %}display:none;{% endif %}">
+                            <label>Opciones (separadas por coma)</label>
+                            <input type="text" class="form-control pregunta-opciones" 
+                                   value="{% if p.opciones %}{{ p.opciones|from_json|join(', ') }}{% endif %}" 
+                                   placeholder="Opción 1, Opción 2, Opción 3">
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-preguntas" id="noPreguntas">
+                        <i class="fas fa-list-ul"></i>
+                        <p>No hay preguntas agregadas</p>
+                        <small class="text-muted">Haz clic en "Agregar Pregunta" para comenzar</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="btn-acciones-editor">
+            <button type="submit" class="btn-guardar-editor" id="btnGuardar">
+                <i class="fas fa-save"></i> {% if machote %}Actualizar{% else %}Crear{% endif %} Machote
+            </button>
+            <a href="/machotes" class="btn-cancelar-editor">
+                <i class="fas fa-arrow-left"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+// ==================== VARIABLES ====================
+var preguntaIdCounter = 0;
+
+// ==================== DRAG & DROP ====================
+document.addEventListener('DOMContentLoaded', function() {
+    var container = document.getElementById('preguntasContainer');
+    if (container) {
+        var sortable = new Sortable(container, {
+            handle: '.drag-handle',
+            animation: 150,
+            ghostClass: 'dragging',
+            dragClass: 'dragging',
+            chosenClass: 'drag-ghost',
+            onEnd: function(evt) {
+                // Actualizar números de orden
+                actualizarOrdenes();
+                mostrarToast('📋 Orden de preguntas actualizado', 'info');
+            }
+        });
+    }
+    
+    // Inicializar contador
+    var items = document.querySelectorAll('.form-group-editor');
+    items.forEach(function(item, index) {
+        var id = item.dataset.id || 'new_' + Date.now() + '_' + index;
+        if (!item.dataset.id) {
+            item.dataset.id = id;
+        }
+    });
+});
+
+function actualizarOrdenes() {
+    var items = document.querySelectorAll('.form-group-editor');
+    items.forEach(function(item, index) {
+        var orderNumber = item.querySelector('.order-number');
+        if (orderNumber) {
+            orderNumber.textContent = '#' + (index + 1);
+        }
+        item.dataset.index = index;
+    });
+}
+
+// ==================== FUNCIONES ====================
+function agregarPregunta() {
+    var container = document.getElementById('preguntasContainer');
+    var noPreguntas = document.getElementById('noPreguntas');
+    var index = container.querySelectorAll('.form-group-editor').length;
+    var id = 'new_' + Date.now() + '_' + index;
+    
+    var div = document.createElement('div');
+    div.className = 'form-group-editor';
+    div.dataset.index = index;
+    div.dataset.id = id;
+    div.innerHTML = `
+        <span class="drag-handle" title="Arrastrar para reordenar">
+            <i class="fas fa-grip-vertical"></i>
+        </span>
+        <span class="order-number">#${index + 1}</span>
+        <button type="button" class="btn-remove-pregunta" onclick="eliminarPregunta(this)" title="Eliminar pregunta">
+            <i class="fas fa-times"></i>
+        </button>
+        <label>
+            <i class="fas fa-question-circle" style="color: #a78bfa; margin-right: 4px;"></i>
+            Pregunta <span class="required">*</span>
+        </label>
+        <div class="row">
+            <div class="form-group">
+                <label>Título</label>
+                <input type="text" class="form-control pregunta-titulo" placeholder="Título de la pregunta" required>
+            </div>
+            <div class="form-group">
+                <label>Variable</label>
+                <input type="text" class="form-control pregunta-variable" placeholder="variable_nombre" required>
+            </div>
+            <div class="form-group">
+                <label>Tipo</label>
+                <select class="form-control pregunta-tipo" onchange="cambiarTipoPregunta(this)">
+                    <option value="texto">Texto corto</option>
+                    <option value="textarea">Texto largo</option>
+                    <option value="select">Selección</option>
+                    <option value="fecha">Fecha</option>
+                    <option value="hora">Hora</option>
+                </select>
+            </div>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" class="pregunta-requerido" checked>
+                <label>Requerido</label>
+            </div>
+        </div>
+        <div class="opciones-container" style="display:none;">
+            <label>Opciones (separadas por coma)</label>
+            <input type="text" class="form-control pregunta-opciones" placeholder="Opción 1, Opción 2, Opción 3">
+        </div>
+    `;
+    
+    container.appendChild(div);
+    
+    if (noPreguntas) {
+        noPreguntas.style.display = 'none';
+    }
+    
+    // Actualizar Sortable para el nuevo elemento
+    actualizarSortable();
+}
+
+function eliminarPregunta(btn) {
+    if (!confirm('¿Eliminar esta pregunta?')) return;
+    var item = btn.closest('.form-group-editor');
+    item.style.transition = 'all 0.3s ease';
+    item.style.transform = 'scale(0.9)';
+    item.style.opacity = '0';
+    setTimeout(function() {
+        item.remove();
+        actualizarOrdenes();
+        var container = document.getElementById('preguntasContainer');
+        if (container.querySelectorAll('.form-group-editor').length === 0) {
+            var noPreguntas = document.getElementById('noPreguntas');
+            if (noPreguntas) {
+                noPreguntas.style.display = 'block';
+            }
+        }
+        mostrarToast('🗑️ Pregunta eliminada', 'info');
+    }, 300);
+}
+
+function cambiarTipoPregunta(select) {
+    var item = select.closest('.form-group-editor');
+    var opcionesContainer = item.querySelector('.opciones-container');
+    if (select.value === 'select') {
+        opcionesContainer.style.display = 'block';
+    } else {
+        opcionesContainer.style.display = 'none';
+    }
+}
+
+function actualizarSortable() {
+    var container = document.getElementById('preguntasContainer');
+    if (container) {
+        // Destruir Sortable existente si existe
+        if (container.sortable) {
+            container.sortable.destroy();
+        }
+        container.sortable = new Sortable(container, {
+            handle: '.drag-handle',
+            animation: 150,
+            ghostClass: 'dragging',
+            dragClass: 'dragging',
+            chosenClass: 'drag-ghost',
+            onEnd: function(evt) {
+                actualizarOrdenes();
+                mostrarToast('📋 Orden de preguntas actualizado', 'info');
+            }
+        });
+    }
+}
+
+function obtenerPreguntas() {
+    var items = document.querySelectorAll('.form-group-editor');
+    var preguntas = [];
+    var valid = true;
+    
+    items.forEach(function(item, index) {
+        var titulo = item.querySelector('.pregunta-titulo').value.trim();
+        var variable = item.querySelector('.pregunta-variable').value.trim();
+        var tipo = item.querySelector('.pregunta-tipo').value;
+        var requerido = item.querySelector('.pregunta-requerido').checked;
+        var opcionesInput = item.querySelector('.pregunta-opciones');
+        var opciones = [];
+        
+        if (opcionesInput) {
+            opciones = opcionesInput.value.split(',').map(function(o) { return o.trim(); }).filter(function(o) { return o; });
+        }
+        
+        if (!titulo) {
+            valid = false;
+            item.querySelector('.pregunta-titulo').style.borderColor = '#ef4444';
+            mostrarToast('❌ El título de la pregunta ' + (index + 1) + ' es requerido', 'error');
+        } else {
+            item.querySelector('.pregunta-titulo').style.borderColor = '';
+        }
+        
+        if (!variable) {
+            valid = false;
+            item.querySelector('.pregunta-variable').style.borderColor = '#ef4444';
+            mostrarToast('❌ La variable de la pregunta ' + (index + 1) + ' es requerida', 'error');
+        } else if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(variable)) {
+            valid = false;
+            item.querySelector('.pregunta-variable').style.borderColor = '#ef4444';
+            mostrarToast('❌ La variable "' + variable + '" debe contener solo letras, números y guión bajo', 'error');
+        } else {
+            item.querySelector('.pregunta-variable').style.borderColor = '';
+        }
+        
+        if (tipo === 'select' && opciones.length === 0) {
+            valid = false;
+            if (opcionesInput) {
+                opcionesInput.style.borderColor = '#ef4444';
+            }
+            mostrarToast('❌ La pregunta ' + (index + 1) + ' es de tipo selección y no tiene opciones', 'error');
+        } else if (opcionesInput) {
+            opcionesInput.style.borderColor = '';
+        }
+        
+        // Verificar variables duplicadas
+        var variables = preguntas.map(function(p) { return p.variable; });
+        if (variable && variables.indexOf(variable) !== -1) {
+            valid = false;
+            item.querySelector('.pregunta-variable').style.borderColor = '#ef4444';
+            mostrarToast('❌ La variable "' + variable + '" ya está siendo utilizada en otra pregunta', 'error');
+        }
+        
+        preguntas.push({
+            id: item.dataset.id || null,
+            orden: index,
+            titulo: titulo,
+            variable: variable,
+            tipo: tipo,
+            requerido: requerido,
+            opciones: opciones
+        });
+    });
+    
+    return { preguntas: preguntas, valid: valid };
+}
+
+function mostrarToast(mensaje, tipo) {
+    tipo = tipo || 'success';
+    var oldFeedback = document.querySelector('.feedback-toast');
+    if (oldFeedback) {
+        oldFeedback.remove();
+    }
+    
+    var toast = document.createElement('div');
+    toast.className = 'feedback-toast ' + tipo;
+    
+    var iconos = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+    };
+    
+    toast.innerHTML = '<strong>' + (iconos[tipo] || 'ℹ️') + '</strong> ' + mensaje;
+    document.body.appendChild(toast);
+    
+    setTimeout(function() {
+        if (toast.parentNode) {
+            toast.style.animation = 'slideOut 0.3s ease forwards';
+            setTimeout(function() {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 300);
+        }
+    }, 4000);
+}
+
+// ==================== EVENTOS ====================
+document.getElementById('formMachote').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var nombre = document.getElementById('nombre').value.trim();
+    var tipo_documento = document.getElementById('tipo_documento').value;
+    var categoria = document.getElementById('categoria').value.trim();
+    var descripcion = document.getElementById('descripcion').value.trim();
+    
+    if (!nombre) {
+        mostrarToast('⚠️ El nombre del machote es requerido', 'warning');
+        document.getElementById('nombre').focus();
+        return;
+    }
+    
+    var { preguntas, valid } = obtenerPreguntas();
+    
+    if (!valid) {
+        return;
+    }
+    
+    if (preguntas.length === 0) {
+        mostrarToast('⚠️ Debes agregar al menos una pregunta', 'warning');
+        return;
+    }
+    
+    var data = {
+        nombre: nombre,
+        tipo_documento: tipo_documento,
+        categoria: categoria,
+        descripcion: descripcion,
+        preguntas: preguntas
+    };
+    
+    var isEdit = {{ 'true' if machote else 'false' }};
+    var url = isEdit ? '/api/machotes/{{ machote.id }}' : '/api/machotes';
+    var method = isEdit ? 'PUT' : 'POST';
+    
+    var btn = document.getElementById('btnGuardar');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error('Error HTTP: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        if (data.success) {
+            mostrarToast('✅ Machote ' + (isEdit ? 'actualizado' : 'creado') + ' correctamente', 'success');
+            setTimeout(function() {
+                window.location.href = '/machotes';
+            }, 1000);
+        } else {
+            mostrarToast('❌ Error: ' + (data.error || 'Error desconocido'), 'error');
+        }
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        mostrarToast('❌ Error al guardar: ' + error.message, 'error');
+    })
+    .finally(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> ' + (isEdit ? 'Actualizar' : 'Crear') + ' Machote';
+    });
+});
+
+// Inicializar Sortable al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    actualizarSortable();
+});
+
+// Re-inicializar Sortable después de cambios
+$(document).on('DOMNodeInserted', '.form-group-editor', function() {
+    actualizarSortable();
+});
+</script>
+{% endblock %}

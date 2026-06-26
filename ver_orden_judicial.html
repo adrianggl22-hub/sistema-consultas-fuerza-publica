@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .detail-card {
+        background: white;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .detail-header {
+        background: linear-gradient(135deg, #6c3483, #512e5f);
+        color: white;
+        padding: 20px;
+    }
+    .detail-body { padding: 20px; }
+    .info-row {
+        display: flex;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .info-label { width: 200px; font-weight: 600; color: #555; }
+    .info-value { flex: 1; color: #333; }
+    .badge-activa { background: #d4edda; color: #155724; padding: 3px 10px; border-radius: 15px; }
+    .section-title {
+        background: #f8f9fa;
+        padding: 8px 12px;
+        margin: 15px 0 10px 0;
+        border-radius: 5px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+</style>
+
+<div class="detail-card">
+    <div class="detail-header">
+        <h1><i class="fas fa-gavel"></i> Orden Judicial</h1>
+        <p>N° Único: {{ orden.numero_unico }}</p>
+    </div>
+    <div class="detail-body">
+        <div class="section-title"><i class="fas fa-building"></i> Datos del Despacho</div>
+        <div class="info-row"><div class="info-label">Despacho:</div><div class="info-value">{{ orden.despacho }}</div></div>
+        <div class="info-row"><div class="info-label">Fecha Emisión:</div><div class="info-value">{{ orden.fecha_emision }}</div></div>
+        <div class="info-row"><div class="info-label">N° Oficio:</div><div class="info-value">{{ orden.numero_oficio or 'No registrado' }}</div></div>
+        <div class="info-row"><div class="info-label">Correo Despacho:</div><div class="info-value">{{ orden.correo_despacho or 'No registrado' }}</div></div>
+        <div class="info-row"><div class="info-label">Teléfono Despacho:</div><div class="info-value">{{ orden.telefono_despacho or 'No registrado' }}</div></div>
+        <div class="info-row"><div class="info-label">Delito(s):</div><div class="info-value">{{ orden.delitos or 'No registrado' }}</div></div>
+        
+        <div class="section-title"><i class="fas fa-user-injured"></i> Ofendido</div>
+        <div class="info-row"><div class="info-label">Nombre:</div><div class="info-value">{{ orden.ofendido_nombre or 'No registrado' }}</div></div>
+        <div class="info-row"><div class="info-label">Identificación:</div><div class="info-value">{{ orden.ofendido_identificacion or 'No registrado' }}</div></div>
+        <div class="info-row"><div class="info-label">Más ofendidos:</div><div class="info-value">{{ 'Sí' if orden.hay_mas_ofendidos else 'No' }}</div></div>
+        
+        <div class="section-title"><i class="fas fa-user-graduate"></i> Imputado</div>
+        <div class="info-row"><div class="info-label">Nombre:</div><div class="info-value">{{ orden.imputado_nombre }}</div></div>
+        <div class="info-row"><div class="info-label">Identificación:</div><div class="info-value">{{ orden.imputado_identificacion }}</div></div>
+        <div class="info-row"><div class="info-label">Nacionalidad:</div><div class="info-value">{{ orden.nacionalidad or 'No registrada' }}</div></div>
+        <div class="info-row"><div class="info-label">Estado Civil:</div><div class="info-value">{{ orden.estado_civil or 'No registrado' }}</div></div>
+        <div class="info-row"><div class="info-label">Género:</div><div class="info-value">{{ orden.genero or 'No registrado' }}</div></div>
+        <div class="info-row"><div class="info-label">Padre:</div><div class="info-value">{{ orden.nombre_padre or 'No registrado' }}</div></div>
+        <div class="info-row"><div class="info-label">Madre:</div><div class="info-value">{{ orden.nombre_madre or 'No registrada' }}</div></div>
+        
+        <div class="section-title"><i class="fas fa-file-signature"></i> Datos de la Orden</div>
+        <div class="info-row"><div class="info-label">Tipo Solicitud:</div><div class="info-value">{{ orden.tipo_solicitud or 'No especificado' }}</div></div>
+        <div class="info-row"><div class="info-label">Condición Requerido:</div><div class="info-value">{{ orden.condicion_requerido or 'No especificado' }}</div></div>
+        <div class="info-row"><div class="info-label">Tipo Captura:</div><div class="info-value">{{ orden.tipo_captura or 'No especificado' }}</div></div>
+        <div class="info-row"><div class="info-label">Remisión a:</div><div class="info-value">{{ orden.remision_a or 'No especificado' }}</div></div>
+        <div class="info-row"><div class="info-label">Ubicación/Lugar:</div><div class="info-value">{{ orden.lugar_captura or 'No registrado' }}</div></div>
+        
+        {% if orden.observaciones %}
+        <div class="info-row"><div class="info-label">Observaciones:</div><div class="info-value">{{ orden.observaciones }}</div></div>
+        {% endif %}
+        
+        <div class="info-row"><div class="info-label">Estado:</div><div class="info-value"><span class="badge-activa">{{ orden.estado }}</span></div></div>
+        <div class="info-row"><div class="info-label">Registrado por:</div><div class="info-value">{{ orden.creado_por }} - {{ orden.fecha_registro }}</div></div>
+        
+        <div style="margin-top: 30px; text-align: right;">
+            <button class="btn btn-secondary" onclick="window.location.href='/ordenes_judiciales'">Volver</button>
+            <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
