@@ -2,123 +2,416 @@
 
 {% block content %}
 <style>
-    .detail-card {
-        background: white;
-        border-radius: 10px;
-        border: 1px solid #ddd;
+    /* ============================================================
+       ESTILOS DARK MODE PARA ORDEN JUDICIAL
+       ============================================================ */
+    
+    .orden-judicial-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px 0;
+    }
+    
+    .oj-card {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
         margin-bottom: 20px;
         overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        transition: border-color 0.3s ease;
     }
-    .detail-header {
-        background: linear-gradient(135deg, #6c3483, #512e5f);
-        color: white;
-        padding: 20px;
+    
+    .oj-card:hover {
+        border-color: #fbbf24;
     }
-    .detail-header h1 {
-        color: white;
-        margin: 0;
-        font-size: 24px;
-    }
-    .detail-header p {
-        margin: 5px 0 0;
-        opacity: 0.9;
-    }
-    .detail-body { padding: 20px; }
-    .info-row {
+    
+    .oj-card-header {
+        background: #1a2236;
+        padding: 16px 24px;
+        border-bottom: 1px solid #1f2937;
         display: flex;
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
     }
-    .info-label { width: 200px; font-weight: 600; color: #555; }
-    .info-value { flex: 1; color: #333; }
-    .badge-activa { background: #d4edda; color: #155724; padding: 3px 10px; border-radius: 15px; }
-    .section-title {
-        background: #f8f9fa;
-        padding: 8px 12px;
-        margin: 15px 0 10px 0;
-        border-radius: 5px;
-        font-weight: bold;
-        color: #2c3e50;
+    
+    .oj-card-header h3 {
+        margin: 0;
+        color: #e5e7eb;
+        font-weight: 700;
+        font-size: 18px;
     }
-    .btn-volver {
-        background: linear-gradient(135deg, #2c3e50, #3498db);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s;
+    
+    .oj-card-header h3 i {
+        color: #fbbf24;
         margin-right: 10px;
     }
-    .btn-imprimir {
-        background: linear-gradient(135deg, #28a745, #20c997);
+    
+    .oj-card-header .numero-unico {
+        color: #fbbf24;
+        font-weight: 700;
+        font-size: 16px;
+        background: rgba(251, 191, 36, 0.1);
+        padding: 4px 16px;
+        border-radius: 20px;
+        border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+    
+    .oj-card-body {
+        padding: 24px;
+        color: #e5e7eb;
+    }
+    
+    .oj-section {
+        background: #1a2236;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+        border: 1px solid #1f2937;
+    }
+    
+    .oj-section:last-child {
+        margin-bottom: 0;
+    }
+    
+    .oj-section-title {
+        color: #fbbf24;
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #1f2937;
+        padding-bottom: 8px;
+    }
+    
+    .oj-section-title i {
+        margin-right: 8px;
+        width: 18px;
+        text-align: center;
+    }
+    
+    .oj-info-row {
+        display: flex;
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        align-items: flex-start;
+    }
+    
+    .oj-info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .oj-info-row .label {
+        font-weight: 600;
+        color: #9ca3af;
+        width: 180px;
+        flex-shrink: 0;
+        font-size: 13px;
+    }
+    
+    .oj-info-row .value {
+        color: #e5e7eb;
+        flex: 1;
+        font-size: 13px;
+        word-break: break-word;
+    }
+    
+    .oj-info-row .value strong {
+        color: #fbbf24;
+    }
+    
+    .oj-info-row .value .no-registrado {
+        color: #6b7280;
+        font-style: italic;
+    }
+    
+    .oj-badge {
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    .oj-badge.active {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .oj-badge.inactive {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .oj-badge.pending {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+    
+    .oj-badge.completed {
+        background: rgba(96, 165, 250, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+    
+    .oj-btn-back {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #1f2937;
+        padding: 8px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+    
+    .oj-btn-back:hover {
+        background: #2d3a4a;
+        color: #e5e7eb;
+        text-decoration: none;
+    }
+    
+    .oj-btn-whatsapp {
+        background: #22c55e;
         color: white;
         border: none;
-        padding: 10px 20px;
+        padding: 8px 24px;
         border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
         cursor: pointer;
-        transition: all 0.3s;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
-    .btn-volver:hover, .btn-imprimir:hover {
+    
+    .oj-btn-whatsapp:hover {
+        background: #16a34a;
         transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+        color: white;
     }
+    
+    .oj-btn-print {
+        background: rgba(96, 165, 250, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(96, 165, 250, 0.2);
+        padding: 8px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .oj-btn-print:hover {
+        background: #3b82f6;
+        color: white;
+    }
+    
+    .oj-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #1f2937;
+    }
+    
     @media (max-width: 768px) {
-        .info-row { flex-direction: column; }
-        .info-label { width: 100%; margin-bottom: 5px; }
+        .oj-card-body { padding: 16px; }
+        .oj-section { padding: 12px 16px; }
+        .oj-info-row { flex-wrap: wrap; }
+        .oj-info-row .label { width: 100%; font-size: 12px; margin-bottom: 2px; color: #6b7280; }
+        .oj-info-row .value { font-size: 13px; }
+        .oj-card-header { flex-direction: column; align-items: flex-start; }
+        .oj-card-header .numero-unico { font-size: 14px; }
+        .oj-actions { flex-direction: column; }
+        .oj-actions .oj-btn-back,
+        .oj-actions .oj-btn-whatsapp,
+        .oj-actions .oj-btn-print { width: 100%; justify-content: center; }
     }
+    
     @media print {
-        .btn-volver, .btn-imprimir { display: none; }
+        .no-print { display: none !important; }
+        .oj-card { background: white !important; border: 1px solid #ddd !important; box-shadow: none !important; }
+        .oj-card-header { background: #f8f9fa !important; border-bottom: 1px solid #ddd !important; }
+        .oj-card-header h3 { color: #333 !important; }
+        .oj-card-header .numero-unico { color: #333 !important; background: #f0f0f0 !important; }
+        .oj-card-body { color: #333 !important; }
+        .oj-section { background: #f8f9fa !important; border: 1px solid #ddd !important; }
+        .oj-section-title { color: #555 !important; border-bottom-color: #ddd !important; }
+        .oj-info-row .label { color: #666 !important; }
+        .oj-info-row .value { color: #333 !important; }
+        .oj-info-row .value .no-registrado { color: #999 !important; }
+        .oj-badge.active { background: #d4edda !important; color: #155724 !important; border: 1px solid #c3e6cb !important; }
+        .oj-badge.inactive { background: #f8d7da !important; color: #721c24 !important; border: 1px solid #f5c6cb !important; }
     }
 </style>
 
-<div class="detail-card">
-    <div class="detail-header">
-        <h1><i class="fas fa-gavel"></i> Orden Judicial</h1>
-        <p>N° Único: {{ orden.numero_unico }}</p>
-    </div>
-    <div class="detail-body">
-        <div class="section-title"><i class="fas fa-building"></i> Datos del Despacho</div>
-        <div class="info-row"><div class="info-label">Despacho:</div><div class="info-value">{{ orden.despacho }}</div></div>
-        <div class="info-row"><div class="info-label">Fecha Emisión:</div><div class="info-value">{{ orden.fecha_emision }}</div></div>
-        <div class="info-row"><div class="info-label">N° Oficio:</div><div class="info-value">{{ orden.numero_oficio or 'No registrado' }}</div></div>
-        <div class="info-row"><div class="info-label">N° Consecutivo Interno:</div><div class="info-value">{{ orden.consecutivo_interno or 'No registrado' }}</div></div>
-        <div class="info-row"><div class="info-label">Correo Despacho:</div><div class="info-value">{{ orden.correo_despacho or 'No registrado' }}</div></div>
-        <div class="info-row"><div class="info-label">Teléfono Despacho:</div><div class="info-value">{{ orden.telefono_despacho or 'No registrado' }}</div></div>
-        <div class="info-row"><div class="info-label">Delito(s):</div><div class="info-value">{{ orden.delitos or 'No registrado' }}</div></div>
-        
-        <div class="section-title"><i class="fas fa-user-injured"></i> Ofendido</div>
-        <div class="info-row"><div class="info-label">Nombre:</div><div class="info-value">{{ orden.ofendido_nombre or 'No registrado' }}</div></div>
-        <div class="info-row"><div class="info-label">Identificación:</div><div class="info-value">{{ orden.ofendido_identificacion or 'No registrado' }}</div></div>
-        <div class="info-row"><div class="info-label">Más ofendidos:</div><div class="info-value">{{ 'Sí' if orden.hay_mas_ofendidos else 'No' }}</div></div>
-        
-        <div class="section-title"><i class="fas fa-user-graduate"></i> Imputado</div>
-        <div class="info-row"><div class="info-label">Nombre:</div><div class="info-value">{{ orden.imputado_nombre }}</div></div>
-        <div class="info-row"><div class="info-label">Identificación:</div><div class="info-value">{{ orden.imputado_identificacion }}</div></div>
-        <div class="info-row"><div class="info-label">Nacionalidad:</div><div class="info-value">{{ orden.nacionalidad or 'No registrada' }}</div></div>
-        <div class="info-row"><div class="info-label">Estado Civil:</div><div class="info-value">{{ orden.estado_civil or 'No registrado' }}</div></div>
-        <div class="info-row"><div class="info-label">Género:</div><div class="info-value">{{ orden.genero or 'No registrado' }}</div></div>
-        <div class="info-row"><div class="info-label">Padre:</div><div class="info-value">{{ orden.nombre_padre or 'No registrado' }}</div></div>
-        <div class="info-row"><div class="info-label">Madre:</div><div class="info-value">{{ orden.nombre_madre or 'No registrada' }}</div></div>
-        
-        <div class="section-title"><i class="fas fa-file-signature"></i> Datos de la Orden</div>
-        <div class="info-row"><div class="info-label">Tipo Solicitud:</div><div class="info-value">{{ orden.tipo_solicitud or 'No especificado' }}</div></div>
-        <div class="info-row"><div class="info-label">Dejar Orden a:</div><div class="info-value">{{ orden.dejar_orden or 'No especificado' }}</div></div>
-        <div class="info-row"><div class="info-label">Condición Requerido:</div><div class="info-value">{{ orden.condicion_requerido or 'No especificado' }}</div></div>
-        <div class="info-row"><div class="info-label">Tipo Captura:</div><div class="info-value">{{ orden.tipo_captura or 'No especificado' }}</div></div>
-        <div class="info-row"><div class="info-label">Remisión a:</div><div class="info-value">{{ orden.remision_a or 'No especificado' }}</div></div>
-        <div class="info-row"><div class="info-label">Ubicación/Lugar:</div><div class="info-value">{{ orden.lugar_captura or 'No registrado' }}</div></div>
-        
-        {% if orden.observaciones %}
-        <div class="info-row"><div class="info-label">Observaciones:</div><div class="info-value">{{ orden.observaciones }}</div></div>
-        {% endif %}
-        
-        <div class="info-row"><div class="info-label">Estado:</div><div class="info-value"><span class="badge-activa">{{ orden.estado }}</span></div></div>
-        <div class="info-row"><div class="info-label">Registrado por:</div><div class="info-value">{{ orden.creado_por }} - {{ orden.fecha_registro }}</div></div>
-        
-        <div style="margin-top: 30px; text-align: right;">
-            <button class="btn-volver" onclick="window.location.href='/ordenes_judiciales'"><i class="fas fa-arrow-left"></i> Volver</button>
-            <button class="btn-imprimir" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+<div class="orden-judicial-container">
+    <div class="oj-card">
+        <div class="oj-card-header">
+            <h3><i class="fas fa-gavel"></i> Orden Judicial</h3>
+            <span class="numero-unico">{{ orden.numero_unico }}</span>
+        </div>
+        <div class="oj-card-body">
+            
+            <div class="oj-section">
+                <div class="oj-section-title"><i class="fas fa-building"></i> Datos del Despacho</div>
+                <div class="oj-info-row"><span class="label">Despacho:</span><span class="value"><strong>{{ orden.despacho or 'No registrado' }}</strong></span></div>
+                <div class="oj-info-row"><span class="label">Fecha Emisión:</span><span class="value">{{ orden.fecha_emision or 'No registrada' }}</span></div>
+                <div class="oj-info-row"><span class="label">N° Oficio:</span><span class="value">{% if orden.numero_oficio %}{{ orden.numero_oficio }}{% else %}<span class="no-registrado">No registrado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">N° Consecutivo Interno:</span><span class="value">{% if orden.consecutivo_interno %}{{ orden.consecutivo_interno }}{% else %}<span class="no-registrado">No registrado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Correo Despacho:</span><span class="value">{% if orden.correo_despacho %}{{ orden.correo_despacho }}{% else %}<span class="no-registrado">No registrado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Teléfono Despacho:</span><span class="value">{% if orden.telefono_despacho %}{{ orden.telefono_despacho }}{% else %}<span class="no-registrado">No registrado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Delito(s):</span><span class="value"><strong>{{ orden.delitos or 'No especificado' }}</strong></span></div>
+            </div>
+            
+            <div class="oj-section">
+                <div class="oj-section-title"><i class="fas fa-user-injured"></i> Ofendido</div>
+                <div class="oj-info-row"><span class="label">Nombre:</span><span class="value"><strong>{{ orden.ofendido_nombre or 'No registrado' }}</strong></span></div>
+                <div class="oj-info-row"><span class="label">Identificación:</span><span class="value">{{ orden.ofendido_identificacion or 'No registrada' }}</span></div>
+                <div class="oj-info-row"><span class="label">Más ofendidos:</span><span class="value">{% if orden.hay_mas_ofendidos %}Sí{% else %}No{% endif %}</span></div>
+            </div>
+            
+            <div class="oj-section">
+                <div class="oj-section-title"><i class="fas fa-user-graduate"></i> Imputado</div>
+                <div class="oj-info-row"><span class="label">Nombre:</span><span class="value"><strong>{{ orden.imputado_nombre or 'No registrado' }}</strong></span></div>
+                <div class="oj-info-row"><span class="label">Identificación:</span><span class="value">{{ orden.imputado_identificacion or 'No registrada' }}</span></div>
+                <div class="oj-info-row"><span class="label">Nacionalidad:</span><span class="value">{% if orden.nacionalidad %}{{ orden.nacionalidad }}{% else %}<span class="no-registrado">No registrada</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Estado Civil:</span><span class="value">{% if orden.estado_civil %}{{ orden.estado_civil }}{% else %}<span class="no-registrado">No registrado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Género:</span><span class="value">{% if orden.genero %}{{ orden.genero }}{% else %}<span class="no-registrado">No especificado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Nombre del Padre:</span><span class="value">{% if orden.nombre_padre %}{{ orden.nombre_padre }}{% else %}<span class="no-registrado">No registrado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Nombre de la Madre:</span><span class="value">{% if orden.nombre_madre %}{{ orden.nombre_madre }}{% else %}<span class="no-registrado">No registrado</span>{% endif %}</span></div>
+            </div>
+            
+            <div class="oj-section">
+                <div class="oj-section-title"><i class="fas fa-file-signature"></i> Datos de la Orden</div>
+                <div class="oj-info-row"><span class="label">Tipo de Solicitud:</span><span class="value">{% if orden.tipo_solicitud %}{{ orden.tipo_solicitud }}{% else %}<span class="no-registrado">No especificado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Condición del Requerido:</span><span class="value">{% if orden.condicion_requerido %}{{ orden.condicion_requerido }}{% else %}<span class="no-registrado">No especificado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Tipo de Captura:</span><span class="value">{% if orden.tipo_captura %}{{ orden.tipo_captura }}{% else %}<span class="no-registrado">No especificado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Remisión a:</span><span class="value">{% if orden.remision_a %}{{ orden.remision_a }}{% else %}<span class="no-registrado">No especificado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Lugar de Captura:</span><span class="value">{% if orden.lugar_captura %}{{ orden.lugar_captura }}{% else %}<span class="no-registrado">No especificado</span>{% endif %}</span></div>
+                <div class="oj-info-row"><span class="label">Estado:</span>
+                    <span class="value">
+                        {% if orden.estado == 'ACTIVA' %}<span class="oj-badge active">ACTIVA</span>
+                        {% elif orden.estado == 'INACTIVA' %}<span class="oj-badge inactive">INACTIVA</span>
+                        {% elif orden.estado == 'CANCELADA' %}<span class="oj-badge inactive">CANCELADA</span>
+                        {% elif orden.estado == 'CUMPLIDA' %}<span class="oj-badge completed">CUMPLIDA</span>
+                        {% else %}<span class="oj-badge pending">{{ orden.estado or 'PENDIENTE' }}</span>{% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            {% if orden.observaciones %}
+            <div class="oj-section">
+                <div class="oj-section-title"><i class="fas fa-comment"></i> Observaciones</div>
+                <div style="color: #d1d5db; font-size: 13px; line-height: 1.6; background: rgba(251, 191, 36, 0.05); border-radius: 8px; padding: 12px 16px; border-left: 4px solid #fbbf24;">
+                    {{ orden.observaciones }}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="oj-actions no-print">
+                <a href="/ficha/{{ orden.persona_id }}" class="oj-btn-back"><i class="fas fa-arrow-left"></i> Volver a Ficha</a>
+                <button class="oj-btn-whatsapp" onclick="compartirWhatsApp()"><i class="fab fa-whatsapp"></i> Compartir por WhatsApp</button>
+                <button class="oj-btn-print" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+            </div>
+            
         </div>
     </div>
 </div>
+
+<script>
+var ordenData = {
+    'id': {{ orden.id }},
+    'persona_id': {{ orden.persona_id }},
+    'despacho': '{{ orden.despacho or "" }}',
+    'fecha_emision': '{{ orden.fecha_emision or "" }}',
+    'numero_unico': '{{ orden.numero_unico or "" }}',
+    'numero_oficio': '{{ orden.numero_oficio or "" }}',
+    'consecutivo_interno': '{{ orden.consecutivo_interno or "" }}',
+    'correo_despacho': '{{ orden.correo_despacho or "" }}',
+    'telefono_despacho': '{{ orden.telefono_despacho or "" }}',
+    'delitos': '{{ orden.delitos or "" }}',
+    'ofendido_nombre': '{{ orden.ofendido_nombre or "" }}',
+    'ofendido_identificacion': '{{ orden.ofendido_identificacion or "" }}',
+    'hay_mas_ofendidos': {{ 'true' if orden.hay_mas_ofendidos else 'false' }},
+    'imputado_nombre': '{{ orden.imputado_nombre or "" }}',
+    'imputado_identificacion': '{{ orden.imputado_identificacion or "" }}',
+    'tipo_solicitud': '{{ orden.tipo_solicitud or "" }}',
+    'dejar_orden': '{{ orden.dejar_orden or "" }}',
+    'condicion_requerido': '{{ orden.condicion_requerido or "" }}',
+    'tipo_captura': '{{ orden.tipo_captura or "" }}',
+    'lugar_captura': '{{ orden.lugar_captura or "" }}',
+    'remision_a': '{{ orden.remision_a or "" }}',
+    'nacionalidad': '{{ orden.nacionalidad or "" }}',
+    'estado_civil': '{{ orden.estado_civil or "" }}',
+    'genero': '{{ orden.genero or "" }}',
+    'nombre_padre': '{{ orden.nombre_padre or "" }}',
+    'nombre_madre': '{{ orden.nombre_madre or "" }}',
+    'latitud': {{ orden.latitud or 'null' }},
+    'longitud': {{ orden.longitud or 'null' }},
+    'direccion_ubicacion': '{{ orden.direccion_ubicacion or "" }}',
+    'estado': '{{ orden.estado or "" }}',
+    'observaciones': '{{ orden.observaciones or "" }}',
+    'creado_por': '{{ orden.creado_por or "" }}',
+    'fecha_registro': '{{ orden.fecha_registro or "" }}'
+};
+
+function compartirWhatsApp() {
+    var orden = ordenData;
+    var fecha = new Date().toLocaleString('es-CR');
+    var mensaje = '';
+    mensaje += '=== FUERZA PUBLICA DE COSTA RICA ===\n';
+    mensaje += 'ORDEN JUDICIAL\n';
+    mensaje += '----------------------------------------\n\n';
+    mensaje += `N° Único: ${orden.numero_unico || 'No registrado'}\n\n`;
+    mensaje += 'DATOS DEL DESPACHO\n';
+    mensaje += `• Despacho: ${orden.despacho || 'No registrado'}\n`;
+    mensaje += `• Fecha Emisión: ${orden.fecha_emision || 'No registrada'}\n`;
+    mensaje += `• N° Oficio: ${orden.numero_oficio || 'No registrado'}\n`;
+    mensaje += `• Delito(s): ${orden.delitos || 'No especificado'}\n\n`;
+    mensaje += 'OFENDIDO\n';
+    mensaje += `• Nombre: ${orden.ofendido_nombre || 'No registrado'}\n`;
+    mensaje += `• Identificación: ${orden.ofendido_identificacion || 'No registrada'}\n`;
+    mensaje += `• Más ofendidos: ${orden.hay_mas_ofendidos ? 'Sí' : 'No'}\n\n`;
+    mensaje += 'IMPUTADO\n';
+    mensaje += `• Nombre: ${orden.imputado_nombre || 'No registrado'}\n`;
+    mensaje += `• Identificación: ${orden.imputado_identificacion || 'No registrada'}\n`;
+    mensaje += `• Nacionalidad: ${orden.nacionalidad || 'No registrada'}\n\n`;
+    mensaje += 'DATOS DE LA ORDEN\n';
+    mensaje += `• Tipo de Solicitud: ${orden.tipo_solicitud || 'No especificado'}\n`;
+    mensaje += `• Tipo de Captura: ${orden.tipo_captura || 'No especificado'}\n`;
+    mensaje += `• Estado: ${orden.estado || 'PENDIENTE'}\n`;
+    mensaje += `• Lugar de Captura: ${orden.lugar_captura || 'No especificado'}\n`;
+    if (orden.observaciones) { mensaje += `\nOBSERVACIONES:\n${orden.observaciones}\n`; }
+    mensaje += '\n----------------------------------------\n';
+    mensaje += `Reporte generado el ${fecha}\n`;
+    mensaje += 'Fuerza Pública de Costa Rica';
+    var mensajeCodificado = encodeURIComponent(mensaje);
+    var url = `https://wa.me/?text=${mensajeCodificado}`;
+    var ventana = window.open(url, '_blank', 'width=800,height=600,scrollbars=yes');
+    if (!ventana || ventana.closed || typeof ventana.closed === 'undefined') {
+        var urlFallback = `https://api.whatsapp.com/send?text=${mensajeCodificado}`;
+        window.open(urlFallback, '_blank', 'width=800,height=600,scrollbars=yes');
+    }
+}
+</script>
 {% endblock %}
