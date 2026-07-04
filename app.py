@@ -1855,12 +1855,51 @@ def ver_incidente(id):
 def ordenes_judiciales():
     return render_template('ordenes_judiciales.html')
 
+# ==================== RUTA MODIFICADA PARA ORDEN JUDICIAL ====================
 @app.route('/orden_judicial/<int:id>')
 @login_required
 @permiso_requerido('ver_ordenes_judiciales')
 def ver_orden_judicial(id):
     orden = OrdenJudicial.query.get_or_404(id)
-    return render_template('ver_orden_judicial.html', orden=orden)
+    
+    # Convertir objeto SQLAlchemy a diccionario para JSON serializable
+    orden_dict = {
+        'id': orden.id,
+        'persona_id': orden.persona_id,
+        'despacho': orden.despacho,
+        'fecha_emision': orden.fecha_emision,
+        'numero_unico': orden.numero_unico,
+        'numero_oficio': orden.numero_oficio,
+        'consecutivo_interno': orden.consecutivo_interno,
+        'correo_despacho': orden.correo_despacho,
+        'telefono_despacho': orden.telefono_despacho,
+        'delitos': orden.delitos,
+        'ofendido_nombre': orden.ofendido_nombre,
+        'ofendido_identificacion': orden.ofendido_identificacion,
+        'hay_mas_ofendidos': orden.hay_mas_ofendidos,
+        'imputado_nombre': orden.imputado_nombre,
+        'imputado_identificacion': orden.imputado_identificacion,
+        'tipo_solicitud': orden.tipo_solicitud,
+        'dejar_orden': orden.dejar_orden,
+        'condicion_requerido': orden.condicion_requerido,
+        'tipo_captura': orden.tipo_captura,
+        'lugar_captura': orden.lugar_captura,
+        'remision_a': orden.remision_a,
+        'nacionalidad': orden.nacionalidad,
+        'estado_civil': orden.estado_civil,
+        'genero': orden.genero,
+        'nombre_padre': orden.nombre_padre,
+        'nombre_madre': orden.nombre_madre,
+        'latitud': orden.latitud,
+        'longitud': orden.longitud,
+        'direccion_ubicacion': orden.direccion_ubicacion,
+        'estado': orden.estado,
+        'observaciones': orden.observaciones,
+        'creado_por': orden.creado_por,
+        'fecha_registro': orden.fecha_registro
+    }
+    
+    return render_template('ver_orden_judicial.html', orden=orden_dict)
 
 # ===== RUTA API PARA OBTENER TODAS LAS ÓRDENES JUDICIALES =====
 @app.route('/api/ordenes_judiciales')
@@ -4263,7 +4302,7 @@ def api_tipos_incidente():
             'ALLANAMIENTO', 'DAÑOS', 'AMENAZAS', 'ACOSO', 'ESTAFA', 'APROPIACIÓN INDEBIDA',
             'TRÁFICO DE DROGAS', 'POSESIÓN DE DROGAS', 'CONDUCCIÓN TEMERARIA', 'ACCIDENTE DE TRÁNSITO',
             'ATENTADO A LA AUTORIDAD', 'RESISTENCIA', 'PERTURBACIÓN DEL ORDEN PÚBLICO',
-            'INCUMPLIMIENTO DE MEDIDAS', 'VIOLACIÓN DE DOMICILIO', 'USURPACIÓN',
+            'INCUMPLIMIENTO DE MEDIDAS', 'VIOLACIÓN DE DOMICILIO', 'VERIFICACION DE DISPOSITIVO DE MONITOREO',
             'INCENDIO', 'LESIONES CULPOSAS', 'MENOR EN RIESGO', 'SUICIDIO', 'HALLAZGO DE CADÁVER',
             'PERSONA EXTRAVIADA', 'VIOLENCIA CONTRA LA MUJER', 'VIOLENCIA CONTRA MENORES',
             'TRATA DE PERSONAS', 'SECUESTRO', 'EXTORSIÓN', 'ASALTO', 'ROBO DE VEHÍCULO',
