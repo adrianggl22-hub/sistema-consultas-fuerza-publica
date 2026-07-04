@@ -3,89 +3,120 @@
 {% block content %}
 <style>
     /* ============================================================
-       ESTILOS DARK MODE PARA ÓRDENES JUDICIALES
+       ESTILOS DARK MODE PARA ÓRDENES JUDICIALES (LISTA)
        ============================================================ */
-    .orden-card-dark {
+    
+    .table-container-dark {
         background: #111827;
         border: 1px solid #1f2937;
         border-radius: 12px;
+        padding: 20px;
         margin-bottom: 20px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3);
     }
-    
-    .orden-header-dark {
-        background: linear-gradient(135deg, #4c1d95, #2d1b69);
+
+    .form-container-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        display: none;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    .form-container-dark h4 {
         color: #e5e7eb;
-        padding: 15px 20px;
-        border-bottom: 1px solid #1f2937;
     }
-    
-    .orden-header-dark h4 {
-        margin: 0;
-    }
-    
-    .orden-header-dark h4 i {
-        color: #a78bfa;
-    }
-    
-    .badge-dark-orden {
-        padding: 3px 12px;
-        border-radius: 15px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-    
-    .badge-dark-orden.activa {
-        background: rgba(34, 197, 94, 0.15);
-        color: #4ade80;
-        border: 1px solid rgba(34, 197, 94, 0.2);
-    }
-    
-    .badge-dark-orden.cumplida {
-        background: rgba(96, 165, 250, 0.15);
-        color: #60a5fa;
-        border: 1px solid rgba(96, 165, 250, 0.2);
-    }
-    
-    .badge-dark-orden.cancelada {
-        background: rgba(239, 68, 68, 0.15);
-        color: #f87171;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-    
-    .btn-icon-dark {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 5px 8px;
-        border-radius: 5px;
-        color: #60a5fa;
-        transition: all 0.2s ease;
-    }
-    
-    .btn-icon-dark:hover {
-        background: rgba(255,255,255,0.05);
+
+    .form-container-dark h4 i {
         color: #fbbf24;
     }
-    
-    .btn-icon-dark i {
-        font-size: 16px;
+
+    .form-container-dark .form-group label {
+        color: #9ca3af;
+        font-weight: 600;
     }
-    
-    .empty-dark {
-        text-align: center;
-        padding: 40px;
+
+    .form-container-dark .form-control,
+    .form-container-dark .form-select {
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        color: #e5e7eb;
+        border-radius: 8px;
+        padding: 10px 14px;
+        transition: all 0.3s ease;
+    }
+
+    .form-container-dark .form-control:focus,
+    .form-container-dark .form-select:focus {
+        background: #1f2937;
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        color: #fff;
+    }
+
+    .form-container-dark .form-control::placeholder {
         color: #6b7280;
     }
-    
+
+    .form-container-dark .form-control option {
+        background: #1a2236;
+        color: #e5e7eb;
+    }
+
+    .form-container-dark .text-muted {
+        color: #6b7280 !important;
+    }
+
+    /* Badge estado dark */
+    .badge-estado-dark {
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    .badge-estado-dark.activa { 
+        background: rgba(34, 197, 94, 0.15); 
+        color: #4ade80;
+    }
+    .badge-estado-dark.vencida { 
+        background: rgba(239, 68, 68, 0.15); 
+        color: #f87171;
+    }
+    .badge-estado-dark.cancelada { 
+        background: rgba(107, 114, 128, 0.15); 
+        color: #9ca3af;
+    }
+    .badge-estado-dark.cumplida { 
+        background: rgba(96, 165, 250, 0.15); 
+        color: #60a5fa;
+    }
+
+    /* Botones */
+    .btn-nueva-orden-dark {
+        background: #fbbf24;
+        color: #111827;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-nueva-orden-dark:hover {
+        background: #f59e0b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+        color: #111827;
+    }
+
     .table-dark-custom {
         width: 100%;
         border-collapse: collapse;
-        font-size: 13px;
-        color: #e5e7eb;
+        font-size: 14px;
     }
-    
+
     .table-dark-custom thead th {
         background: #1a2236;
         color: #9ca3af;
@@ -93,155 +124,250 @@
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        padding: 10px 12px;
+        padding: 12px 8px;
         border-bottom: 1px solid #1f2937;
     }
-    
+
     .table-dark-custom tbody td {
-        padding: 10px 12px;
+        padding: 10px 8px;
         border-bottom: 1px solid rgba(255,255,255,0.04);
         color: #e5e7eb;
         vertical-align: middle;
+        font-size: 13px;
     }
-    
+
     .table-dark-custom tbody tr {
         transition: all 0.2s ease;
     }
-    
+
     .table-dark-custom tbody tr:hover td {
         background: rgba(255,255,255,0.03);
     }
-    
-    .table-responsive-dark {
-        overflow-x: auto;
+
+    .search-box-dark {
+        border-radius: 25px;
+        border: 1px solid #1f2937;
+        background: #1a2236;
+        color: #e5e7eb;
+        padding: 8px 15px;
+        transition: all 0.3s ease;
     }
-    
-    h1 {
+    .search-box-dark:focus {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        background: #1f2937;
+        color: #fff;
+    }
+    .search-box-dark::placeholder {
+        color: #6b7280;
+    }
+    .search-icon-dark {
+        border-radius: 25px 0 0 25px;
+        background: #1a2236;
+        border: 1px solid #1f2937;
+        border-right: none;
+        color: #6b7280;
+    }
+
+    .btn-icon-dark {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+        font-size: 16px;
+        color: #6b7280;
+    }
+    .btn-icon-dark:hover {
+        background: rgba(255,255,255,0.05);
         color: #e5e7eb;
     }
-    
-    h1 i {
-        color: #a78bfa;
+    .btn-icon-dark i {
+        font-size: 16px;
+        color: #60a5fa;
     }
-    
+    .btn-icon-dark:hover i {
+        color: #fbbf24;
+    }
+
+    .action-buttons-dark {
+        display: flex;
+        gap: 2px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
     .subtitle-dark {
         color: #9ca3af;
         font-size: 14px;
         margin-bottom: 20px;
     }
-    
-    .text-center {
-        text-align: center;
-    }
-    
-    .padding-content {
-        padding: 20px;
-    }
-    
+
     @media (max-width: 768px) {
-        .table-dark-custom {
-            font-size: 12px;
+        .btn-icon-dark {
+            padding: 3px 6px;
+            font-size: 14px;
         }
-        .table-dark-custom thead th,
-        .table-dark-custom tbody td {
-            padding: 6px 8px;
-        }
-        .padding-content {
-            padding: 12px;
+        .btn-icon-dark i {
+            font-size: 14px;
         }
     }
 </style>
 
-<h1><i class="fas fa-gavel"></i> Órdenes Judiciales</h1>
-<p class="subtitle-dark">Gestión de órdenes de captura, localización y citación</p>
+<h1>
+    <i class="fas fa-gavel" style="color: #fbbf24;"></i> Órdenes Judiciales
+    <button class="btn btn-nueva-orden-dark float-end" onclick="window.location.href='/orden_judicial/nuevo'">
+        <i class="fas fa-plus-circle"></i> Nueva Orden Judicial
+    </button>
+</h1>
+<p class="subtitle-dark">Gestión de órdenes judiciales emitidas por los juzgados</p>
 
-<div class="orden-card-dark">
-    <div class="orden-header-dark">
-        <h4><i class="fas fa-list"></i> Lista de Órdenes Judiciales</h4>
-    </div>
-    <div class="padding-content">
-        <div class="table-responsive-dark">
-            <table class="table-dark-custom" id="tablaOrdenesJudiciales">
-                <thead>
-                    <tr>
-                        <th>N° Único</th>
-                        <th>Despacho</th>
-                        <th>Fecha Emisión</th>
-                        <th>Imputado</th>
-                        <th>Delitos</th>
-                        <th>Tipo Solicitud</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="8" class="empty-dark">Cargando órdenes...</td></tr>
-                </tbody>
-            </table>
+<!-- Tabla de órdenes judiciales -->
+<div class="table-container-dark" id="tablaOrdenesContainer">
+    <div class="mb-3">
+        <div class="input-group">
+            <span class="input-group-text search-icon-dark"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control search-box-dark" id="buscarOrden" placeholder="Buscar por número único, despacho, imputado...">
         </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table-dark-custom" id="tablaOrdenes">
+            <thead>
+                <tr>
+                    <th>N° Único</th>
+                    <th>Despacho</th>
+                    <th>Fecha Emisión</th>
+                    <th>Imputado</th>
+                    <th>Delito(s)</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th style="text-align: center; min-width: 120px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaOrdenesBody">
+                <tr><td colspan="8" class="text-center" style="color: #6b7280; padding: 30px;"><i class="fas fa-spinner fa-spin" style="color: #fbbf24;"></i> Cargando datos...</td></tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-function cargarOrdenes() {
+// ==================== VARIABLES GLOBALES ====================
+
+// ==================== FUNCIONES PARA CARGAR DATOS ====================
+
+function cargarOrdenesJudiciales() {
+    const tbody = document.getElementById('tablaOrdenesBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center" style="color: #6b7280; padding: 30px;"><i class="fas fa-spinner fa-spin" style="color: #fbbf24;"></i> Cargando datos...</td></tr>';
+    
     fetch('/api/ordenes_judiciales')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            const tbody = $('#tablaOrdenesJudiciales tbody');
-            tbody.empty();
+            tbody.innerHTML = '';
             
-            if (!data || data.length === 0) {
-                tbody.html('<tr><td colspan="8" class="empty-dark">No hay órdenes judiciales registradas</td></tr>');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center" style="color: #6b7280; padding: 30px;">No hay órdenes judiciales registradas</td></tr>';
                 return;
             }
             
-            data.forEach(o => {
-                let estadoClass = 'badge-dark-orden activa';
-                let estadoText = 'Activa';
-                if (o.estado === 'CUMPLIDA') {
-                    estadoClass = 'badge-dark-orden cumplida';
-                    estadoText = 'Cumplida';
-                } else if (o.estado === 'CANCELADA') {
-                    estadoClass = 'badge-dark-orden cancelada';
-                    estadoText = 'Cancelada';
-                }
+            data.forEach(orden => {
+                const fechaEmision = orden.fecha_emision ? new Date(orden.fecha_emision).toLocaleDateString('es-CR', {day:'2-digit',month:'2-digit',year:'numeric'}) : 'No especificada';
                 
-                tbody.append(`
+                let estadoClass = 'badge-estado-dark ';
+                estadoClass += orden.estado === 'ACTIVA' ? 'activa' : 
+                              orden.estado === 'VENCIDA' ? 'vencida' : 
+                              orden.estado === 'CANCELADA' ? 'cancelada' : 'cumplida';
+                
+                tbody.innerHTML += `
                     <tr>
-                        <td><strong>${escapeHtml(o.numero_unico)}</strong></td>
-                        <td>${escapeHtml(o.despacho) || '-'}</td>
-                        <td>${o.fecha_emision || '-'}</td>
-                        <td>${escapeHtml(o.imputado_nombre) || '-'}</td>
-                        <td>${escapeHtml(o.delitos) || '-'}</td>
-                        <td>${escapeHtml(o.tipo_solicitud) || '-'}</td>
-                        <td><span class="${estadoClass}">${estadoText}</span></td>
+                        <td><strong>${orden.numero_unico || 'No especificado'}</strong></td>
+                        <td>${orden.despacho || 'No especificado'}</td>
+                        <td>${fechaEmision}</td>
+                        <td>${orden.imputado_nombre || 'No especificado'}</td>
+                        <td>${orden.delitos || '-'}</td>
+                        <td>${orden.tipo_solicitud || '-'}</td>
+                        <td><span class="${estadoClass}">${orden.estado || 'PENDIENTE'}</span></td>
                         <td>
-                            <button class="btn-icon-dark" onclick="verFicha(${o.persona_id})" title="Ver Ficha"><i class="fas fa-eye"></i></button>
+                            <div class="action-buttons-dark">
+                                <button class="btn-icon-dark" onclick="verOrden(${orden.id})" title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-icon-dark" onclick="editarOrden(${orden.id})" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-icon-dark" onclick="eliminarOrden(${orden.id})" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
-                `);
+                `;
             });
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error cargando órdenes judiciales:', error);
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="color: #f87171; padding: 30px;"><i class="fas fa-exclamation-triangle"></i> Error al cargar los datos</td></tr>`;
+        });
 }
 
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-    });
-}
-
-function verFicha(id) {
-    window.open(`/ficha/${id}`, '_blank');
-}
-
-$(document).ready(function() {
-    cargarOrdenes();
+// ==================== FUNCIONES DE BÚSQUEDA ====================
+document.addEventListener('DOMContentLoaded', function() {
+    cargarOrdenesJudiciales();
+    
+    const buscarInput = document.getElementById('buscarOrden');
+    if (buscarInput) {
+        buscarInput.addEventListener('keyup', function() {
+            const filtro = this.value.toLowerCase();
+            const filas = document.querySelectorAll('#tablaOrdenesBody tr');
+            
+            filas.forEach(fila => {
+                const texto = fila.textContent.toLowerCase();
+                fila.style.display = texto.includes(filtro) ? '' : 'none';
+            });
+        });
+    }
 });
+
+// ==================== FUNCIONES CRUD ====================
+
+function verOrden(id) {
+    window.open(`/orden_judicial/${id}`, '_blank');
+}
+
+function editarOrden(id) {
+    // Redirigir a la página de edición (si existe)
+    alert('Función de edición en desarrollo');
+    // window.location.href = `/orden_judicial/editar/${id}`;
+}
+
+function eliminarOrden(id) {
+    if (!confirm('¿Está seguro de eliminar esta orden judicial?')) return;
+    
+    fetch(`/api/ordenes_judiciales/${id}`, { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('✅ Orden judicial eliminada correctamente');
+                cargarOrdenesJudiciales();
+            } else {
+                alert('❌ Error al eliminar: ' + (data.error || 'Error desconocido'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Error al eliminar la orden judicial');
+        });
+}
 </script>
 {% endblock %}
