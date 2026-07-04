@@ -511,6 +511,22 @@
         margin-bottom: 20px;
     }
 
+    /* Estilo para el botón de editar ubicación */
+    .btn-editar-ubicacion-dark {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .btn-editar-ubicacion-dark:hover {
+        background: #3b82f6;
+        color: #fff;
+    }
+
     @media (max-width: 768px) {
         .detalle-grid-dark {
             grid-template-columns: 1fr;
@@ -642,13 +658,15 @@
             <div class="col-md-4">
                 <div class="form-group mb-2">
                     <label for="latitud">Latitud</label>
-                    <input type="text" class="form-control" id="latitud" placeholder="9.9159706" readonly>
+                    <!-- MODIFICACIÓN: Eliminado el atributo readonly para permitir edición manual -->
+                    <input type="text" class="form-control" id="latitud" placeholder="9.9159706">
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group mb-2">
                     <label for="longitud">Longitud</label>
-                    <input type="text" class="form-control" id="longitud" placeholder="-84.2471255" readonly>
+                    <!-- MODIFICACIÓN: Eliminado el atributo readonly para permitir edición manual -->
+                    <input type="text" class="form-control" id="longitud" placeholder="-84.2471255">
                 </div>
             </div>
             <div class="col-md-4">
@@ -666,6 +684,10 @@
             </button>
             <button class="btn btn-danger-map-dark" onclick="limpiarUbicacion()">
                 <i class="fas fa-eraser"></i> Limpiar ubicación
+            </button>
+            <!-- MODIFICACIÓN: Botón para actualizar desde coordenadas manuales -->
+            <button class="btn btn-editar-ubicacion-dark" onclick="actualizarDesdeCoordenadas()">
+                <i class="fas fa-sync-alt"></i> Actualizar desde coordenadas
             </button>
         </div>
     </div>
@@ -823,6 +845,53 @@ function limpiarUbicacion() {
     }
 }
 
+// MODIFICACIÓN: Nueva función para actualizar el marcador desde coordenadas manuales
+function actualizarDesdeCoordenadas() {
+    const latInput = document.getElementById('latitud');
+    const lngInput = document.getElementById('longitud');
+    const direccionInput = document.getElementById('direccion_ubicacion');
+    
+    const lat = parseFloat(latInput.value);
+    const lng = parseFloat(lngInput.value);
+    
+    if (isNaN(lat) || isNaN(lng)) {
+        alert('❌ Por favor ingrese coordenadas válidas (números)');
+        return;
+    }
+    
+    // Validar rangos de coordenadas
+    if (lat < -90 || lat > 90) {
+        alert('❌ Latitud debe estar entre -90 y 90');
+        return;
+    }
+    if (lng < -180 || lng > 180) {
+        alert('❌ Longitud debe estar entre -180 y 180');
+        return;
+    }
+    
+    // Actualizar el marcador en el mapa
+    if (marcadorUbicacion) {
+        mapaUbicacion.removeLayer(marcadorUbicacion);
+    }
+    
+    marcadorUbicacion = L.marker([lat, lng], {
+        draggable: true
+    }).addTo(mapaUbicacion);
+    
+    marcadorUbicacion.on('dragend', function() {
+        const pos = marcadorUbicacion.getLatLng();
+        document.getElementById('latitud').value = pos.lat.toFixed(7);
+        document.getElementById('longitud').value = pos.lng.toFixed(7);
+    });
+    
+    mapaUbicacion.setView([lat, lng], 15);
+    
+    // Si no tiene dirección, intentar obtenerla
+    if (!direccionInput.value) {
+        obtenerDireccion(lat, lng);
+    }
+}
+
 function marcarUbicacion(lat, lng, direccion) {
     if (!mapaUbicacion) return;
     
@@ -854,6 +923,29 @@ function marcarUbicacion(lat, lng, direccion) {
     }
 }
 
+// MODIFICACIÓN: Función para verificar si se puede editar la ubicación
+function habilitarEdicionUbicacion(habilitar) {
+    const latInput = document.getElementById('latitud');
+    const lngInput = document.getElementById('longitud');
+    const dirInput = document.getElementById('direccion_ubicacion');
+    
+    if (habilitar) {
+        latInput.removeAttribute('readonly');
+        lngInput.removeAttribute('readonly');
+        dirInput.removeAttribute('readonly');
+        latInput.style.background = '#1a2236';
+        lngInput.style.background = '#1a2236';
+        dirInput.style.background = '#1a2236';
+    } else {
+        latInput.setAttribute('readonly', 'readonly');
+        lngInput.setAttribute('readonly', 'readonly');
+        dirInput.setAttribute('readonly', 'readonly');
+        latInput.style.background = '#0d1117';
+        lngInput.style.background = '#0d1117';
+        dirInput.style.background = '#0d1117';
+    }
+}
+
 // ==================== FUNCIONES PARA CARGAR DATOS ====================
 function cargarPersonas() {
     fetch('/api/personas')
@@ -876,7 +968,6 @@ function cargarOrdenes() {
     
     tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="color: #6b7280; padding: 30px;"><i class="fas fa-spinner fa-spin" style="color: #fbbf24;"></i> Cargando datos...</td></tr>';
     
-    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
     fetch('/api/ordenes_captura')
         .then(response => {
             if (!response.ok) {
@@ -945,6 +1036,9 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarOrdenes();
     inicializarMapa();
     
+    // MODIFICACIÓN: Habilitar edición de ubicación por defecto
+    habilitarEdicionUbicacion(true);
+    
     const buscarInput = document.getElementById('buscarOrden');
     if (buscarInput) {
         buscarInput.addEventListener('keyup', function() {
@@ -970,6 +1064,9 @@ function mostrarFormularioNuevo() {
     cargarPersonas();
     limpiarUbicacion();
     centrarMapa();
+    
+    // MODIFICACIÓN: Habilitar edición de ubicación
+    habilitarEdicionUbicacion(true);
     
     setTimeout(() => {
         if (mapaUbicacion) {
@@ -1000,6 +1097,9 @@ function limpiarFormulario() {
     document.getElementById('longitud').value = '';
     document.getElementById('direccion_ubicacion').value = '';
     limpiarUbicacion();
+    
+    // MODIFICACIÓN: Habilitar edición de ubicación
+    habilitarEdicionUbicacion(true);
 }
 
 // ==================== FUNCIONES CRUD ====================
@@ -1037,7 +1137,6 @@ function guardarOrden() {
         direccion_ubicacion: direccion_ubicacion
     };
     
-    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
     const url = ordenIdEnEdicion ? `/api/ordenes_captura/${ordenIdEnEdicion}` : '/api/ordenes_captura';
     const method = ordenIdEnEdicion ? 'PUT' : 'POST';
     
@@ -1062,7 +1161,6 @@ function guardarOrden() {
 }
 
 function editarOrden(id) {
-    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
     fetch(`/api/ordenes_captura/${id}`)
         .then(response => response.json())
         .then(orden => {
@@ -1085,6 +1183,9 @@ function editarOrden(id) {
             document.getElementById('latitud').value = orden.latitud || '';
             document.getElementById('longitud').value = orden.longitud || '';
             document.getElementById('direccion_ubicacion').value = orden.direccion_ubicacion || '';
+            
+            // MODIFICACIÓN: Habilitar edición de ubicación en edición
+            habilitarEdicionUbicacion(true);
             
             if (orden.latitud && orden.longitud) {
                 marcarUbicacion(orden.latitud, orden.longitud, orden.direccion_ubicacion);
@@ -1111,7 +1212,6 @@ function editarOrden(id) {
 
 // ==================== FUNCIÓN VER ORDEN ====================
 function verOrden(id) {
-    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
     fetch(`/api/ordenes_captura/${id}`)
         .then(response => response.json())
         .then(orden => {
@@ -1218,7 +1318,6 @@ function verOrden(id) {
 function eliminarOrden(id) {
     if (!confirm('¿Está seguro de eliminar esta orden?')) return;
     
-    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
     fetch(`/api/ordenes_captura/${id}`, { method: 'DELETE' })
         .then(response => response.json())
         .then(data => {
@@ -1245,7 +1344,6 @@ function enviarWhatsApp(id) {
         btn.disabled = true;
     }
     
-    // === CAMBIO IMPORTANTE: /api/ordenes_captura en lugar de /api/ordenes ===
     fetch(`/api/ordenes_captura/${id}`)
         .then(response => {
             if (!response.ok) {
